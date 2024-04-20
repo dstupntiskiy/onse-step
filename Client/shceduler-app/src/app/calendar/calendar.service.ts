@@ -1,0 +1,26 @@
+import { Injectable } from '@angular/core';
+import { EventInput } from '@fullcalendar/core';
+import { Observable, of } from 'rxjs';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class CalendarService {
+
+  constructor() { }
+
+  getEvents(): Observable<EventInput[]>{
+    return of([
+      {
+        title: 'event 1', 
+        start: '2024-04-18T11:00:00.000', 
+        end: '2024-04-18T13:00:00.000'
+      },
+      {
+        title: 'event 2', 
+        start: '2024-04-19T12:00:00.000', 
+        end: '2024-04-19T14:00:00.000'
+      }
+    ])
+  }
+}

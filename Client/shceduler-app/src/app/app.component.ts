@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { CalendarComponent } from './components/calendar/calendar.component';
+import { CalendarComponent } from './calendar/calendar.component';
 
 
 @Component({
