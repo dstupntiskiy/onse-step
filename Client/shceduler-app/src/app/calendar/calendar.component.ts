@@ -1,4 +1,4 @@
-import { Component, ViewChild, OnInit, AfterViewInit } from '@angular/core';
+import { Component, ViewChild, OnInit, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { FullCalendarComponent, FullCalendarModule } from '@fullcalendar/angular';
 import { CalendarApi, CalendarOptions, EventClickArg, EventInput } from '@fullcalendar/core';
 import { CalendarService } from './calendar.service';
@@ -110,7 +110,6 @@ export class CalendarComponent {
         event.setEnd(result.endTime),
         event.setProp('title', result.eventName)
       
-        console.log(event)
         this.calendarApi.refetchEvents();
         this.snackBarService.success('Событие ' + result.eventName + ' обновлено')
       }
@@ -128,6 +127,5 @@ export class CalendarComponent {
 
   ngAfterViewInit(){
     this.calendarApi = this.calendarComponent.getApi();
-
   }
 }
