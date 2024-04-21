@@ -3,7 +3,7 @@ import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/materia
 import { MatButtonModule } from '@angular/material/button'
 import { MatInputModule } from '@angular/material/input'
 import { MatSelectModule } from '@angular/material/select'
-import { FormsModule } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { addHours, getFormattedTime, getHalfHourIntervals, setTimeFromStringToDate } from '../../shared/helpers/time-helper';
 
 export interface AddEventData{
@@ -19,29 +19,40 @@ export interface AddEventData{
     MatDialogModule, 
     MatInputModule,
     MatSelectModule,
-    FormsModule],
+    FormsModule,
+    ReactiveFormsModule],
   templateUrl: './add-event-dialog.component.html',
   styleUrl: './add-event-dialog.component.scss'
 })
 export class AddEventDialogComponent {
   timeOptions: string[] = getHalfHourIntervals();
-  startSelectedValue: string;
-  endSelectedValue: string;
+
+  public eventForm: FormGroup; 
+  public get name() { return this.eventForm.get('name')}
+  public get start() { return this.eventForm.get('start')}
+  public get end() { return this.eventForm.get('end')}
 
   constructor(
     public dialogRef: MatDialogRef<AddEventDialogComponent>,
+    private formBuilder: FormBuilder,
     @Inject(MAT_DIALOG_DATA) public data: {title: string, data: AddEventData}
   ){}
 
   onSaveClick(): void{
     var start = new Date(this.data.data.startTime);
-    var end = new Date(this.data.data.startTime); 
+    var end = new Date(this.data.data.startTime);
+    if (this.name?.valid && this.name?.value !== null){
     const data: AddEventData = {
-      startTime: setTimeFromStringToDate(start, this.startSelectedValue),
-      endTime: setTimeFromStringToDate(end, this.endSelectedValue),
-      eventName: 'NEW'
+      startTime: setTimeFromStringToDate(start, this.start?.value),
+      endTime: setTimeFromStringToDate(end, this.end?.value),
+      eventName: this.name?.value
     }
     this.dialogRef.close(data)
+  }
+  }
+
+  submit(): void{
+    this.onSaveClick();
   }
 
   onCloseClick(): void{
@@ -49,7 +60,12 @@ export class AddEventDialogComponent {
   }
 
   ngOnInit(){
-    this.startSelectedValue = getFormattedTime(this.data.data.startTime)
-    this.endSelectedValue = getFormattedTime(addHours(this.data.data.startTime, 1))
+    this.eventForm = this.formBuilder.group({
+      name: new FormControl(null, [Validators.required]),
+      start: new FormControl(null, [Validators.required]),
+      end: new FormControl(null, [Validators.required])
+    });
+    this.start?.setValue(getFormattedTime(this.data.data.startTime))
+    this.end?.setValue(getFormattedTime(addHours(this.data.data.startTime, 1)))
   }
 }
