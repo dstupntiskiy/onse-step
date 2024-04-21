@@ -1,6 +1,6 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, OnInit, AfterViewInit } from '@angular/core';
 import { FullCalendarComponent, FullCalendarModule } from '@fullcalendar/angular';
-import { CalendarOptions, EventInput } from '@fullcalendar/core';
+import { CalendarApi, CalendarOptions, EventInput } from '@fullcalendar/core';
 import { CalendarService } from './calendar.service';
 import interationPlugin, { DateClickArg } from '@fullcalendar/interaction'
 import timeGridWeek from '@fullcalendar/timegrid'
@@ -8,6 +8,8 @@ import dayGridPlugin from '@fullcalendar/daygrid'
 import { EventComponent } from './event/event.component';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { AddEventDialogComponent } from './add-event-dialog/add-event-dialog.component';
+import { AddEventData } from './add-event-dialog/add-event-dialog.component';
+
 
 @Component({
   selector: 'app-calendar',
@@ -54,6 +56,8 @@ export class CalendarComponent {
   }
   events: EventInput[]
 
+  calendarApi: CalendarApi;
+
   constructor(private calendarService: CalendarService,
     public dialog: MatDialog
   ){}
@@ -63,26 +67,30 @@ export class CalendarComponent {
   }
 
   handleDateClick(info: DateClickArg) {
-    var start = info.date;
-    const hoursToAdd = 1 * 60 * 60 * 1000;
-    var end = new Date(hoursToAdd + start.getTime())
-    var event: EventInput = {
-      start: start,
-      end: end,
-      title: 'New Event',
-      borderColor: 'transparent',
-      backgroundColor: 'transparent',
-      extendedProps:{
-        id: this.id
-      }
-    }
-    var api = this.calendarComponent.getApi();
-    api.addEvent(event);
     this.id += 1;
 
     const dialogRef = this.dialog.open(AddEventDialogComponent, {
-      data: { title: 'Add Event', message: 'add me'}
-    })
+      data: { title: 'Add Event', data: {startTime: info.date}}
+    });
+
+    dialogRef.afterClosed().subscribe((result: AddEventData) => {
+      if (result){
+        const event: EventInput = {
+          start: result.startTime,
+          end: result.endTime,
+          title: result.eventName,
+          borderColor: 'transparent',
+          backgroundColor: 'transparent',
+          extendedProps:{
+            id: this.id
+          }
+        }
+      
+
+        this.calendarApi.addEvent(event);
+      }
+  });
+
   }
 
   handleEventContent(arg: any){
@@ -96,5 +104,10 @@ export class CalendarComponent {
   }
   ngOnInit(){
     this.calendarService.getEvents().subscribe(x => this.events = x)
+  }
+
+  ngAfterViewInit(){
+    this.calendarApi = this.calendarComponent.getApi();
+
   }
 }
