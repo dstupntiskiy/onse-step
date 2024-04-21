@@ -52,6 +52,7 @@ export class CalendarComponent {
     plugins: [dayGridPlugin, timeGridWeek, interationPlugin],
     selectable: true,
     editable: true,
+    height: 'calc(100vh - 32px)',
     dateClick: this.handleDateClick.bind(this),
     eventClick: this.handleEventClick.bind(this)
   }
@@ -127,5 +128,6 @@ export class CalendarComponent {
 
   ngAfterViewInit(){
     this.calendarApi = this.calendarComponent.getApi();
+    this.calendarApi.refetchEvents()
   }
 }

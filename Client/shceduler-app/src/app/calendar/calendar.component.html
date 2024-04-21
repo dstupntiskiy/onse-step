@@ -1,10 +1,12 @@
-<full-calendar #calendar
-  [options]="calendarOptions"
-  [events]="events">
-  <ng-template #eventContent let-arg>
-    <app-event
-     [title]="arg.event.title"
-     [start]="arg.event.start"
-     [end]="arg.event.end"></app-event>
-  </ng-template>
-</full-calendar>
+<div class="calendar-content">
+  <full-calendar #calendar
+    [options]="calendarOptions"
+    [events]="events">
+    <ng-template #eventContent let-arg>
+      <app-event
+      [title]="arg.event.title"
+      [start]="arg.event.start"
+      [end]="arg.event.end"></app-event>
+    </ng-template>
+  </full-calendar>
+</div>
