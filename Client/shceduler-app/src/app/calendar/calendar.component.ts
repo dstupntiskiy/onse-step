@@ -5,11 +5,14 @@ import { CalendarService } from './calendar.service';
 import interationPlugin, { DateClickArg } from '@fullcalendar/interaction'
 import timeGridWeek from '@fullcalendar/timegrid'
 import dayGridPlugin from '@fullcalendar/daygrid'
+import { EventComponent } from './event/event.component';
 
 @Component({
   selector: 'app-calendar',
   standalone: true,
-    imports: [FullCalendarModule],
+    imports: [FullCalendarModule,
+      EventComponent
+    ],
   templateUrl: './calendar.component.html',
   styleUrl: './calendar.component.scss'
 })
@@ -17,6 +20,7 @@ import dayGridPlugin from '@fullcalendar/daygrid'
 export class CalendarComponent {
   @ViewChild('calendar') calendarComponent: FullCalendarComponent;
 
+  id: number = 0;
   calendarOptions: CalendarOptions = {
     buttonText:{
       today: 'Сегодня',
@@ -43,7 +47,8 @@ export class CalendarComponent {
     plugins: [dayGridPlugin, timeGridWeek, interationPlugin],
     selectable: true,
     editable: true,
-    dateClick: this.handleDateClick.bind(this)
+    dateClick: this.handleDateClick.bind(this),
+    eventContent: this.handleEventContent.bind(this)
   }
   events: EventInput[]
 
@@ -62,11 +67,20 @@ export class CalendarComponent {
       start: start,
       end: end,
       title: 'New Event',
-      borderColor: 'red'
+      borderColor: 'transparent',
+      backgroundColor: 'transparent',
+      extendedProps:{
+        id: this.id
+      }
     }
     console.log(event);
     var api = this.calendarComponent.getApi();
     api.addEvent(event);
+    this.id += 1;
+  }
+
+  handleEventContent(arg: any){
+
   }
 
 
