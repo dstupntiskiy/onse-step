@@ -1,6 +1,6 @@
 import { Component, ViewChild, OnInit, AfterViewInit } from '@angular/core';
 import { FullCalendarComponent, FullCalendarModule } from '@fullcalendar/angular';
-import { CalendarApi, CalendarOptions, EventInput } from '@fullcalendar/core';
+import { CalendarApi, CalendarOptions, EventClickArg, EventInput } from '@fullcalendar/core';
 import { CalendarService } from './calendar.service';
 import interationPlugin, { DateClickArg } from '@fullcalendar/interaction'
 import timeGridWeek from '@fullcalendar/timegrid'
@@ -9,6 +9,7 @@ import { EventComponent } from './event/event.component';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { AddEventDialogComponent } from './add-event-dialog/add-event-dialog.component';
 import { AddEventData } from './add-event-dialog/add-event-dialog.component';
+import { SnackBarService } from '../services/snack-bar.service';
 
 
 @Component({
@@ -52,13 +53,15 @@ export class CalendarComponent {
     selectable: true,
     editable: true,
     dateClick: this.handleDateClick.bind(this),
-    eventContent: this.handleEventContent.bind(this)
+    eventClick: this.handleEventClick.bind(this)
   }
   events: EventInput[]
 
   calendarApi: CalendarApi;
 
-  constructor(private calendarService: CalendarService,
+  constructor(
+    private calendarService: CalendarService,
+    private snackBarService: SnackBarService,
     public dialog: MatDialog
   ){}
 
@@ -70,7 +73,7 @@ export class CalendarComponent {
     this.id += 1;
 
     const dialogRef = this.dialog.open(AddEventDialogComponent, {
-      data: { title: 'Add Event', data: {startTime: info.date}}
+      data: { title: 'Новое Событие', data: {startTime: info.date}}
     });
 
     dialogRef.afterClosed().subscribe((result: AddEventData) => {
@@ -86,15 +89,35 @@ export class CalendarComponent {
           }
         }
       
-
         this.calendarApi.addEvent(event);
+        this.snackBarService.success('Событие ' + result.eventName + ' создано')
       }
   });
 
   }
 
-  handleEventContent(arg: any){
-
+  handleEventClick(info: EventClickArg){
+    const dialogRef = this.dialog.open(AddEventDialogComponent, {
+      data: { title: 'Событие', 
+        data: {
+          startTime: info.event.start,
+          endTime: info.event.end,
+          eventName: info.event.title
+        }}
+    
+    })
+    
+    dialogRef.afterClosed().subscribe((result: AddEventData) => {
+      const event = this.calendarApi.getEventById(info.event.id);
+      if (result && event){
+        event.setStart(result.startTime),
+        event.setEnd(result.endTime),
+        event.setProp('title', result.eventName)
+      
+        this.calendarApi.refetchEvents();
+        this.snackBarService.success('Событие ' + result.eventName + ' обновлено')
+      }
+    });
   }
 
 

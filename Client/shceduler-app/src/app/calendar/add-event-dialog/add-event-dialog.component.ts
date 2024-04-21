@@ -69,8 +69,12 @@ export class AddEventDialogComponent {
   {
     validators: this.validateForm()
   });
+    this.data.data.eventName ? this.name?.setValue(this.data.data.eventName) : ''
+
     this.start?.setValue(getFormattedTime(this.data.data.startTime))
-    this.end?.setValue(getFormattedTime(addHours(this.data.data.startTime, 1)))
+    this.data.data.endTime 
+      ? this.end?.setValue(getFormattedTime(this.data.data.endTime))
+      :  this.end?.setValue(getFormattedTime(addHours(this.data.data.startTime, 1)))
   }
 
   validateForm(){
