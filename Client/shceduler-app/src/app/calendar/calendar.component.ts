@@ -1,10 +1,10 @@
-import { Component, Inject } from '@angular/core';
+import { Component } from '@angular/core';
 import { FullCalendarModule } from '@fullcalendar/angular';
 import { CalendarOptions, EventInput } from '@fullcalendar/core';
-import { Observable, of } from 'rxjs';
-import { options } from './calendarCustomOptions'
-import { DOCUMENT } from '@angular/common';
 import { CalendarService } from './calendar.service';
+import interationPlugin from '@fullcalendar/interaction'
+import timeGridWeek from '@fullcalendar/timegrid'
+import dayGridPlugin from '@fullcalendar/daygrid'
 
 @Component({
   selector: 'app-calendar',
@@ -14,7 +14,33 @@ import { CalendarService } from './calendar.service';
   styleUrl: './calendar.component.scss'
 })
 export class CalendarComponent {
-  calendarOptions: CalendarOptions = options
+  calendarOptions: CalendarOptions = {
+    buttonText:{
+      today: 'Сегодня',
+      month: 'Месяц',
+      week: 'Неделя',
+      day: 'День',
+      list: 'Список'
+    },
+    scrollTime: '08:00',
+    locale: 'ru-RU',
+    slotLabelFormat:{
+      hour12: false ,
+      hour: 'numeric',
+      minute:'2-digit',
+      omitZeroMinute: false
+    },
+    dayHeaderFormat: {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric'},
+    allDaySlot: false,
+    initialView: 'timeGridWeek',
+    plugins: [dayGridPlugin, timeGridWeek, interationPlugin],
+    selectable: true,
+    editable: true,
+    dateClick: this.handleDateClick.bind(this)
+  }
   events: EventInput[]
 
   constructor(private calendarService: CalendarService){}
@@ -23,6 +49,13 @@ export class CalendarComponent {
     this.calendarOptions.weekends = !this.calendarOptions.weekends // toggle the boolean!
   }
 
+  handleDateClick(info: any) {
+    console.log(info);
+  }
+
+  handleSelect(info: any){
+    console.log(info)
+  }
   ngOnInit(){
     this.calendarService.getEvents().subscribe(x => this.events = x)
   }
