@@ -19,7 +19,7 @@ export class CalendarService {
       {
         title: 'event 2', 
         start: '2024-04-25T12:00:00.000', 
-        end: '2024-04-25T14:00:00.000'
+        end: '2024-04-25T12:30:00.000'
       }
     ])
   }
