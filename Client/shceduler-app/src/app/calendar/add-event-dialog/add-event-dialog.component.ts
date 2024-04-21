@@ -32,27 +32,28 @@ export class AddEventDialogComponent {
   public get start() { return this.eventForm.get('start')}
   public get end() { return this.eventForm.get('end')}
 
+  public submitted: boolean = false;
+
   constructor(
     public dialogRef: MatDialogRef<AddEventDialogComponent>,
     private formBuilder: FormBuilder,
     @Inject(MAT_DIALOG_DATA) public data: {title: string, data: AddEventData}
   ){}
 
-  onSaveClick(): void{
-    var start = new Date(this.data.data.startTime);
-    var end = new Date(this.data.data.startTime);
-    if (this.name?.valid && this.name?.value !== null){
-    const data: AddEventData = {
-      startTime: setTimeFromStringToDate(start, this.start?.value),
-      endTime: setTimeFromStringToDate(end, this.end?.value),
-      eventName: this.name?.value
-    }
-    this.dialogRef.close(data)
-  }
-  }
-
   submit(): void{
-    this.onSaveClick();
+
+    this.submitted = true;
+    if (this.eventForm.valid)
+    {
+      var start = new Date(this.data.data.startTime);
+      var end = new Date(this.data.data.startTime);
+      const data: AddEventData = {
+        startTime: setTimeFromStringToDate(start, this.start?.value),
+        endTime: setTimeFromStringToDate(end, this.end?.value),
+        eventName: this.name?.value
+      }
+      this.dialogRef.close(data)
+    }
   }
 
   onCloseClick(): void{
@@ -64,8 +65,29 @@ export class AddEventDialogComponent {
       name: new FormControl(null, [Validators.required]),
       start: new FormControl(null, [Validators.required]),
       end: new FormControl(null, [Validators.required])
-    });
+    },
+  {
+    validators: this.validateForm()
+  });
     this.start?.setValue(getFormattedTime(this.data.data.startTime))
     this.end?.setValue(getFormattedTime(addHours(this.data.data.startTime, 1)))
+  }
+
+  validateForm(){
+    return (form: FormGroup) => {
+        const start = form.get('start')?.value;
+        const end = form.get('end')?.value;
+
+        var timeArray: string[] = getHalfHourIntervals();
+
+        const startIndex = timeArray.indexOf(start);
+        const endIndex = timeArray.indexOf(end);
+        
+        const error = 
+          endIndex > startIndex ? null : { InvalidInput: true }
+        
+        form.get('end')?.setErrors(error);
+        return error;
+      }
   }
 }
