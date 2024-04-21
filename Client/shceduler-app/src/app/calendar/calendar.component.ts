@@ -25,7 +25,7 @@ import { SnackBarService } from '../services/snack-bar.service';
 export class CalendarComponent {
   @ViewChild('calendar') calendarComponent: FullCalendarComponent;
 
-  id: number = 0;
+  id: number = 2;
   calendarOptions: CalendarOptions = {
     buttonText:{
       today: 'Сегодня',
@@ -70,8 +70,6 @@ export class CalendarComponent {
   }
 
   handleDateClick(info: DateClickArg) {
-    this.id += 1;
-
     const dialogRef = this.dialog.open(AddEventDialogComponent, {
       data: { title: 'Новое Событие', data: {startTime: info.date}}
     });
@@ -84,13 +82,11 @@ export class CalendarComponent {
           title: result.eventName,
           borderColor: 'transparent',
           backgroundColor: 'transparent',
-          extendedProps:{
-            id: this.id
-          }
         }
       
         this.calendarApi.addEvent(event);
         this.snackBarService.success('Событие ' + result.eventName + ' создано')
+        this.id +=  1;
       }
   });
 
@@ -114,6 +110,7 @@ export class CalendarComponent {
         event.setEnd(result.endTime),
         event.setProp('title', result.eventName)
       
+        console.log(event)
         this.calendarApi.refetchEvents();
         this.snackBarService.success('Событие ' + result.eventName + ' обновлено')
       }
