@@ -6,12 +6,14 @@ import interationPlugin, { DateClickArg } from '@fullcalendar/interaction'
 import timeGridWeek from '@fullcalendar/timegrid'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import { EventComponent } from './event/event.component';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { AddEventDialogComponent } from './add-event-dialog/add-event-dialog.component';
 
 @Component({
   selector: 'app-calendar',
   standalone: true,
     imports: [FullCalendarModule,
-      EventComponent
+      EventComponent, MatDialogModule
     ],
   templateUrl: './calendar.component.html',
   styleUrl: './calendar.component.scss'
@@ -52,7 +54,8 @@ export class CalendarComponent {
   }
   events: EventInput[]
 
-  constructor(private calendarService: CalendarService
+  constructor(private calendarService: CalendarService,
+    public dialog: MatDialog
   ){}
 
   toggleWeekends() {
@@ -73,10 +76,13 @@ export class CalendarComponent {
         id: this.id
       }
     }
-    console.log(event);
     var api = this.calendarComponent.getApi();
     api.addEvent(event);
     this.id += 1;
+
+    const dialogRef = this.dialog.open(AddEventDialogComponent, {
+      data: { title: 'Add Event', message: 'add me'}
+    })
   }
 
   handleEventContent(arg: any){

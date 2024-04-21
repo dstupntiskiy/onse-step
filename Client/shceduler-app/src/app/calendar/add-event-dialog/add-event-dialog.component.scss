@@ -1,0 +1,19 @@
+.dialog{
+
+    .period{
+        display: flex;
+        gap: 16px;
+    }
+
+    width: 300px;
+    margin: 16px;
+
+    .input{
+        width: 100%;
+    }
+
+    .actions{
+        display: flex;
+        justify-content: flex-end;
+    }
+}

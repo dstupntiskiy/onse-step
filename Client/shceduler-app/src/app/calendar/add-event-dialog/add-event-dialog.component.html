@@ -1,0 +1,32 @@
+<div class="dialog">
+    <h1 mat-dialog-title>{{ data.title }}</h1>
+    <mat-form-field class="input event-name">
+        <input matInput placeholder="Event Name" formContolName="name">
+    </mat-form-field>
+
+    <div class="period">
+        <mat-form-field class="event-start">
+            <mat-label>Event Start</mat-label>
+            <mat-select [(ngModel)]="startSelectedValue">
+                @for (option of timeOptions; track option){
+                    <mat-option [value]="option">{{option}}</mat-option>
+                }
+            </mat-select>
+        </mat-form-field>
+        <mat-form-field class="event-end">
+            <mat-label>Event End</mat-label>
+            <mat-select [(ngModel)]="endSelectedValue">
+                @for (option of timeOptions; track option){
+                    <mat-option [value]="option">{{option}}</mat-option>
+                }
+            </mat-select>
+        </mat-form-field>
+    </div>
+    <div mat-dialog-content>
+    <p>{{ data.message }}</p>
+    </div>
+    <div class="actions" mat-dialog-actions>
+        <button mat-button (click)="onCloseClick()">Close</button>
+        <button mat-raised-button color="accent">Save</button>
+    </div>
+</div>
