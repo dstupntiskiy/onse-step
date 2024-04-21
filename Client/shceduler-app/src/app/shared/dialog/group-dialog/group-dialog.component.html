@@ -1,0 +1,15 @@
+<form [formGroup]="form">
+    <div class="group-dialog-content">
+        <h1 mat-dialog-title>{{ data.title }}</h1>
+        <mat-form-field>
+            <input matInput placeholder="Название" formControlName="name">
+        </mat-form-field>
+        <mat-form-field>
+            <input matInput placeholder="Направление" formControlName="style">
+        </mat-form-field>
+        <div class="actions">
+            <button mat-button (click)="onCloseClick()">Закрыть</button>
+            <button mat-raised-button color="accent" (click)="submit()">Сохранить</button>
+        </div>
+    </div>
+</form>
