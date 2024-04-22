@@ -1,5 +1,10 @@
 <div class="dialog">
-    <h1 mat-dialog-title>{{ data.title }}</h1>
+    <div class="event-dialog-header">
+        <h1 mat-dialog-title>{{ data.title }}</h1>
+        <div>
+            <span class="event-day">{{ day }}</span>
+        </div>
+    </div>
     <form [formGroup]="eventForm">
     <mat-form-field class="input event-name">
         <input matInput placeholder="Название" formControlName="name">
@@ -7,7 +12,7 @@
 
     <div class="period">
         <mat-form-field class="event-start">
-            <mat-label>Event Start</mat-label>
+            <mat-label>Начало</mat-label>
             <mat-select  formControlName="start" >
                 @for (option of timeOptions; track option){
                     <mat-option [value]="option">{{option}}</mat-option>
@@ -15,7 +20,7 @@
             </mat-select>
         </mat-form-field>
         <mat-form-field class="event-end">
-            <mat-label>Event End</mat-label>
+            <mat-label>Конец</mat-label>
             <mat-select formControlName="end" >
                 @for (option of timeOptions; track option){
                     <mat-option [value]="option">{{option}}</mat-option>
@@ -23,6 +28,14 @@
             </mat-select>
         </mat-form-field>
     </div>
+    <mat-form-field class="event-group">
+        <mat-label>Группа</mat-label>
+        <mat-select formControlName="group" >
+            @for (option of groups; track option){
+                <mat-option [value]="option">{{option.name}}</mat-option>
+            }
+        </mat-select>
+    </mat-form-field>
     <div class="actions" mat-dialog-actions>
         <button mat-button (click)="onCloseClick()">Close</button>
         <button mat-raised-button color="accent" (click)="submit()">Save</button>

@@ -1,10 +1,17 @@
 import { Inject, Injectable } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { GroupDialogComponent } from '../shared/dialog/group-dialog/group-dialog.component';
+import { Group } from '../shared/models/group-model';
 
 export interface GroupData{
   title: string
 }
+
+const GROUPS: Group[] = [
+  { id: '1', name: 'High heels pro', style: 'High heels'},
+  { id: '2', name: 'High heels начинающие', style: 'High heels'},
+  { id: '3', name: 'Contemp', style: 'Contemporary'},
+]
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +24,11 @@ export class GroupService {
     public dialog: MatDialog) 
     { }
 
-    showGroupDialog(){
-      this.dialog.open(GroupDialogComponent, {data: {title: 'Группа'}})
+    showGroupDialog(): MatDialogRef<GroupDialogComponent, any>{
+      return this.dialog.open(GroupDialogComponent, {data: {title: 'Группа'}})
+    }
+
+    getGoups(): Group[]{
+      return GROUPS;
     }
 }

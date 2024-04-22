@@ -52,6 +52,7 @@ export class CalendarComponent {
     plugins: [dayGridPlugin, timeGridWeek, interationPlugin],
     selectable: true,
     editable: true,
+    eventDrop: this.handleDrop,
     height: 'calc(100vh - 32px)',
     dateClick: this.handleDateClick.bind(this),
     eventClick: this.handleEventClick.bind(this)
@@ -81,6 +82,7 @@ export class CalendarComponent {
           start: result.startTime,
           end: result.endTime,
           title: result.eventName,
+          extendedProps: { groupId: result.groupId },
           borderColor: 'transparent',
           backgroundColor: 'transparent',
         }
@@ -94,12 +96,14 @@ export class CalendarComponent {
   }
 
   handleEventClick(info: EventClickArg){
-    const dialogRef = this.dialog.open(AddEventDialogComponent, {
+      console.log(info.event)
+      const dialogRef = this.dialog.open(AddEventDialogComponent, {
       data: { title: 'Событие', 
         data: {
           startTime: info.event.start,
           endTime: info.event.end,
-          eventName: info.event.title
+          eventName: info.event.title,
+          groupId: info.event.extendedProps['groupId']
         }}
     
     })
@@ -110,6 +114,7 @@ export class CalendarComponent {
         event.setStart(result.startTime),
         event.setEnd(result.endTime),
         event.setProp('title', result.eventName)
+        event.setExtendedProp('groupId',result.groupId)
       
         this.calendarApi.refetchEvents();
         this.snackBarService.success('Событие ' + result.eventName + ' обновлено')
@@ -117,7 +122,8 @@ export class CalendarComponent {
     });
   }
 
-
+  handleDrop(){
+  }
 
   handleSelect(info: any){
     console.log(info)

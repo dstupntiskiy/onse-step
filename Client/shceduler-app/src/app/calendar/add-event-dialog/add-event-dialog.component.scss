@@ -1,10 +1,26 @@
 .dialog{
-    h1{
-       margin: 0;
-       padding: 0; 
-       line-height: 40px;
-    }
+    .event-dialog-header{
+        display: flex;
+        justify-content: space-between;
 
+        h1{
+        margin: 0;
+        padding: 0; 
+        line-height: 40px;
+        }
+
+        div{
+            width:150px;
+            position: relative;
+            span{
+                position: absolute;
+                bottom: 0;
+                right: 0;
+                line-height: 32px;
+            }
+        }
+
+    }
     .period{
         display: flex;
         gap: 16px;
@@ -20,5 +36,9 @@
     .actions{
         display: flex;
         justify-content: flex-end;
+    }
+
+    .event-group{
+        width: 100%
     }
 }

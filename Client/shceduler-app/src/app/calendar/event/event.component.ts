@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, input } from '@angular/core';
 import { getFormattedTime } from '../../shared/helpers/time-helper';
 
 @Component({
@@ -10,14 +10,10 @@ import { getFormattedTime } from '../../shared/helpers/time-helper';
 })
 export class EventComponent {
   @Input() title: string;
-  @Input() start: Date;
-  @Input() end: Date;
-
-  eventStart: string;
-  eventEnd: string;
-
-  ngOnInit(){
-    this.eventStart = getFormattedTime(this.start)
-    this.eventEnd = getFormattedTime(this.end)
-  }
+  start = input('', {
+    transform: (value: Date) => getFormattedTime(value)
+  });
+  end = input('', {
+    transform: (value: Date) => getFormattedTime(value)
+  });
 }
