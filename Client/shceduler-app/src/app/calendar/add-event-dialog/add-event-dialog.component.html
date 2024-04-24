@@ -9,11 +9,10 @@
     <mat-form-field class="input event-name">
         <input matInput placeholder="Название" formControlName="name">
     </mat-form-field>
-
-    <mat-checkbox (change)="changeIsRecur($event.checked)">
+    <mat-checkbox formControlName="isRecur" (change)="changeIsRecur($event.checked)">
         Еженедельное событие
     </mat-checkbox>
-    <ng-container *ngIf="isRecur">
+    <ng-container *ngIf="isRecur?.value">
         <mat-form-field class="event-start">
             <mat-label>Дни недели</mat-label>
             <mat-select  formControlName="weekdays" multiple>

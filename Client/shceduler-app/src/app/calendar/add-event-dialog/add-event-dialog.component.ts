@@ -1,4 +1,4 @@
-import {  Component, Inject } from '@angular/core';
+import {  ChangeDetectorRef, Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
 import { MatButtonModule } from '@angular/material/button'
 import { MatInputModule } from '@angular/material/input'
@@ -16,7 +16,7 @@ export interface AddEventData{
   endTime: Date;
   eventName: string;
   groupId?: string;
-  rrule?: RRule;
+  isRecur?: boolean;
 }
 
 export interface Weekday{
@@ -57,7 +57,7 @@ export class AddEventDialogComponent {
   weekDays: Weekday[] = WEEKDAYS;
   groups: Group[];
   day: string;
-  isRecur?: boolean = false;
+  //isRecur?: boolean;
 
   public eventForm: FormGroup; 
   public get name() { return this.eventForm.get('name')}
@@ -65,9 +65,11 @@ export class AddEventDialogComponent {
   public get end() { return this.eventForm.get('end')}
   public get group() { return this.eventForm.get('group') }
   public get weekdays() { return this.eventForm.get('weekdays')}
+  public get isRecur() { return this.eventForm.get('isRecur')}
 
   constructor(
     public dialogRef: MatDialogRef<AddEventDialogComponent>,
+    private cdr: ChangeDetectorRef,
     private groupService: GroupService,
     private formBuilder: FormBuilder,
     @Inject(MAT_DIALOG_DATA) public data: {title: string, event: AddEventData}
@@ -90,7 +92,7 @@ export class AddEventDialogComponent {
   }
 
   changeIsRecur(isRecur: boolean){
-    this.isRecur = isRecur;
+    this.isRecur?.setValue(isRecur);
   }
 
   onCloseClick(): void{
@@ -105,7 +107,8 @@ export class AddEventDialogComponent {
       start: new FormControl(null, [Validators.required]),
       end: new FormControl(null, [Validators.required]),
       group: new FormControl(null),
-      weekdays: new FormControl(null)
+      weekdays: new FormControl(null),
+      isRecur: new FormControl(null)
     },
   {
     validators: this.validateForm()
@@ -118,6 +121,8 @@ export class AddEventDialogComponent {
     :  this.end?.setValue(getFormattedTime(addHours(this.data.event.startTime, 1)))
 
     this.day = this.data.event.startTime.toLocaleDateString('ru-RU');
+    this.isRecur?.setValue(this.data.event.isRecur) ;
+    this.cdr.detectChanges();
   }
 
   validateForm(){

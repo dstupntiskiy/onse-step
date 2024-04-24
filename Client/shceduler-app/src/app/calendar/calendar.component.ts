@@ -98,13 +98,14 @@ export class CalendarComponent {
   }
 
   handleEventClick(info: EventClickArg){
-      const dialogRef = this.dialog.open(AddEventDialogComponent, {
-      data: { title: 'Событие', 
+    const dialogRef = this.dialog.open(AddEventDialogComponent, {
+        data: { title: 'Событие', 
         event: {
           startTime: info.event.start,
           endTime: info.event.end,
           eventName: info.event.title,
-          groupId: info.event.extendedProps['groupId']
+          groupId: info.event.extendedProps['groupId'],
+          isRecur: !!info.event._def.recurringDef
         }}
     
     })
@@ -130,7 +131,6 @@ export class CalendarComponent {
   }
   ngOnInit(){
     this.calendarService.getEvents().subscribe(x => this.events = x)
-    console.log(this.events);
   }
 
   ngAfterViewInit(){
