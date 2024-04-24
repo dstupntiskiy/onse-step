@@ -10,6 +10,19 @@
         <input matInput placeholder="Название" formControlName="name">
     </mat-form-field>
 
+    <mat-checkbox (change)="changeIsRecur($event.checked)">
+        Еженедельное событие
+    </mat-checkbox>
+    <ng-container *ngIf="isRecur">
+        <mat-form-field class="event-start">
+            <mat-label>Дни недели</mat-label>
+            <mat-select  formControlName="weekdays" multiple>
+                @for (option of weekDays; track option){
+                    <mat-option [value]="option">{{option}}</mat-option>
+                }
+            </mat-select>
+        </mat-form-field>
+    </ng-container>
     <div class="period">
         <mat-form-field class="event-start">
             <mat-label>Начало</mat-label>

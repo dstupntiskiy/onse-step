@@ -1,15 +1,17 @@
-import { Component, ViewChild, OnInit, AfterViewInit, ChangeDetectorRef } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { FullCalendarComponent, FullCalendarModule } from '@fullcalendar/angular';
 import { CalendarApi, CalendarOptions, EventClickArg, EventInput } from '@fullcalendar/core';
 import { CalendarService } from './calendar.service';
 import interationPlugin, { DateClickArg } from '@fullcalendar/interaction'
 import timeGridWeek from '@fullcalendar/timegrid'
 import dayGridPlugin from '@fullcalendar/daygrid'
+import rrulePlugin from '@fullcalendar/rrule'
 import { EventComponent } from './event/event.component';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { AddEventDialogComponent } from './add-event-dialog/add-event-dialog.component';
 import { AddEventData } from './add-event-dialog/add-event-dialog.component';
 import { SnackBarService } from '../services/snack-bar.service';
+import { RRule } from 'rrule'
 
 
 @Component({
@@ -49,9 +51,10 @@ export class CalendarComponent {
       day: 'numeric'},
     allDaySlot: false,
     initialView: 'timeGridWeek',
-    plugins: [dayGridPlugin, timeGridWeek, interationPlugin],
+    plugins: [rrulePlugin, dayGridPlugin, timeGridWeek, interationPlugin],
     selectable: true,
     editable: true,
+    firstDay: 1,
     eventDrop: this.handleDrop,
     height: 'calc(100vh - 32px)',
     dateClick: this.handleDateClick.bind(this),
@@ -73,7 +76,7 @@ export class CalendarComponent {
 
   handleDateClick(info: DateClickArg) {
     const dialogRef = this.dialog.open(AddEventDialogComponent, {
-      data: { title: 'Новое Событие', data: {startTime: info.date}}
+      data: { title: 'Новое Событие', event: {startTime: info.date}}
     });
 
     dialogRef.afterClosed().subscribe((result: AddEventData) => {
@@ -86,7 +89,6 @@ export class CalendarComponent {
           borderColor: 'transparent',
           backgroundColor: 'transparent',
         }
-      
         this.calendarApi.addEvent(event);
         this.snackBarService.success('Событие ' + result.eventName + ' создано')
         this.id +=  1;
@@ -96,10 +98,9 @@ export class CalendarComponent {
   }
 
   handleEventClick(info: EventClickArg){
-      console.log(info.event)
       const dialogRef = this.dialog.open(AddEventDialogComponent, {
       data: { title: 'Событие', 
-        data: {
+        event: {
           startTime: info.event.start,
           endTime: info.event.end,
           eventName: info.event.title,
@@ -115,7 +116,6 @@ export class CalendarComponent {
         event.setEnd(result.endTime),
         event.setProp('title', result.eventName)
         event.setExtendedProp('groupId',result.groupId)
-      
         this.calendarApi.refetchEvents();
         this.snackBarService.success('Событие ' + result.eventName + ' обновлено')
       }
@@ -130,10 +130,11 @@ export class CalendarComponent {
   }
   ngOnInit(){
     this.calendarService.getEvents().subscribe(x => this.events = x)
+    console.log(this.events);
   }
 
   ngAfterViewInit(){
     this.calendarApi = this.calendarComponent.getApi();
     this.calendarApi.refetchEvents()
-  }
+  }  
 }
