@@ -1,0 +1,9 @@
+<div class="dialog">
+    <mat-dialog-content>
+        <p>{{data.message}}</p>
+    </mat-dialog-content>
+    <mat-dialog-actions class="actions">
+        <button mat-button (click)="onCloseClick()">Закрыть</button>
+        <button mat-raised-button color="accent" (click)="onOkClick()">ОК</button>
+    </mat-dialog-actions>
+</div>

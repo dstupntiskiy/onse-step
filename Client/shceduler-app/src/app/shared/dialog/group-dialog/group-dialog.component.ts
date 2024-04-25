@@ -13,7 +13,7 @@ import { Group } from '../../models/group-model';
     MatInputModule,
     MatButtonModule,
     FormsModule,
-    ReactiveFormsModule,
+    ReactiveFormsModule
   ],
   templateUrl: './group-dialog.component.html',
   styleUrl: './group-dialog.component.scss'

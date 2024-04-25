@@ -1,5 +1,5 @@
-import {  ChangeDetectorRef, Component, Inject } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
+import { Component, Inject } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
 import { MatButtonModule } from '@angular/material/button'
 import { MatInputModule } from '@angular/material/input'
 import { MatSelectModule } from '@angular/material/select'
@@ -8,15 +8,23 @@ import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, 
 import { addHours, getFormattedTime, getHalfHourIntervals, setTimeFromStringToDate } from '../../shared/helpers/time-helper';
 import { Group } from '../../shared/models/group-model';
 import { GroupService } from '../../groups/group.service';
-import { datetime, RRule, RRuleSet, rrulestr } from 'rrule'
+import { RRule, RRuleSet } from 'rrule'
 import { CommonModule } from '@angular/common';
+import { ConfirmationDialogComponent } from '../../shared/dialog/confirmation-dialog/confirmation-dialog.component';
 
-export interface AddEventData{
+export interface EventModel{
   startTime: Date;
   endTime: Date;
   eventName: string;
   groupId?: string;
-  isRecur?: boolean;
+  isRecur: boolean;
+  rrule?: RRuleSet;
+  isNew?: boolean;
+}
+
+export interface EventResult{
+  action?: 'save'| 'delete'
+  event?: EventModel
 }
 
 export interface Weekday{
@@ -25,13 +33,13 @@ export interface Weekday{
 }
 
 const WEEKDAYS: Weekday[] = [
-  { number: 1, name: 'Понедельник'},
-  { number: 2, name: 'Вторник'},
-  { number: 3, name: 'Среда'},
-  { number: 4, name: 'Четверг'},
-  { number: 5, name: 'Пятница'},
-  { number: 6, name: 'Суббота'},
-  { number: 0, name: 'Воскресенье'},
+  { number: 0, name: 'Понедельник'},
+  { number: 1, name: 'Вторник'},
+  { number: 2, name: 'Среда'},
+  { number: 3, name: 'Четверг'},
+  { number: 4, name: 'Пятница'},
+  { number: 5, name: 'Суббота'},
+  { number: 6, name: 'Воскресенье'},
 ]
 
 @Component({
@@ -45,7 +53,8 @@ const WEEKDAYS: Weekday[] = [
     MatSelectModule,
     FormsModule,
     ReactiveFormsModule,
-    MatCheckboxModule],
+    MatCheckboxModule,
+    ConfirmationDialogComponent],
   templateUrl: './add-event-dialog.component.html',
   styleUrl: './add-event-dialog.component.scss',
   providers:[
@@ -54,10 +63,11 @@ const WEEKDAYS: Weekday[] = [
 })
 export class AddEventDialogComponent {
   timeOptions: string[] = getHalfHourIntervals();
-  weekDays: Weekday[] = WEEKDAYS;
+  weekDaysList: Weekday[] = WEEKDAYS;
   groups: Group[];
   day: string;
-  //isRecur?: boolean;
+  disableRecur: boolean;
+  isNew: boolean = false;
 
   public eventForm: FormGroup; 
   public get name() { return this.eventForm.get('name')}
@@ -69,25 +79,43 @@ export class AddEventDialogComponent {
 
   constructor(
     public dialogRef: MatDialogRef<AddEventDialogComponent>,
-    private cdr: ChangeDetectorRef,
+    public dialog: MatDialog,
     private groupService: GroupService,
     private formBuilder: FormBuilder,
-    @Inject(MAT_DIALOG_DATA) public data: {title: string, event: AddEventData}
+    @Inject(MAT_DIALOG_DATA) public data: {title: string, event: EventModel}
   ){}
 
   submit(): void{
-
+    
     if (this.eventForm.valid)
     {
       var start = new Date(this.data.event.startTime);
       var end = new Date(this.data.event.startTime);
-      const data: AddEventData = {
+
+      var rruleSet: RRuleSet;
+      var result: EventResult = {action: 'save'}
+
+      const data: EventModel = {
         startTime: setTimeFromStringToDate(start, this.start?.value),
         endTime: setTimeFromStringToDate(end, this.end?.value),
         eventName: this.name?.value,
-        groupId: (this.group?.value as Group)?.id
+        groupId: (this.group?.value as Group)?.id,
+        isRecur: this.isRecur?.value,
       }
-      this.dialogRef.close(data)
+
+      if (this.isRecur?.value){
+        rruleSet = new RRuleSet()
+          rruleSet.rrule(new RRule({
+            freq: RRule.WEEKLY,
+            byweekday: this.weekdays?.value.map((x : Weekday) => x.number),
+            dtstart: setTimeFromStringToDate(start, this.start?.value)
+          }))
+
+        data.rrule = rruleSet
+      }
+
+      result.event = data
+      this.dialogRef.close(result)
     }
   }
 
@@ -100,6 +128,8 @@ export class AddEventDialogComponent {
   }
 
   ngOnInit(){
+    this.isNew = this.data.event.isNew === true ;
+    
     this.groups = this.groupService.getGoups();
 
     this.eventForm = this.formBuilder.group({
@@ -108,10 +138,10 @@ export class AddEventDialogComponent {
       end: new FormControl(null, [Validators.required]),
       group: new FormControl(null),
       weekdays: new FormControl(null),
-      isRecur: new FormControl(null)
+      isRecur: new FormControl({disabled: true })
     },
   {
-    validators: this.validateForm()
+    validators: [this.validateDates(), this.validateRecur()]
   });
   this.data.event.eventName ? this.name?.setValue(this.data.event.eventName) : ''
   this.group?.setValue(this.groups.find(x => x.id === this.data.event.groupId))
@@ -121,11 +151,27 @@ export class AddEventDialogComponent {
     :  this.end?.setValue(getFormattedTime(addHours(this.data.event.startTime, 1)))
 
     this.day = this.data.event.startTime.toLocaleDateString('ru-RU');
-    this.isRecur?.setValue(this.data.event.isRecur) ;
-    this.cdr.detectChanges();
+    
+    this.isRecur?.setValue(this.data.event.isRecur);
+    if (this.isRecur?.value){
+      this.isRecur?.disable();
+    }
+
+    this.weekdays?.setValue(this.data.event.rrule?._rrule[0].options.byweekday.map((x) => this.weekDaysList.find(wd => wd.number === x)))
   }
 
-  validateForm(){
+  onDelete(): void{
+    var confDialogRef = this.dialog.open(ConfirmationDialogComponent, {data: {message: 'Вы уверены что хотите удалить событие: ' + this.data.event.eventName}})
+    confDialogRef.afterClosed().subscribe((result) => {
+      if (result == true){
+        var action : EventResult = {action : 'delete'}
+        this.dialogRef.close(action)
+      }
+    })
+    
+  }
+
+  private validateDates(){
     return (form: FormGroup) => {
         const start = form.get('start')?.value;
         const end = form.get('end')?.value;
@@ -139,6 +185,18 @@ export class AddEventDialogComponent {
           endIndex > startIndex ? null : { InvalidInput: true }
         
         form.get('end')?.setErrors(error);
+        return error;
+      }
+  }
+
+  private validateRecur(){
+    return (form: FormGroup) => {
+      const isRecur = form.get('isRecur')?.value  
+      const weekdays = form.get('weekdays')?.value
+
+      const error = 
+           !isRecur || weekdays?.length > 0 ? null : { InvalidInput: true }
+        form.get('weekdays')?.setErrors(error);
         return error;
       }
   }

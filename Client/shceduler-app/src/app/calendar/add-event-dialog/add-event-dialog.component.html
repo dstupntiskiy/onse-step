@@ -16,8 +16,8 @@
         <mat-form-field class="event-start">
             <mat-label>Дни недели</mat-label>
             <mat-select  formControlName="weekdays" multiple>
-                @for (option of weekDays; track option){
-                    <mat-option [value]="option">{{option}}</mat-option>
+                @for (option of weekDaysList; track option){
+                    <mat-option [value]="option">{{option.name}}</mat-option>
                 }
             </mat-select>
         </mat-form-field>
@@ -49,8 +49,13 @@
         </mat-select>
     </mat-form-field>
     <div class="actions" mat-dialog-actions>
-        <button mat-button (click)="onCloseClick()">Close</button>
-        <button mat-raised-button color="accent" (click)="submit()">Save</button>
+        <div class="actions-left">
+            <button *ngIf="!isNew" mat-raised-button color="warn" (click)="onDelete()">Удалить</button>
+        </div>
+        <div class="actions-right">
+            <button mat-button (click)="onCloseClick()">Закрыть</button>
+            <button mat-raised-button color="accent" (click)="submit()">Сохранить</button>
+        </div>
     </div>
     </form>
 </div>
