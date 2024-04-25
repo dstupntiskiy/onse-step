@@ -9,22 +9,38 @@
     <mat-form-field class="input event-name">
         <input matInput placeholder="Название" formControlName="name">
     </mat-form-field>
-    <mat-checkbox formControlName="isRecur" (change)="changeIsRecur($event.checked)">
-        Еженедельное событие
-    </mat-checkbox>
+    <div class="fields-row">
+        <mat-checkbox formControlName="isRecur" (change)="changeIsRecur($event.checked)">
+            Еженедельное событие
+        </mat-checkbox>
+        <ng-container *ngIf="isRecur?.value">
+            <mat-form-field class="event-start">
+                <mat-label>Дни недели</mat-label>
+                <mat-select  formControlName="weekdays" multiple>
+                    @for (option of weekDaysList; track option){
+                        <mat-option [value]="option">{{option.name}}</mat-option>
+                    }
+                </mat-select>
+            </mat-form-field>
+        </ng-container>
+    </div>
     <ng-container *ngIf="isRecur?.value">
-        <mat-form-field class="event-start">
-            <mat-label>Дни недели</mat-label>
-            <mat-select  formControlName="weekdays" multiple>
-                @for (option of weekDaysList; track option){
-                    <mat-option [value]="option">{{option.name}}</mat-option>
-                }
-            </mat-select>
-        </mat-form-field>
+        <div class="fields-row">
+            <mat-form-field class="recur-start">
+                <input matInput [matDatepicker]="pickerStart" formControlName="recurStart">
+                <mat-datepicker-toggle matIconSuffix [for]="pickerStart"></mat-datepicker-toggle>
+                <mat-datepicker #pickerStart></mat-datepicker>
+            </mat-form-field>
+            <mat-form-field class="recur-end">
+                <input matInput [matDatepicker]="pickerEnd" formControlName="recurEnd">
+                <mat-datepicker-toggle matIconSuffix [for]="pickerEnd"></mat-datepicker-toggle>
+                <mat-datepicker #pickerEnd></mat-datepicker>
+            </mat-form-field>
+        </div>
     </ng-container>
-    <div class="period">
+    <div class="fields-row period">
         <mat-form-field class="event-start">
-            <mat-label>Начало</mat-label>
+            <mat-label>Время начала</mat-label>
             <mat-select  formControlName="start" >
                 @for (option of timeOptions; track option){
                     <mat-option [value]="option">{{option}}</mat-option>
@@ -32,7 +48,7 @@
             </mat-select>
         </mat-form-field>
         <mat-form-field class="event-end">
-            <mat-label>Конец</mat-label>
+            <mat-label>Время окончания</mat-label>
             <mat-select formControlName="end" >
                 @for (option of timeOptions; track option){
                     <mat-option [value]="option">{{option}}</mat-option>

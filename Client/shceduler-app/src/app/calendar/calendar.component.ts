@@ -111,8 +111,6 @@ export class CalendarComponent {
         event.remove()
       }
     });
-    
-    console.log(this.calendarApi.getEvents())
   }
 
   ngOnInit(){

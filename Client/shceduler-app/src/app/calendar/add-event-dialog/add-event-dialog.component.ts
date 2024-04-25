@@ -4,6 +4,7 @@ import { MatButtonModule } from '@angular/material/button'
 import { MatInputModule } from '@angular/material/input'
 import { MatSelectModule } from '@angular/material/select'
 import { MatCheckboxModule } from '@angular/material/checkbox'
+import { MatDatepickerModule} from '@angular/material/datepicker'
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { addHours, getFormattedTime, getHalfHourIntervals, setTimeFromStringToDate } from '../../shared/helpers/time-helper';
 import { Group } from '../../shared/models/group-model';
@@ -11,6 +12,9 @@ import { GroupService } from '../../groups/group.service';
 import { RRule, RRuleSet } from 'rrule'
 import { CommonModule } from '@angular/common';
 import { ConfirmationDialogComponent } from '../../shared/dialog/confirmation-dialog/confirmation-dialog.component';
+import { MatNativeDateModule, MAT_DATE_LOCALE, DateAdapter } from '@angular/material/core';
+import {provideNativeDateAdapter} from '@angular/material/core';
+import { CustomDateAdapter } from '../../shared/adapters/custom.date.adapter';
 
 export interface EventModel{
   startTime: Date;
@@ -54,11 +58,16 @@ const WEEKDAYS: Weekday[] = [
     FormsModule,
     ReactiveFormsModule,
     MatCheckboxModule,
-    ConfirmationDialogComponent],
+    ConfirmationDialogComponent,
+    MatDatepickerModule,
+    MatNativeDateModule ],
   templateUrl: './add-event-dialog.component.html',
   styleUrl: './add-event-dialog.component.scss',
   providers:[
-    GroupService
+    GroupService,
+    provideNativeDateAdapter(),
+    { provide: MAT_DATE_LOCALE, useValue: 'ru-RU' },
+    { provide: DateAdapter, useClass: CustomDateAdapter}
   ]
 })
 export class AddEventDialogComponent {
@@ -68,6 +77,8 @@ export class AddEventDialogComponent {
   day: string;
   disableRecur: boolean;
   isNew: boolean = false;
+  pickerStart: Date;
+  pickerEnd: Date;
 
   public eventForm: FormGroup; 
   public get name() { return this.eventForm.get('name')}
@@ -76,6 +87,8 @@ export class AddEventDialogComponent {
   public get group() { return this.eventForm.get('group') }
   public get weekdays() { return this.eventForm.get('weekdays')}
   public get isRecur() { return this.eventForm.get('isRecur')}
+  public get recurStart() { return this.eventForm.get('recurStart')}
+  public get recurEnd() { return this.eventForm.get('recurEnd')}
 
   constructor(
     public dialogRef: MatDialogRef<AddEventDialogComponent>,
@@ -108,7 +121,8 @@ export class AddEventDialogComponent {
           rruleSet.rrule(new RRule({
             freq: RRule.WEEKLY,
             byweekday: this.weekdays?.value.map((x : Weekday) => x.number),
-            dtstart: setTimeFromStringToDate(start, this.start?.value)
+            dtstart: setTimeFromStringToDate(this.recurStart?.value, this.start?.value),
+            until: this.recurEnd?.value
           }))
 
         data.rrule = rruleSet
@@ -138,10 +152,14 @@ export class AddEventDialogComponent {
       end: new FormControl(null, [Validators.required]),
       group: new FormControl(null),
       weekdays: new FormControl(null),
-      isRecur: new FormControl({disabled: true })
+      isRecur: new FormControl({disabled: true }),
+      recurStart: new FormControl(null),
+      recurEnd: new FormControl(null)
     },
   {
-    validators: [this.validateDates(), this.validateRecur()]
+    validators: [
+      this.validateDates(), 
+      this.validateWeekdaysNotEmpty()]
   });
   this.data.event.eventName ? this.name?.setValue(this.data.event.eventName) : ''
   this.group?.setValue(this.groups.find(x => x.id === this.data.event.groupId))
@@ -155,7 +173,11 @@ export class AddEventDialogComponent {
     this.isRecur?.setValue(this.data.event.isRecur);
     if (this.isRecur?.value){
       this.isRecur?.disable();
+
+      this.recurStart?.setValue(this.data.event.rrule?._rrule[0].options.dtstart)
+      this.recurEnd?.setValue(this.data.event.rrule?._rrule[0].options.until)
     }
+    
 
     this.weekdays?.setValue(this.data.event.rrule?._rrule[0].options.byweekday.map((x) => this.weekDaysList.find(wd => wd.number === x)))
   }
@@ -189,15 +211,15 @@ export class AddEventDialogComponent {
       }
   }
 
-  private validateRecur(){
+  private validateWeekdaysNotEmpty(){
     return (form: FormGroup) => {
       const isRecur = form.get('isRecur')?.value  
       const weekdays = form.get('weekdays')?.value
 
       const error = 
            !isRecur || weekdays?.length > 0 ? null : { InvalidInput: true }
-        form.get('weekdays')?.setErrors(error);
-        return error;
+      form.get('weekdays')?.setErrors(error);
+      return error;
       }
   }
 }

@@ -28,7 +28,7 @@ export class CalendarService {
       },
       {
         id: '3',
-        title: 'event reoccuring',
+        title: 'event recurring',
         rrule:{
           freq: RRule.WEEKLY,
           byweekday: [1,4],

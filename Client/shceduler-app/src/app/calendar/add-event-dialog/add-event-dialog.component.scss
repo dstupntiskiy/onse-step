@@ -21,12 +21,23 @@
         }
 
     }
+
+    .fields-row{
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        align-items: stretch;
+        .mdc-checkbox{
+            padding: 0;
+        }
+    }
+
     .period{
         display: flex;
         gap: 16px;
     }
 
-    width: 400px;
+    width: 450px;
     margin: 16px;
 
     .input{
