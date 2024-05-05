@@ -27,11 +27,13 @@
     <ng-container *ngIf="isRecur?.value">
         <div class="fields-row">
             <mat-form-field class="recur-start">
+                <mat-label>Дата старта</mat-label>
                 <input matInput [matDatepicker]="pickerStart" formControlName="recurStart">
                 <mat-datepicker-toggle matIconSuffix [for]="pickerStart"></mat-datepicker-toggle>
                 <mat-datepicker #pickerStart></mat-datepicker>
             </mat-form-field>
             <mat-form-field class="recur-end">
+                <mat-label>Дата окончания</mat-label>
                 <input matInput [matDatepicker]="pickerEnd" formControlName="recurEnd">
                 <mat-datepicker-toggle matIconSuffix [for]="pickerEnd"></mat-datepicker-toggle>
                 <mat-datepicker #pickerEnd></mat-datepicker>

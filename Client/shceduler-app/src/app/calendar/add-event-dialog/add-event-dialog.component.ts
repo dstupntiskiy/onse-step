@@ -137,10 +137,13 @@ export class AddEventDialogComponent {
     if (this.isRecur?.value){
       this.isRecur?.disable();
 
+      this.recurStart?.disable();
+      this.recurEnd?.disable();
+      this.weekdays?.disable();
       this.recurStart?.setValue(this.data.event.rrule?._rrule[0].options.dtstart)
       this.recurEnd?.setValue(this.data.event.rrule?._rrule[0].options.until)
     }
-    
+
     this.weekdays?.setValue(this.data.event.rrule?._rrule[0].options.byweekday.map((x) => this.weekDaysList.find(wd => wd.number === x)))
   }
 

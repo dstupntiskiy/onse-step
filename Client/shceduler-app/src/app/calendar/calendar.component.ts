@@ -47,6 +47,7 @@ export class CalendarComponent {
       day: 'numeric'},
     allDaySlot: false,
     initialView: 'timeGridWeek',
+    eventStartEditable: false,
     plugins: [rrulePlugin, dayGridPlugin, timeGridWeek, interationPlugin],
     selectable: true,
     editable: true,
@@ -136,8 +137,6 @@ export class CalendarComponent {
   private getEvent(eventData: EventModel) : EventInput{
     var event: EventInput = {}
     event.title = eventData.eventName
-    event.borderColor = 'transparent'
-    event.backgroundColor = 'tranparent'
     event.extendedProps =  { groupId: eventData.groupId }
     event.id = eventData.id
     if (eventData.isRecur && eventData.rrule){

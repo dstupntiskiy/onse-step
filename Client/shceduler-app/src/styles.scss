@@ -10,3 +10,20 @@ body {
     height: 3em !important; // 1.5em by default
     border-bottom: 0 !important;
 }
+.fc-event{
+    border: 0 !important;
+}
+
+.fc-event-main{
+    padding: 0 !important;
+}
+
+::-webkit-scrollbar{
+    background-color: transparent;
+    width: 6px;
+}
+::-webkit-scrollbar-thumb{
+    width: 6px;
+    background-color: darkgray;
+    border-radius: 6px;
+}
