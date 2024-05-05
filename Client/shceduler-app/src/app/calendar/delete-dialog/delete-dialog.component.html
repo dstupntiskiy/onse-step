@@ -1,0 +1,10 @@
+<div class="dialog">
+    <mat-dialog-content>
+        <p>{{data.message}}</p>
+    </mat-dialog-content>
+    <mat-dialog-actions class="actions">
+        <button mat-button (click)="onCloseClick()">Закрыть</button>
+        <button mat-raised-button color="warn" (click)="onDeleteAllClick()">Удалить все повторения</button>
+        <button mat-raised-button color="warn" (click)="onDeleteOneClick()">Удалить экземпляр</button>
+    </mat-dialog-actions>
+</div>

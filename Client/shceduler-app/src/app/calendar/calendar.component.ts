@@ -24,7 +24,6 @@ import { SnackBarService } from '../services/snack-bar.service';
 export class CalendarComponent {
   @ViewChild('calendar') calendarComponent: FullCalendarComponent;
 
-  id: number = 2;
   calendarOptions: CalendarOptions = {
     buttonText:{
       today: 'Сегодня',
@@ -52,6 +51,7 @@ export class CalendarComponent {
     selectable: true,
     editable: true,
     firstDay: 1,
+
     height: 'calc(100vh - 32px)',
     dateClick: this.handleDateClick.bind(this),
     eventClick: this.handleEventClick.bind(this)
@@ -66,10 +66,6 @@ export class CalendarComponent {
     public dialog: MatDialog
   ){}
 
-  toggleWeekends() {
-    this.calendarOptions.weekends = !this.calendarOptions.weekends // toggle the boolean!
-  }
-
   handleDateClick(info: DateClickArg) {
     const dialogRef = this.dialog.open(AddEventDialogComponent, {
       data: { title: 'Новое Событие', event: {startTime: info.date, isNew: true}}
@@ -77,38 +73,53 @@ export class CalendarComponent {
 
     dialogRef.afterClosed().subscribe((result: EventResult) => {
       if (result && result.event){
-        this.calendarApi.addEvent(this.getEvent(result.event));
+        var event = this.getEvent(result.event)
+        this.calendarApi.addEvent(event);
         this.snackBarService.success('Событие ' + result.event.eventName + ' создано')
-        this.id +=  1;
       }
   });
 
   }
 
   handleEventClick(info: EventClickArg){
+    var exdates: string[] = []
+    info.event._def.recurringDef?.typeData.rruleSet._exdate.forEach((element: Date) => {
+      exdates.push(element.toISOString())
+    })
+
     const dialogRef = this.dialog.open(AddEventDialogComponent, {
         data: { title: 'Событие', 
-        event: {
-          startTime: info.event.start,
-          endTime: info.event.end,
-          eventName: info.event.title,
-          groupId: info.event.extendedProps['groupId'],
-          isRecur: !!info.event._def.recurringDef,
-          rrule: info.event._def.recurringDef?.typeData.rruleSet
-        }}
-    
-    })
-    
+          event: {
+            startTime: info.event.start,
+            endTime: info.event.end,
+            eventName: info.event.title,
+            groupId: info.event.extendedProps['groupId'],
+            isRecur: !!info.event._def.recurringDef,
+            rrule: info.event._def.recurringDef?.typeData.rruleSet,
+            exdate: exdates
+          }
+        }
+     }); 
+
     dialogRef.afterClosed().subscribe((result: EventResult) => {
       const event = this.calendarApi.getEventById(info.event.id);
-      if (result?.action == 'save' && result.event && event){
-        event.remove()
-        this.calendarApi.addEvent(this.getEvent(result.event));
-        this.calendarApi.refetchEvents();
-        this.snackBarService.success('Событие ' + result.event.eventName + ' обновлено')
-      }
-      if (result?.action == 'delete' && event){
-        event.remove()
+      if(event){
+        if (result?.action == 'save' && result.event){
+          event.remove()
+          var newEvent = this.getEvent(result.event)
+          this.calendarApi.addEvent(newEvent);
+          this.calendarApi.refetchEvents();
+          this.snackBarService.success('Событие ' + result.event.eventName + ' обновлено')
+        }
+        if (result?.action == 'delete'){
+          event.remove()
+        }
+        if (result?.action == 'deleteOne' && result.event){
+          event.remove()
+          this.calendarApi.addEvent(this.getEvent(result.event));
+          this.calendarApi.refetchEvents();
+          this.snackBarService.success('Событие ' + result.event.eventName + ' обновлено')
+        }
       }
     });
   }
@@ -128,8 +139,9 @@ export class CalendarComponent {
     event.borderColor = 'transparent'
     event.backgroundColor = 'tranparent'
     event.extendedProps =  { groupId: eventData.groupId }
-
-    if (eventData.isRecur){
+    event.id = eventData.id
+    if (eventData.isRecur && eventData.rrule){
+      event.exdate = eventData.exdate
       event.rrule = eventData.rrule?._rrule['0'].toString()
       event.duration = { minutes: (eventData.endTime.getTime() - eventData.startTime.getTime())/(1000 * 60)}
     }

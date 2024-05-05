@@ -15,8 +15,10 @@ import { ConfirmationDialogComponent } from '../../shared/dialog/confirmation-di
 import { MatNativeDateModule, MAT_DATE_LOCALE, DateAdapter } from '@angular/material/core';
 import {provideNativeDateAdapter} from '@angular/material/core';
 import { CustomDateAdapter } from '../../shared/adapters/custom.date.adapter';
+import { DeleteDialogComponent, DeleteResult } from '../delete-dialog/delete-dialog.component';
 
 export interface EventModel{
+  id: string,
   startTime: Date;
   endTime: Date;
   eventName: string;
@@ -24,10 +26,11 @@ export interface EventModel{
   isRecur: boolean;
   rrule?: RRuleSet;
   isNew?: boolean;
+  exdate?: string[]
 }
 
 export interface EventResult{
-  action?: 'save'| 'delete'
+  action?: 'save'| 'delete' | 'deleteOne'
   event?: EventModel
 }
 
@@ -80,6 +83,8 @@ export class AddEventDialogComponent {
   pickerStart: Date;
   pickerEnd: Date;
 
+  private initialEvent: EventModel;
+
   public eventForm: FormGroup; 
   public get name() { return this.eventForm.get('name')}
   public get start() { return this.eventForm.get('start')}
@@ -98,50 +103,8 @@ export class AddEventDialogComponent {
     @Inject(MAT_DIALOG_DATA) public data: {title: string, event: EventModel}
   ){}
 
-  submit(): void{
-    
-    if (this.eventForm.valid)
-    {
-      var start = new Date(this.data.event.startTime);
-      var end = new Date(this.data.event.startTime);
-
-      var rruleSet: RRuleSet;
-      var result: EventResult = {action: 'save'}
-
-      const data: EventModel = {
-        startTime: setTimeFromStringToDate(start, this.start?.value),
-        endTime: setTimeFromStringToDate(end, this.end?.value),
-        eventName: this.name?.value,
-        groupId: (this.group?.value as Group)?.id,
-        isRecur: this.isRecur?.value,
-      }
-
-      if (this.isRecur?.value){
-        rruleSet = new RRuleSet()
-          rruleSet.rrule(new RRule({
-            freq: RRule.WEEKLY,
-            byweekday: this.weekdays?.value.map((x : Weekday) => x.number),
-            dtstart: setTimeFromStringToDate(this.recurStart?.value, this.start?.value),
-            until: this.recurEnd?.value
-          }))
-
-        data.rrule = rruleSet
-      }
-
-      result.event = data
-      this.dialogRef.close(result)
-    }
-  }
-
-  changeIsRecur(isRecur: boolean){
-    this.isRecur?.setValue(isRecur);
-  }
-
-  onCloseClick(): void{
-    this.dialogRef.close()
-  }
-
   ngOnInit(){
+    this.initialEvent = this.data.event;
     this.isNew = this.data.event.isNew === true ;
     
     this.groups = this.groupService.getGoups();
@@ -178,19 +141,83 @@ export class AddEventDialogComponent {
       this.recurEnd?.setValue(this.data.event.rrule?._rrule[0].options.until)
     }
     
-
     this.weekdays?.setValue(this.data.event.rrule?._rrule[0].options.byweekday.map((x) => this.weekDaysList.find(wd => wd.number === x)))
   }
 
-  onDelete(): void{
-    var confDialogRef = this.dialog.open(ConfirmationDialogComponent, {data: {message: 'Вы уверены что хотите удалить событие: ' + this.data.event.eventName}})
-    confDialogRef.afterClosed().subscribe((result) => {
-      if (result == true){
-        var action : EventResult = {action : 'delete'}
-        this.dialogRef.close(action)
-      }
-    })
+  submit(): void{
     
+    if (this.eventForm.valid)
+    {
+      var start = new Date(this.data.event.startTime);
+      var end = new Date(this.data.event.startTime);
+
+      var rruleSet: RRuleSet;
+      var result: EventResult = {action: 'save'}
+
+      const data: EventModel = {
+        id: (Math.floor(Math.random() * 1000)).toString(),
+        startTime: setTimeFromStringToDate(start, this.start?.value),
+        endTime: setTimeFromStringToDate(end, this.end?.value),
+        eventName: this.name?.value,
+        groupId: (this.group?.value as Group)?.id,
+        isRecur: this.isRecur?.value
+      }
+      if (this.isRecur?.value){
+        rruleSet = new RRuleSet()
+        rruleSet.rrule(new RRule({
+          freq: RRule.WEEKLY,
+          byweekday: this.weekdays?.value.map((x : Weekday) => x.number),
+          dtstart: setTimeFromStringToDate(this.recurStart?.value, this.start?.value),
+          until: this.recurEnd?.value,
+        }))
+        if (this.initialEvent.exdate){
+          data.exdate = this.initialEvent.exdate
+        }
+        data.rrule = rruleSet
+      }
+
+      result.event = data
+      this.dialogRef.close(result)
+    }
+  }
+
+  changeIsRecur(isRecur: boolean){
+    this.isRecur?.setValue(isRecur);
+  }
+
+  onCloseClick(): void{
+    this.dialogRef.close()
+  }
+
+  onDelete(): void{
+    if (this.isRecur?.value){
+      var deleteDialog = this.dialog.open(DeleteDialogComponent, {data: { message: 'Удалить все повторения или экземпляр?', eventName: this.data.event.eventName}})
+      deleteDialog.afterClosed().subscribe((result: DeleteResult) =>{
+          if (result?.delete == 'all'){
+            var action : EventResult = {action : 'delete'}
+            this.dialogRef.close(action)
+          }
+          if (result?.delete == 'one'){
+            var event = this.initialEvent
+
+            var exdateArr = this.initialEvent.exdate
+            exdateArr?.push(new Date(this.initialEvent.startTime).toISOString())
+            event.exdate = exdateArr
+
+            var action : EventResult = {action : 'deleteOne', event: event}
+            this.dialogRef.close(action)
+          }
+      })
+    }
+    else{
+      var confDialogRef = this.dialog.open(ConfirmationDialogComponent, {data: {message: 'Вы уверены что хотите удалить событие: ' + this.data.event.eventName}})
+      confDialogRef.afterClosed().subscribe((result) => {
+        if (result == true){
+          var action : EventResult = {action : 'delete'}
+          this.dialogRef.close(action)
+        }
+      })
+    }
   }
 
   private validateDates(){
