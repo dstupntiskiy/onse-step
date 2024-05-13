@@ -1,0 +1,51 @@
+using Microsoft.EntityFrameworkCore;
+using Scheduler.Application.Interfaces;
+using Scheduler.Entities;
+using Scheduler.Entities.Base;
+using Scheduler.Infrastructure.Data;
+using Scheduler.Infrastructure.Extentions;
+using Scheduler.Infrastructure.Repository;
+using Scheduler.Mappings;
+using Serilog;
+
+namespace Scheduler;
+
+public class Startup
+{
+    public IConfiguration Configuration { get; }
+    
+    public IWebHostEnvironment HostingEnvironment { get; }
+    
+    public Startup(IConfiguration configuration, IWebHostEnvironment env)
+    {
+        this.Configuration = configuration;
+        this.HostingEnvironment = env;
+    }
+
+    public void ConfigureServices(IServiceCollection services)
+    {
+        var appCore = typeof(BaseEntity).Assembly;
+        services.AddLogging(z => z.AddSerilog());
+        services.AddDbContext<OneStepContext>(x =>
+            x.UseNpgsql(this.Configuration.GetConnectionString("DefaultConnection")));
+        services.AddEndpointsApiExplorer();
+        services.AddSwaggerGen();
+        services.AddControllers(z => z.EnableEndpointRouting = false);
+        services.AddNHibernate(this.Configuration.GetConnectionString("DefaultConnection"));
+        services.AddAutoMapper(typeof(MappingProfile));
+        services.AddAutoMapper(appCore);
+        services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(appCore));
+        services.AddTransient<IRepository<Group>, Repository<Group>>();
+    }
+
+    public void Configure(IApplicationBuilder app)
+    {
+        app.UseHttpsRedirection()
+            .UseRouting()
+            .UseEndpoints(z => { z.MapControllers(); })
+            .UseHsts()
+            .UseSwagger()
+            .UseSwaggerUI();
+        
+    }
+}

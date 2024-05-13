@@ -1,0 +1,16 @@
+{
+  "version": 2,
+  "dgSpecHash": "ySyo4w8dn8mWgO/ycKqaQ9OIPejEF+b3qhYWnHGiEe+0nZo73m0RLMkfT9GukOtiILW9V9JnvDhJ/SPhyNYHEw==",
+  "success": true,
+  "projectFilePath": "C:\\Project\\OneStep\\Scheduler.Application\\Scheduler.Application.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\slise\\.nuget\\packages\\automapper\\13.0.1\\automapper.13.0.1.nupkg.sha512",
+    "C:\\Users\\slise\\.nuget\\packages\\mediatr\\12.2.0\\mediatr.12.2.0.nupkg.sha512",
+    "C:\\Users\\slise\\.nuget\\packages\\mediatr.contracts\\2.0.1\\mediatr.contracts.2.0.1.nupkg.sha512",
+    "C:\\Users\\slise\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\8.0.0\\microsoft.extensions.dependencyinjection.abstractions.8.0.0.nupkg.sha512",
+    "C:\\Users\\slise\\.nuget\\packages\\microsoft.extensions.options\\6.0.0\\microsoft.extensions.options.6.0.0.nupkg.sha512",
+    "C:\\Users\\slise\\.nuget\\packages\\microsoft.extensions.primitives\\6.0.0\\microsoft.extensions.primitives.6.0.0.nupkg.sha512",
+    "C:\\Users\\slise\\.nuget\\packages\\system.runtime.compilerservices.unsafe\\6.0.0\\system.runtime.compilerservices.unsafe.6.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}

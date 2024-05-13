@@ -1,8 +1,10 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scheduler", "Scheduler\Scheduler.csproj", "{0C43A4AE-A745-4467-B1AD-F245B16F0FAD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scheduler.Web", "Scheduler.Web\Scheduler.Web.csproj", "{0C43A4AE-A745-4467-B1AD-F245B16F0FAD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scheduler.Infrastructure", "Scheduler.Infrastructure\Scheduler.Infrastructure.csproj", "{3C2CA492-981D-45A9-846A-AA7E2D2B6F56}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scheduler.Application", "Scheduler.Application\Scheduler.Application.csproj", "{02298F4E-3A0F-467A-BB28-B2AE169D7291}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -18,5 +20,9 @@ Global
 		{3C2CA492-981D-45A9-846A-AA7E2D2B6F56}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3C2CA492-981D-45A9-846A-AA7E2D2B6F56}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3C2CA492-981D-45A9-846A-AA7E2D2B6F56}.Release|Any CPU.Build.0 = Release|Any CPU
+		{02298F4E-3A0F-467A-BB28-B2AE169D7291}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{02298F4E-3A0F-467A-BB28-B2AE169D7291}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{02298F4E-3A0F-467A-BB28-B2AE169D7291}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{02298F4E-3A0F-467A-BB28-B2AE169D7291}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

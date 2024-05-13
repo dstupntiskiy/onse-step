@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Scheduler.Entities;
 using Scheduler.Infrastructure.Contracts;
-using Scheduler.Infrastructure.Domain;
 
 namespace Scheduler.Infrastructure.Data;
 
@@ -26,5 +26,5 @@ public class OneStepContext: DbContext, IOneStepContext
         return await base.SaveChangesAsync();
     }
     
-    public DbSet<Group> Groups { get; set; }
+    public DbSet<Group> Group { get; set; }
 }

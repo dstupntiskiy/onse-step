@@ -22,7 +22,7 @@ namespace Scheduler.Infrastructure.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Scheduler.Infrastructure.Domain.Group", b =>
+            modelBuilder.Entity("Scheduler.Entities.Group", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -41,7 +41,7 @@ namespace Scheduler.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Groups");
+                    b.ToTable("Group");
                 });
 #pragma warning restore 612, 618
         }

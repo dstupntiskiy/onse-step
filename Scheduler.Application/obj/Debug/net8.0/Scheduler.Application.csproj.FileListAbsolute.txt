@@ -1,0 +1,13 @@
+C:\Project\OneStep\Scheduler.Application\bin\Debug\net8.0\Scheduler.Application.deps.json
+C:\Project\OneStep\Scheduler.Application\bin\Debug\net8.0\Scheduler.Application.dll
+C:\Project\OneStep\Scheduler.Application\bin\Debug\net8.0\Scheduler.Application.pdb
+C:\Project\OneStep\Scheduler.Application\obj\Debug\net8.0\Scheduler.Application.csproj.AssemblyReference.cache
+C:\Project\OneStep\Scheduler.Application\obj\Debug\net8.0\Scheduler.Application.GeneratedMSBuildEditorConfig.editorconfig
+C:\Project\OneStep\Scheduler.Application\obj\Debug\net8.0\Scheduler.Application.AssemblyInfoInputs.cache
+C:\Project\OneStep\Scheduler.Application\obj\Debug\net8.0\Scheduler.Application.AssemblyInfo.cs
+C:\Project\OneStep\Scheduler.Application\obj\Debug\net8.0\Scheduler.Application.csproj.CoreCompileInputs.cache
+C:\Project\OneStep\Scheduler.Application\obj\Debug\net8.0\Scheduler.Application.sourcelink.json
+C:\Project\OneStep\Scheduler.Application\obj\Debug\net8.0\Scheduler.Application.dll
+C:\Project\OneStep\Scheduler.Application\obj\Debug\net8.0\refint\Scheduler.Application.dll
+C:\Project\OneStep\Scheduler.Application\obj\Debug\net8.0\Scheduler.Application.pdb
+C:\Project\OneStep\Scheduler.Application\obj\Debug\net8.0\ref\Scheduler.Application.dll
