@@ -29,7 +29,10 @@ public class Startup
         services.AddDbContext<OneStepContext>(x =>
             x.UseNpgsql(this.Configuration.GetConnectionString("DefaultConnection")));
         services.AddEndpointsApiExplorer();
-        services.AddSwaggerGen();
+        services.AddSwaggerGen(options =>
+        {
+            options.CustomSchemaIds(type => type.FullName?.Replace("+", "."));
+        });
         services.AddControllers(z => z.EnableEndpointRouting = false);
         services.AddNHibernate(this.Configuration.GetConnectionString("DefaultConnection"));
         services.AddAutoMapper(typeof(MappingProfile));

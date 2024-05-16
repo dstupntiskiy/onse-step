@@ -6,11 +6,11 @@ public interface IRepository<TEntity>
     
     Task<List<TEntity>> GetAll();
 
-    Task AddAsync(TEntity entity);
+    Task<Guid> AddAsync(TEntity entity);
 
     Task UpdateAsync(TEntity entity);
 
-    Task Delete(TEntity entity);
+    Task DeleteAsync(Guid id, CancellationToken cancellationToken);
 
     IQueryable<TEntity> Query();
 }

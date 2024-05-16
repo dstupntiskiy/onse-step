@@ -30,9 +30,30 @@ public class Repository<TEntity> : IRepository<TEntity>
         return this.Query().ToListAsync();
     }
 
-    public Task AddAsync(TEntity entity)
+    public async Task<Guid> AddAsync(TEntity entity)
     {
-        throw new NotImplementedException();
+        entity.MarkNew();
+        using var transaction = this.Session.BeginTransaction();
+        try
+        {
+            if (entity.Id == Guid.Empty)
+            {
+                await this.Session.SaveAsync(entity);
+            }
+            else
+            {
+                await this.Session.SaveAsync(entity, entity.Id);
+            }
+
+            await transaction.CommitAsync();
+        }
+        catch (Exception)
+        {
+            await transaction.RollbackAsync();
+            throw;
+        }
+
+        return entity.Id;
     }
 
     public Task UpdateAsync(TEntity entity)
@@ -40,8 +61,24 @@ public class Repository<TEntity> : IRepository<TEntity>
         throw new NotImplementedException();
     }
 
-    public Task Delete(TEntity entity)
+    public async Task DeleteAsync(Guid id, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        using var transaction = this.Session.BeginTransaction();
+        try
+        {
+            var entity = await this.GetById(id);
+            if (entity == null)
+            {
+                throw new ObjectNotFoundException(id, typeof(TEntity));
+            }
+
+            await this.Session.DeleteAsync(entity, cancellationToken);
+            await transaction.CommitAsync(cancellationToken);
+        }
+        catch (Exception)
+        {
+            await transaction.RollbackAsync(cancellationToken);
+            throw;
+        }
     }
 }

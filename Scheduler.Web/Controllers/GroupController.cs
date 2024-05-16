@@ -27,7 +27,18 @@ public class GroupController : ControllerBase
     {
         return await this.mediator.Send(new GetAllGroupQuery());
     }
-    
-    //[HttpPost]
-    //public async Task<Guid> Create()
+
+    [HttpPost]
+    public async Task<Guid> Add(Application.Commands.Groups.GroupSave.Command cmd)
+    {
+        return await this.mediator.Send(cmd);
+    }
+
+    [HttpDelete]
+    public async Task<IActionResult> Delete(Application.Commands.Groups.GroupDelete.Command cmd)
+    {
+        await this.mediator.Send(cmd);
+
+        return this.Ok();
+    }
 }
