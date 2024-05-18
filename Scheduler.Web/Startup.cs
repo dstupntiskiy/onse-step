@@ -38,7 +38,10 @@ public class Startup
         services.AddAutoMapper(typeof(MappingProfile));
         services.AddAutoMapper(appCore);
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(appCore));
+        services.AddTransient<IRepository<Recurrence>, Repository<Recurrence>>();
         services.AddTransient<IRepository<Group>, Repository<Group>>();
+        services.AddTransient<IRepository<Event>, Repository<Event>>();
+
     }
 
     public void Configure(IApplicationBuilder app)

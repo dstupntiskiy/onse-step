@@ -27,4 +27,8 @@ public class OneStepContext: DbContext, IOneStepContext
     }
     
     public DbSet<Group> Group { get; set; }
+    
+    public DbSet<Event> Event { get; set; }
+    
+    public DbSet<Recurrence> Recurrency { get; set; }
 }
