@@ -13,7 +13,7 @@ public class EventMap: AuditableEntityMap<Event>
         this.References(x => x.Group)
             .NotFound.Ignore()
             .Column($"{nameof(Group).ToLower()}id");
-        this.References(x => x.Reccurrency)
+        this.References(x => x.Recurrence)
             .NotFound.Ignore()
             .Column($"{nameof(Recurrence)}id");
     }    

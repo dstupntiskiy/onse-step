@@ -6,23 +6,14 @@ using Scheduler.Entities.Base;
 
 namespace Scheduler.Infrastructure.Repository;
 
-public class Repository<TEntity> : IRepository<TEntity>
-    where TEntity: AuditableEntity
+public class Repository<TEntity>(ISession session) : IRepository<TEntity>
+    where TEntity : AuditableEntity
 {
-    private readonly IConfiguration Configuration;
-    private readonly ISession Session;
-    
-    public Repository(IConfiguration configuration, ISession session)
-    {
-        this.Configuration = configuration;
-        this.Session = session;
-    }
-
-    public IQueryable<TEntity> Query() => this.Session.Query<TEntity>();
+    public IQueryable<TEntity> Query() => session.Query<TEntity>();
     
     public Task<TEntity> GetById(Guid id)
     {
-        return this.Session.GetAsync<TEntity>(id);
+        return session.GetAsync<TEntity>(id);
     }
 
     public Task<List<TEntity>> GetAll()
@@ -30,19 +21,19 @@ public class Repository<TEntity> : IRepository<TEntity>
         return this.Query().ToListAsync();
     }
 
-    public async Task<Guid> AddAsync(TEntity entity)
+    public async Task<TEntity> AddAsync(TEntity entity)
     {
         entity.MarkNew();
-        using var transaction = this.Session.BeginTransaction();
+        using var transaction = session.BeginTransaction();
         try
         {
             if (entity.Id == Guid.Empty)
             {
-                await this.Session.SaveAsync(entity);
+                await session.SaveAsync(entity);
             }
             else
             {
-                await this.Session.SaveAsync(entity, entity.Id);
+                await session.SaveAsync(entity, entity.Id);
             }
 
             await transaction.CommitAsync();
@@ -53,7 +44,7 @@ public class Repository<TEntity> : IRepository<TEntity>
             throw;
         }
 
-        return entity.Id;
+        return entity;
     }
 
     public Task UpdateAsync(TEntity entity)
@@ -63,7 +54,7 @@ public class Repository<TEntity> : IRepository<TEntity>
 
     public async Task DeleteAsync(Guid id, CancellationToken cancellationToken)
     {
-        using var transaction = this.Session.BeginTransaction();
+        using var transaction = session.BeginTransaction();
         try
         {
             var entity = await this.GetById(id);
@@ -72,7 +63,7 @@ public class Repository<TEntity> : IRepository<TEntity>
                 throw new ObjectNotFoundException(id, typeof(TEntity));
             }
 
-            await this.Session.DeleteAsync(entity, cancellationToken);
+            await session.DeleteAsync(entity, cancellationToken);
             await transaction.CommitAsync(cancellationToken);
         }
         catch (Exception)

@@ -7,12 +7,10 @@ namespace Scheduler.Middleware;
 
 public class ExceptionHanlingMiddleware
 {
-    private readonly ILogger logger;
     private readonly RequestDelegate next;
 
-    public ExceptionHanlingMiddleware(ILogger logger, RequestDelegate next)
+    public ExceptionHanlingMiddleware( RequestDelegate next)
     {
-        this.logger = logger;
         this.next = next;
     }
 
@@ -24,7 +22,6 @@ public class ExceptionHanlingMiddleware
         }
         catch (Exception ex)
         {
-            this.logger.LogError(ex, "Request completed with error");
             await this.HandleExceptionAsync(httpContext, ex);
         }
     }

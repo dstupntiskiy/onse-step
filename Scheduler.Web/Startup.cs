@@ -6,6 +6,7 @@ using Scheduler.Infrastructure.Data;
 using Scheduler.Infrastructure.Extentions;
 using Scheduler.Infrastructure.Repository;
 using Scheduler.Mappings;
+using Scheduler.Middleware;
 using Serilog;
 
 namespace Scheduler;
@@ -33,7 +34,8 @@ public class Startup
         {
             options.CustomSchemaIds(type => type.FullName?.Replace("+", "."));
         });
-        services.AddControllers(z => z.EnableEndpointRouting = false);
+        services.AddControllers(z => z.EnableEndpointRouting = false)
+            .AddJsonOptions(option => option.JsonSerializerOptions.IncludeFields = true);
         services.AddNHibernate(this.Configuration.GetConnectionString("DefaultConnection"));
         services.AddAutoMapper(typeof(MappingProfile));
         services.AddAutoMapper(appCore);
@@ -41,12 +43,13 @@ public class Startup
         services.AddTransient<IRepository<Recurrence>, Repository<Recurrence>>();
         services.AddTransient<IRepository<Group>, Repository<Group>>();
         services.AddTransient<IRepository<Event>, Repository<Event>>();
-
+        AppContext.SetSwitch("System.Runtime.Serialization.EnableUnsafeBinaryFormatterSerialization", true);
     }
 
     public void Configure(IApplicationBuilder app)
     {
         app.UseHttpsRedirection()
+            .UseMiddleware<ExceptionHanlingMiddleware>()
             .UseRouting()
             .UseEndpoints(z => { z.MapControllers(); })
             .UseHsts()

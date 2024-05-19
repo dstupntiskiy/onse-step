@@ -30,5 +30,5 @@ public class OneStepContext: DbContext, IOneStepContext
     
     public DbSet<Event> Event { get; set; }
     
-    public DbSet<Recurrence> Recurrency { get; set; }
+    public DbSet<Recurrence> Recurrence { get; set; }
 }

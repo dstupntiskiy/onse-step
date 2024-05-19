@@ -44,7 +44,7 @@ namespace Scheduler.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("ReccurrencyId")
+                    b.Property<Guid?>("RecurrenceId")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("StartDateTime")
@@ -54,7 +54,7 @@ namespace Scheduler.Infrastructure.Migrations
 
                     b.HasIndex("GroupId");
 
-                    b.HasIndex("ReccurrencyId");
+                    b.HasIndex("RecurrenceId");
 
                     b.ToTable("Event");
                 });
@@ -90,22 +90,21 @@ namespace Scheduler.Infrastructure.Migrations
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int[]>("DaysOfWeek")
-                        .IsRequired()
-                        .HasColumnType("integer[]");
+                    b.Property<string>("DaysOfWeekJson")
+                        .HasColumnType("text");
 
-                    b.Property<DateTime>("EndDate")
+                    b.Property<DateTime?>("EndDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime[]>("ExceptDates")
-                        .HasColumnType("timestamp with time zone[]");
+                    b.Property<string>("ExceptDatesJson")
+                        .HasColumnType("text");
 
-                    b.Property<DateTime>("StartDate")
+                    b.Property<DateTime?>("StartDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Recurrency");
+                    b.ToTable("Recurrence");
                 });
 
             modelBuilder.Entity("Scheduler.Entities.Event", b =>
@@ -114,13 +113,13 @@ namespace Scheduler.Infrastructure.Migrations
                         .WithMany()
                         .HasForeignKey("GroupId");
 
-                    b.HasOne("Scheduler.Entities.Recurrence", "Reccurrency")
+                    b.HasOne("Scheduler.Entities.Recurrence", "Recurrence")
                         .WithMany()
-                        .HasForeignKey("ReccurrencyId");
+                        .HasForeignKey("RecurrenceId");
 
                     b.Navigation("Group");
 
-                    b.Navigation("Reccurrency");
+                    b.Navigation("Recurrence");
                 });
 #pragma warning restore 612, 618
         }

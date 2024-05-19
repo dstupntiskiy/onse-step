@@ -22,6 +22,6 @@ namespace Scheduler.Application.Commands.Groups.GroupSave;
 
             var result = await groupRepository.AddAsync(group);
 
-            return result;
+            return result.Id;
         }
     }

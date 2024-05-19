@@ -11,5 +11,5 @@ public class EventDto
     public string? Color { get; set; }
     public GroupProjection? Group { get; set; }
     
-    public Recurrence? Recurrency { get; set; }
+    public Recurrence? Recurrence { get; set; }
 }

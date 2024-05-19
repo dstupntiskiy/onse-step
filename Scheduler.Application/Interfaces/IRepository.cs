@@ -6,7 +6,7 @@ public interface IRepository<TEntity>
     
     Task<List<TEntity>> GetAll();
 
-    Task<Guid> AddAsync(TEntity entity);
+    Task<TEntity> AddAsync(TEntity entity);
 
     Task UpdateAsync(TEntity entity);
 

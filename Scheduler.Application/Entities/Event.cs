@@ -9,6 +9,5 @@ public class Event : AuditableEntity
     public virtual required string Name { get; set; }
     public virtual Group? Group { get; set; }
     public virtual string? Color { get; set; }
-    
-    public virtual Recurrence? Reccurrency { get; set; }
+    public virtual Recurrence? Recurrence { get; set; }
 }

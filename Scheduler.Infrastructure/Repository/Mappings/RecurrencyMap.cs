@@ -8,7 +8,7 @@ public class RecurrencyMap: AuditableEntityMap<Recurrence>
     {
         this.Map(x => x.StartDate);
         this.Map(x => x.EndDate);
-        this.Map(x => x.ExceptDates);
-        this.Map(x => x.DaysOfWeek);
+        this.Map(x => x.ExceptDatesJson);
+        this.Map(x => x.DaysOfWeekJson);
     }
 }

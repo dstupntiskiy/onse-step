@@ -1615,7 +1615,8 @@
       "Scheduler.Application/1.0.0": {
         "dependencies": {
           "AutoMapper": "13.0.1",
-          "MediatR": "12.2.0"
+          "MediatR": "12.2.0",
+          "Newtonsoft.Json": "13.0.3"
         },
         "runtime": {
           "Scheduler.Application.dll": {}
