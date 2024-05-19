@@ -1,9 +1,9 @@
-using Scheduler.Entities;
-using Scheduler.Entities.Projections;
+using Scheduler.Application.Entities;
+using Scheduler.Application.Entities.Projections;
 
 namespace Scheduler.Application.Common.Dtos;
 
-public class EventDto
+public class EventDto : EntityDto
 {
     public required string Name { get; set; }
     public required DateTime StartDateTime { get; set; }

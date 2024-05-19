@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Scheduler.Entities.Base;
+namespace Scheduler.Application.Entities.Base;
 
 public abstract class BaseEntity
 {

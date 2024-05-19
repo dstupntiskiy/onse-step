@@ -1,4 +1,4 @@
-using Scheduler.Entities;
+using Scheduler.Application.Entities;
 
 namespace Scheduler.Infrastructure.Repository.Mappings;
 

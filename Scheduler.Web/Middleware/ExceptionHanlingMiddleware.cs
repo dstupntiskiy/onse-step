@@ -1,27 +1,22 @@
 using System.Net;
 using System.Net.Mime;
-using Microsoft.AspNetCore.Mvc.Formatters;
 using Newtonsoft.Json;
 
 namespace Scheduler.Middleware;
 
-public class ExceptionHanlingMiddleware
+public class ExceptionHanlingMiddleware(RequestDelegate next, ILogger<ExceptionHanlingMiddleware> logger)
 {
-    private readonly RequestDelegate next;
-
-    public ExceptionHanlingMiddleware( RequestDelegate next)
-    {
-        this.next = next;
-    }
+    private readonly ILogger logger = logger;
 
     public async Task InvokeAsync(HttpContext httpContext)
     {
         try
         {
-            await this.next(httpContext);
+            await next(httpContext);
         }
         catch (Exception ex)
         {
+            this.logger.LogError(ex, ex.Message);
             await this.HandleExceptionAsync(httpContext, ex);
         }
     }

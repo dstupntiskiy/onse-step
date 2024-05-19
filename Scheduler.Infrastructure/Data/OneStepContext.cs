@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Scheduler.Entities;
+using Scheduler.Application.Entities;
 using Scheduler.Infrastructure.Contracts;
 
 namespace Scheduler.Infrastructure.Data;

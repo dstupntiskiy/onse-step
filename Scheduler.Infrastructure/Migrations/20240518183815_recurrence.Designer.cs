@@ -25,7 +25,7 @@ namespace Scheduler.Infrastructure.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Scheduler.Entities.Event", b =>
+            modelBuilder.Entity("Scheduler.Application.Entities.Event", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -62,7 +62,7 @@ namespace Scheduler.Infrastructure.Migrations
                     b.ToTable("Event");
                 });
 
-            modelBuilder.Entity("Scheduler.Entities.Group", b =>
+            modelBuilder.Entity("Scheduler.Application.Entities.Group", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -84,7 +84,7 @@ namespace Scheduler.Infrastructure.Migrations
                     b.ToTable("Group");
                 });
 
-            modelBuilder.Entity("Scheduler.Entities.Recurrence", b =>
+            modelBuilder.Entity("Scheduler.Application.Entities.Recurrence", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -110,13 +110,13 @@ namespace Scheduler.Infrastructure.Migrations
                     b.ToTable("Recurrence");
                 });
 
-            modelBuilder.Entity("Scheduler.Entities.Event", b =>
+            modelBuilder.Entity("Scheduler.Application.Entities.Event", b =>
                 {
-                    b.HasOne("Scheduler.Entities.Group", "Group")
+                    b.HasOne("Scheduler.Application.Entities.Group", "Group")
                         .WithMany()
                         .HasForeignKey("GroupId");
 
-                    b.HasOne("Scheduler.Entities.Recurrence", "Recurrence")
+                    b.HasOne("Scheduler.Application.Entities.Recurrence", "Recurrence")
                         .WithMany()
                         .HasForeignKey("RecurrenceId");
 

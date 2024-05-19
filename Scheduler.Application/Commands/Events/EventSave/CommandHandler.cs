@@ -2,16 +2,14 @@ using AutoMapper;
 using MediatR;
 using Scheduler.Application.Common.Dtos;
 using Scheduler.Application.Interfaces;
-using Scheduler.Entities;
-using System;
+using Scheduler.Application.Entities;
 using System.ComponentModel.DataAnnotations;
-using System.Data;
 
 namespace Scheduler.Application.Commands.Events.EventSave;
 
 public class CommandHandler(
     IRepository<Event> eventRepository, 
-    IRepository<Recurrence> recurrencyRepository,
+    IRepository<Entities.Recurrence> recurrencyRepository,
     IRepository<Group> groupRepository,
     IMapper mapper)
     : IRequestHandler<Command, List<EventDto>>

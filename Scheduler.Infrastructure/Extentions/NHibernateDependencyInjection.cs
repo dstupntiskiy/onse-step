@@ -1,7 +1,7 @@
 using FluentNHibernate.Cfg;
 using FluentNHibernate.Cfg.Db;
 using Microsoft.Extensions.DependencyInjection;
-using Scheduler.Entities.Base;
+using Scheduler.Application.Entities.Base;
 using Scheduler.Infrastructure.Repository.Mappings;
 
 namespace Scheduler.Infrastructure.Extentions;

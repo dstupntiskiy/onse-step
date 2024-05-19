@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Scheduler.Application.Interfaces;
-using Scheduler.Entities;
-using Scheduler.Entities.Base;
+using Scheduler.Application.Entities;
+using Scheduler.Application.Entities.Base;
 using Scheduler.Infrastructure.Data;
 using Scheduler.Infrastructure.Extentions;
 using Scheduler.Infrastructure.Repository;

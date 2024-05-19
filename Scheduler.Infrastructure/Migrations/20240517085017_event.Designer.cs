@@ -25,7 +25,7 @@ namespace Scheduler.Infrastructure.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Scheduler.Entities.Event", b =>
+            modelBuilder.Entity("Scheduler.Application.Entities.Event", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -57,7 +57,7 @@ namespace Scheduler.Infrastructure.Migrations
                     b.ToTable("Event");
                 });
 
-            modelBuilder.Entity("Scheduler.Entities.Group", b =>
+            modelBuilder.Entity("Scheduler.Application.Entities.Group", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -79,9 +79,9 @@ namespace Scheduler.Infrastructure.Migrations
                     b.ToTable("Group");
                 });
 
-            modelBuilder.Entity("Scheduler.Entities.Event", b =>
+            modelBuilder.Entity("Scheduler.Application.Entities.Event", b =>
                 {
-                    b.HasOne("Scheduler.Entities.Group", "Group")
+                    b.HasOne("Scheduler.Application.Entities.Group", "Group")
                         .WithMany()
                         .HasForeignKey("GroupId");
 

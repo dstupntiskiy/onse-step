@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using MediatR;
 using Scheduler.Application.Interfaces;
-using Scheduler.Entities;
+using Scheduler.Application.Entities;
 
 namespace Scheduler.Application.Commands.Groups.GroupSave;
 

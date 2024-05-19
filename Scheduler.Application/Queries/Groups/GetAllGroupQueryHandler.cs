@@ -2,7 +2,7 @@ using AutoMapper;
 using MediatR;
 using Scheduler.Application.Common.Dtos;
 using Scheduler.Application.Interfaces;
-using Scheduler.Entities;
+using Scheduler.Application.Entities;
 
 namespace Scheduler.Application.Queries.Groups;
 

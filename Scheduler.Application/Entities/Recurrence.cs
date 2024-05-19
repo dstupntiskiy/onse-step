@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using Newtonsoft.Json;
-using Scheduler.Entities.Base;
+using Scheduler.Application.Entities.Base;
 
-namespace Scheduler.Entities;
+namespace Scheduler.Application.Entities;
 
 [Serializable]
 public class Recurrence : AuditableEntity

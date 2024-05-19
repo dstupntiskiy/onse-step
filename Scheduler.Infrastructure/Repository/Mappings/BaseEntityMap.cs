@@ -1,5 +1,5 @@
 using FluentNHibernate.Mapping;
-using Scheduler.Entities.Base;
+using Scheduler.Application.Entities.Base;
 
 namespace Scheduler.Infrastructure.Repository.Mappings;
 

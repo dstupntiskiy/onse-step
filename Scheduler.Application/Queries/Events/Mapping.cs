@@ -1,6 +1,6 @@
 using AutoMapper;
 using Scheduler.Application.Common.Dtos;
-using Scheduler.Entities;
+using Scheduler.Application.Entities;
 
 namespace Scheduler.Application.Queries.Events;
 

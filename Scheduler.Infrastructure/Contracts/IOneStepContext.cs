@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using Scheduler.Entities;
+using Scheduler.Application.Entities;
 
 namespace Scheduler.Infrastructure.Contracts;
 

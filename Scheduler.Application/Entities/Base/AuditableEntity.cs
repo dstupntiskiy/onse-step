@@ -1,4 +1,4 @@
-namespace Scheduler.Entities.Base;
+namespace Scheduler.Application.Entities.Base;
 
 public class AuditableEntity : BaseEntity
 {

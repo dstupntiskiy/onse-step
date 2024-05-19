@@ -1,6 +1,6 @@
-using Scheduler.Entities.Base;
+using Scheduler.Application.Entities.Base;
 
-namespace Scheduler.Entities;
+namespace Scheduler.Application.Entities;
 
 public class Event : AuditableEntity
 {

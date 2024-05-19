@@ -1,6 +1,6 @@
 using MediatR;
 using Scheduler.Application.Common.Dtos;
-using Scheduler.Entities;
+using Scheduler.Application.Entities;
 
 namespace Scheduler.Application.Commands.Events.EventSave;
 

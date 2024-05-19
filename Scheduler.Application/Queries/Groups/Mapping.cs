@@ -1,7 +1,7 @@
 using AutoMapper;
 using Scheduler.Application.Common.Dtos;
-using Scheduler.Entities;
-using Scheduler.Entities.Projections;
+using Scheduler.Application.Entities;
+using Scheduler.Application.Entities.Projections;
 
 namespace Scheduler.Application.Queries.Groups;
 

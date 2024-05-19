@@ -2,7 +2,7 @@ using Microsoft.Extensions.Configuration;
 using NHibernate;
 using NHibernate.Linq;
 using Scheduler.Application.Interfaces;
-using Scheduler.Entities.Base;
+using Scheduler.Application.Entities.Base;
 
 namespace Scheduler.Infrastructure.Repository;
 

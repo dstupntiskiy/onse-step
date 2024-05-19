@@ -1,6 +1,6 @@
-using Scheduler.Entities.Base;
+using Scheduler.Application.Entities.Base;
 
-namespace Scheduler.Entities.Projections;
+namespace Scheduler.Application.Entities.Projections;
 
 public class GroupProjection: BaseEntity
 {
