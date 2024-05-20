@@ -13,6 +13,6 @@ export class SnackBarService {
   }
 
   error(message: string){
-    this.snackBar.open(message, 'закрыть', {duration: 10000})
+    this.snackBar.open(message, 'Закрыть', {duration: 10000})
   }
 }

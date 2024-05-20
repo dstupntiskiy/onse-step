@@ -47,9 +47,10 @@ export class GroupsComponent {
   }
 
   ngOnInit(){
-    this.groupService.getGoups().subscribe((groups: Group[]) =>{
+    this.groupService.getGoups().subscribe({
+      next: (groups: Group[]) =>{
       this.dataSource = groups
-    });
+    }});
   }
 
 }

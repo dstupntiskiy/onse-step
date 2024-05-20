@@ -7,8 +7,9 @@ import { MatInputModule } from '@angular/material/input';
 import { Group } from '../../shared/models/group-model';
 import { GroupService } from '../group.service';
 import { Guid } from 'typescript-guid';
-import { catchError } from 'rxjs';
+import { catchError, finalize, timeout } from 'rxjs';
 import { SnackBarService } from '../../services/snack-bar.service';
+import { SpinnerService } from '../../shared/spinner/spinner.service';
 
 @Component({
   selector: 'app-group-dialog',
@@ -21,7 +22,7 @@ import { SnackBarService } from '../../services/snack-bar.service';
   ],
   providers:[
     GroupService,
-    SnackBarService
+    SnackBarService,
   ],
   templateUrl: './group-dialog.component.html',
   styleUrl: './group-dialog.component.scss'
@@ -37,7 +38,8 @@ export class GroupDialogComponent {
     private dialogRef: MatDialogRef<GroupDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data : { title : string, group: Group }, 
     private groupService: GroupService,
-    private snackbarService: SnackBarService
+    private snackbarService: SnackBarService,
+    private spinnerService: SpinnerService
   ){
   }
 
@@ -63,14 +65,15 @@ export class GroupDialogComponent {
         name: this.name?.value,
         style: this.style?.value
       }
+      this.spinnerService.loadingOn();
       this.groupService.saveGroup(group)
-      .subscribe({
-        error: (error) => {
-          this.snackbarService.error(error.error)
-        },
-        next: (result: Group) =>{
+      .pipe(
+        finalize(() => this.spinnerService.loadingOff())
+      )
+      .subscribe(
+        (result: Group) =>{
           this.dialogRef.close(result);
-        }});
+        });
       
     }
   }

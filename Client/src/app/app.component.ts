@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { CalendarComponent } from './calendar/calendar.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
+import { SpinnerComponent } from './shared/spinner/spinner.component';
 
 
 @Component({
@@ -12,7 +13,8 @@ import { SidebarComponent } from './sidebar/sidebar.component';
     RouterOutlet,
     CommonModule,
     CalendarComponent,
-    SidebarComponent],
+    SidebarComponent,
+    SpinnerComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
