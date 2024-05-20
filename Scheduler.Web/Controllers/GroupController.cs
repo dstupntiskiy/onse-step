@@ -22,7 +22,7 @@ public class GroupController(IMediator mediator) : ControllerBase
     }
 
     [HttpPost]
-    public async Task<Guid> Add(Application.Commands.Groups.GroupSave.Command cmd)
+    public async Task<GroupDto> Add(Application.Commands.Groups.GroupSave.Command cmd)
     {
         return await mediator.Send(cmd);
     }

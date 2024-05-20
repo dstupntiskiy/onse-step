@@ -1,10 +1,14 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, inject } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { Group } from '../../models/group-model';
+import { Group } from '../../shared/models/group-model';
+import { GroupService } from '../group.service';
+import { Guid } from 'typescript-guid';
+import { catchError } from 'rxjs';
+import { SnackBarService } from '../../services/snack-bar.service';
 
 @Component({
   selector: 'app-group-dialog',
@@ -15,6 +19,10 @@ import { Group } from '../../models/group-model';
     FormsModule,
     ReactiveFormsModule
   ],
+  providers:[
+    GroupService,
+    SnackBarService
+  ],
   templateUrl: './group-dialog.component.html',
   styleUrl: './group-dialog.component.scss'
 })
@@ -22,11 +30,14 @@ export class GroupDialogComponent {
   public form: FormGroup; 
   public get name() { return this.form.get('name')}
   public get style() { return this.form.get('style')}
+  public id: string = Guid.EMPTY.toString();
 
 
   constructor(private formBuilder: FormBuilder,
-    @Inject(MAT_DIALOG_DATA) public data: {title: string},
-    private dialogRef: MatDialogRef<GroupDialogComponent>
+    private dialogRef: MatDialogRef<GroupDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) public data : { title : string, group: Group }, 
+    private groupService: GroupService,
+    private snackbarService: SnackBarService
   ){
   }
 
@@ -35,6 +46,10 @@ export class GroupDialogComponent {
       name: new FormControl(null, [Validators.required]),
       style: new FormControl(null, [Validators.required])
     })
+
+    this.id = this.data.group?.id;
+    this.name?.setValue(this.data.group?.name);
+    this.style?.setValue(this.data.group?.style);
   }
 
   onCloseClick(){
@@ -44,11 +59,19 @@ export class GroupDialogComponent {
   submit(){
     if (this.form.valid){
       const group: Group = {
-        id: '4',
+        id: this.id,
         name: this.name?.value,
         style: this.style?.value
       }
-      this.dialogRef.close(group);
+      this.groupService.saveGroup(group)
+      .subscribe({
+        error: (error) => {
+          this.snackbarService.error(error.error)
+        },
+        next: (result: Group) =>{
+          this.dialogRef.close(result);
+        }});
+      
     }
   }
 }

@@ -1,13 +1,15 @@
 using System.ComponentModel.DataAnnotations;
+using AutoMapper;
 using MediatR;
+using Scheduler.Application.Common.Dtos;
 using Scheduler.Application.Interfaces;
 using Scheduler.Application.Entities;
 
 namespace Scheduler.Application.Commands.Groups.GroupSave;
 
-    public class CommandHandler(IRepository<Group> groupRepository) : IRequestHandler<Command, Guid>
+    public class CommandHandler(IRepository<Group> groupRepository, IMapper mapper) : IRequestHandler<Command, GroupDto>
     {
-        public async Task<Guid> Handle(Command request, CancellationToken cancellationToken)
+        public async Task<GroupDto> Handle(Command request, CancellationToken cancellationToken)
         {
             var group = new Group()
             {
@@ -22,6 +24,6 @@ namespace Scheduler.Application.Commands.Groups.GroupSave;
 
             var result = await groupRepository.AddAsync(group);
 
-            return result.Id;
+            return mapper.Map<GroupDto>(result);
         }
     }

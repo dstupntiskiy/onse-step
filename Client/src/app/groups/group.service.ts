@@ -1,35 +1,27 @@
-import { Inject, Injectable } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { GroupDialogComponent } from '../shared/dialog/group-dialog/group-dialog.component';
+import { Injectable } from '@angular/core';
 import { Group } from '../shared/models/group-model';
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
+import { BaseHttpService } from '../services/base-http.service';
+import { HttpClient } from '@angular/common/http';
 
 export interface GroupData{
   title: string
 }
-
-const GROUPS: Group[] = [
-  { id: '1', name: 'High heels pro', style: 'High heels'},
-  { id: '2', name: 'High heels начинающие', style: 'High heels'},
-  { id: '3', name: 'Contemp', style: 'Contemporary'},
-]
-
 @Injectable({
   providedIn: 'root'
 })
-export class GroupService {
+export class GroupService extends BaseHttpService{
 
-  constructor(
-    public dialogRef: MatDialogRef<GroupDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: {title: string},
-    public dialog: MatDialog) 
-    { }
+  protected route: string = 'Group';
 
-    showGroupDialog(): MatDialogRef<GroupDialogComponent, any>{
-      return this.dialog.open(GroupDialogComponent, {data: {title: 'Группа'}})
-    }
+  constructor(http: HttpClient) 
+    { super(http)}
 
     getGoups(): Observable<Group[]>{
-      return of(GROUPS);
+      return this.get<Group[]>('GetAll');
+    }
+
+    saveGroup(group: Group): Observable<Group>{
+      return this.post<Group>('', group)
     }
 }
