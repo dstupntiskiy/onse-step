@@ -5,6 +5,7 @@ using Scheduler.Application.Entities;
 namespace Scheduler.Application.Commands.Events.EventSave;
 
 public class Command(
+    Guid id,
     string name,
     DateTime startDateTime,
     DateTime endDateTime,
@@ -16,6 +17,7 @@ public class Command(
     DateOnly[]? exceptDates,
     DayOfWeek[]? daysOfWeek) : IRequest<List<EventDto>>
 {
+    public Guid Id { get; } = id;
     public string Name { get; } = name;
     public DateTime StartDateTime { get; } = startDateTime;
     public DateTime EndDateTime { get; } = endDateTime;

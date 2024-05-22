@@ -2,7 +2,6 @@ import { Component, Inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { ConfirmationDialogComponent } from '../../shared/dialog/confirmation-dialog/confirmation-dialog.component';
-import { EventResult } from '../add-event-dialog/add-event-dialog.component';
 
 export interface DeleteResult{
   delete: 'all' | 'one'

@@ -9,29 +9,38 @@ import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, 
 import { addHours, getFormattedTime, getHalfHourIntervals, setTimeFromStringToDate } from '../../shared/helpers/time-helper';
 import { Group } from '../../shared/models/group-model';
 import { GroupService } from '../../groups/group.service';
-import { RRule, RRuleSet } from 'rrule'
 import { CommonModule } from '@angular/common';
 import { ConfirmationDialogComponent } from '../../shared/dialog/confirmation-dialog/confirmation-dialog.component';
 import { MatNativeDateModule, MAT_DATE_LOCALE, DateAdapter } from '@angular/material/core';
 import {provideNativeDateAdapter} from '@angular/material/core';
 import { CustomDateAdapter } from '../../shared/adapters/custom.date.adapter';
 import { DeleteDialogComponent, DeleteResult } from '../delete-dialog/delete-dialog.component';
+import { SpinnerService } from '../../shared/spinner/spinner.service';
+import { finalize } from 'rxjs';
+import { EventService } from '../event/event.service';
+import { Guid } from 'typescript-guid';
 
 export interface EventModel{
   id: string,
-  startTime: Date;
-  endTime: Date;
-  eventName: string;
-  groupId?: string;
-  isRecur: boolean;
-  rrule?: RRuleSet;
-  isNew?: boolean;
-  exdate?: string[]
+  startDateTime: Date;
+  endDateTime: Date;
+  name: string;
+  color?: string;
+  group?: Group;
+  recurrence?: Recurrence
+}
+
+export interface Recurrence{
+  exceptdates?: string[];
+  startDate: Date;
+  endDate: Date;
+  daysOfWeek: number[];
+  id: string; 
 }
 
 export interface EventResult{
   action?: 'save'| 'delete' | 'deleteOne'
-  event?: EventModel
+  events?: EventModel[]
 }
 
 export interface Weekday{
@@ -40,13 +49,13 @@ export interface Weekday{
 }
 
 const WEEKDAYS: Weekday[] = [
-  { number: 0, name: 'Понедельник'},
-  { number: 1, name: 'Вторник'},
-  { number: 2, name: 'Среда'},
-  { number: 3, name: 'Четверг'},
-  { number: 4, name: 'Пятница'},
-  { number: 5, name: 'Суббота'},
-  { number: 6, name: 'Воскресенье'},
+  { number: 1, name: 'Понедельник'},
+  { number: 2, name: 'Вторник'},
+  { number: 3, name: 'Среда'},
+  { number: 4, name: 'Четверг'},
+  { number: 5, name: 'Пятница'},
+  { number: 6, name: 'Суббота'},
+  { number: 0, name: 'Воскресенье'},
 ]
 
 @Component({
@@ -64,8 +73,8 @@ const WEEKDAYS: Weekday[] = [
     ConfirmationDialogComponent,
     MatDatepickerModule,
     MatNativeDateModule ],
-  templateUrl: './add-event-dialog.component.html',
-  styleUrl: './add-event-dialog.component.scss',
+  templateUrl: './event-dialog.component.html',
+  styleUrl: './event-dialog.component.scss',
   providers:[
     GroupService,
     provideNativeDateAdapter(),
@@ -73,7 +82,7 @@ const WEEKDAYS: Weekday[] = [
     { provide: DateAdapter, useClass: CustomDateAdapter}
   ]
 })
-export class AddEventDialogComponent {
+export class EventDialogComponent {
   timeOptions: string[] = getHalfHourIntervals();
   weekDaysList: Weekday[] = WEEKDAYS;
   groups: Group[];
@@ -96,16 +105,19 @@ export class AddEventDialogComponent {
   public get recurEnd() { return this.eventForm.get('recurEnd')}
 
   constructor(
-    public dialogRef: MatDialogRef<AddEventDialogComponent>,
+    public dialogRef: MatDialogRef<EventDialogComponent>,
     public dialog: MatDialog,
     private groupService: GroupService,
     private formBuilder: FormBuilder,
+    private spinnerService: SpinnerService,
+    private eventService: EventService,
     @Inject(MAT_DIALOG_DATA) public data: {title: string, event: EventModel}
   ){}
 
   ngOnInit(){
     this.initialEvent = this.data.event;
-    this.isNew = this.data.event.isNew === true ;
+
+    this.isNew = !Guid.isGuid(this.initialEvent.id)
 
     this.eventForm = this.formBuilder.group({
       name: new FormControl(null, [Validators.required]),
@@ -123,68 +135,66 @@ export class AddEventDialogComponent {
       this.validateWeekdaysNotEmpty()]
   });
 
-  this.groupService.getGoups().subscribe((groups: Group[]) =>{
-    this.groups = groups
-    this.group?.setValue(this.groups.find(x => x.id === this.data.event.groupId))
-    
-  });
+  this.groupService.getGoups()
+    .subscribe((groups: Group[]) =>{
+      this.groups = groups
+      this.group?.setValue(this.groups.find(x => x.id === this.data.event.group?.id))
+    });
 
-  this.data.event.eventName ? this.name?.setValue(this.data.event.eventName) : ''
-  this.start?.setValue(getFormattedTime(this.data.event.startTime))
-  this.data.event.endTime 
-    ? this.end?.setValue(getFormattedTime(this.data.event.endTime))
-    :  this.end?.setValue(getFormattedTime(addHours(this.data.event.startTime, 1)))
+  this.data.event.name ? this.name?.setValue(this.data.event.name) : ''
+  this.start?.setValue(getFormattedTime(this.data.event.startDateTime))
+  this.data.event.endDateTime
+    ? this.end?.setValue(getFormattedTime(this.data.event.endDateTime))
+    :  this.end?.setValue(getFormattedTime(addHours(this.data.event.startDateTime, 1)))
 
-    this.day = this.data.event.startTime.toLocaleDateString('ru-RU');
-    
-    this.isRecur?.setValue(this.data.event.isRecur);
-    if (this.isRecur?.value){
-      this.isRecur?.disable();
+  this.day = this.data.event.startDateTime.toLocaleDateString('ru-RU');
+  this.isRecur?.setValue(this.data.event.recurrence === null);
+  if (this.isRecur?.value){
+    this.isRecur?.disable();
 
-      this.recurStart?.disable();
-      this.recurEnd?.disable();
-      this.weekdays?.disable();
-      this.recurStart?.setValue(this.data.event.rrule?._rrule[0].options.dtstart)
-      this.recurEnd?.setValue(this.data.event.rrule?._rrule[0].options.until)
+    this.recurStart?.disable();
+    this.recurEnd?.disable();
+    this.weekdays?.disable();
+    this.recurStart?.setValue(this.data.event.recurrence?.startDate)
+    this.recurEnd?.setValue(this.data.event.recurrence?.endDate)
+    this.weekdays?.setValue(this.data.event.recurrence?.daysOfWeek?.map(x => WEEKDAYS.find(y => y.number == x)))
     }
-
-    this.weekdays?.setValue(this.data.event.rrule?._rrule[0].options.byweekday.map((x) => this.weekDaysList.find(wd => wd.number === x)))
   }
 
   submit(): void{
     
     if (this.eventForm.valid)
     {
-      var start = new Date(this.data.event.startTime);
-      var end = new Date(this.data.event.startTime);
+      var start = new Date(this.data.event.startDateTime);
+      var end = new Date(this.data.event.startDateTime);
 
-      var rruleSet: RRuleSet;
       var result: EventResult = {action: 'save'}
 
       const data: EventModel = {
-        id: (Math.floor(Math.random() * 1000)).toString(),
-        startTime: setTimeFromStringToDate(start, this.start?.value),
-        endTime: setTimeFromStringToDate(end, this.end?.value),
-        eventName: this.name?.value,
-        groupId: (this.group?.value as Group)?.id,
-        isRecur: this.isRecur?.value
+        id: this.initialEvent.id ?? Guid.create().toString(),
+        startDateTime: setTimeFromStringToDate(start, this.start?.value),
+        endDateTime: setTimeFromStringToDate(end, this.end?.value),
+        name: this.name?.value,
+        group: { id: (this.group?.value as Group)?.id },
       }
       if (this.isRecur?.value){
-        rruleSet = new RRuleSet()
-        rruleSet.rrule(new RRule({
-          freq: RRule.WEEKLY,
-          byweekday: this.weekdays?.value.map((x : Weekday) => x.number),
-          dtstart: setTimeFromStringToDate(this.recurStart?.value, this.start?.value),
-          until: this.recurEnd?.value,
-        }))
-        if (this.initialEvent.exdate){
-          data.exdate = this.initialEvent.exdate
+        data.recurrence = {
+          daysOfWeek: this.weekdays?.value.map((x : Weekday) => x.number),
+          exceptdates: this.initialEvent.recurrence?.exceptdates,
+          startDate: this.recurStart?.value,
+          endDate: addHours(this.recurEnd?.value, 24),
+          id: this.initialEvent.recurrence?.id ?? Guid.EMPTY.toString()
         }
-        data.rrule = rruleSet
       }
-
-      result.event = data
-      this.dialogRef.close(result)
+      this.spinnerService.loadingOn();
+      this.eventService.saveEvent(data)
+        .pipe(
+          finalize(() => this.spinnerService.loadingOff())
+        )
+        .subscribe((events: EventModel[]) => {
+          result.events = events
+          this.dialogRef.close(result)
+        })
     }
   }
 
@@ -198,7 +208,7 @@ export class AddEventDialogComponent {
 
   onDelete(): void{
     if (this.isRecur?.value){
-      var deleteDialog = this.dialog.open(DeleteDialogComponent, {data: { message: 'Удалить все повторения или экземпляр?', eventName: this.data.event.eventName}})
+      var deleteDialog = this.dialog.open(DeleteDialogComponent, {data: { message: 'Удалить все повторения или экземпляр?', eventName: this.data.event.name}})
       deleteDialog.afterClosed().subscribe((result: DeleteResult) =>{
           if (result?.delete == 'all'){
             var action : EventResult = {action : 'delete'}
@@ -207,17 +217,18 @@ export class AddEventDialogComponent {
           if (result?.delete == 'one'){
             var event = this.initialEvent
 
-            var exdateArr = this.initialEvent.exdate
-            exdateArr?.push(new Date(this.initialEvent.startTime).toISOString())
-            event.exdate = exdateArr
+            var exdateArr = this.initialEvent.recurrence?.exceptdates
+            exdateArr?.push(new Date(this.initialEvent.startDateTime).toISOString())
+            if(event.recurrence)
+              event.recurrence.exceptdates = exdateArr  
 
-            var action : EventResult = {action : 'deleteOne', event: event}
+            var action : EventResult = {action : 'deleteOne', events: [event]}
             this.dialogRef.close(action)
           }
       })
     }
     else{
-      var confDialogRef = this.dialog.open(ConfirmationDialogComponent, {data: {message: 'Вы уверены что хотите удалить событие: ' + this.data.event.eventName}})
+      var confDialogRef = this.dialog.open(ConfirmationDialogComponent, {data: {message: 'Вы уверены что хотите удалить событие: ' + this.data.event.name}})
       confDialogRef.afterClosed().subscribe((result) => {
         if (result == true){
           var action : EventResult = {action : 'delete'}

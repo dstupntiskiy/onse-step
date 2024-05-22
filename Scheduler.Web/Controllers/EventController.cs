@@ -16,6 +16,12 @@ public class EventController(IMediator mediator) : ControllerBase
         return await mediator.Send(new GetEventQuery(id));
     }
 
+    [HttpGet("GetAll")]
+    public async Task<EventDto[]> GetAll()
+    {
+        return await mediator.Send(new GetAllEventsQuery());
+    }
+
     [HttpPost]
     public async Task<List<EventDto>> Save(Command cmd)
     {
