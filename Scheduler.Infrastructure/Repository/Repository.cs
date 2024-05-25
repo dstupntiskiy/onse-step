@@ -47,9 +47,21 @@ public class Repository<TEntity>(ISession session) : IRepository<TEntity>
         return entity;
     }
 
-    public Task UpdateAsync(TEntity entity)
+    public async Task<TEntity> UpdateAsync(TEntity entity, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        using var transaction = session.BeginTransaction();
+        TEntity mergedEntity;
+        try
+        {
+            mergedEntity = await session.MergeAsync(entity, cancellationToken);
+            await transaction.CommitAsync(cancellationToken);
+        }
+        catch (Exception)
+        {
+            await transaction.RollbackAsync(cancellationToken);
+            throw;
+        }
+        return mergedEntity;
     }
 
     public async Task DeleteAsync(Guid id, CancellationToken cancellationToken)

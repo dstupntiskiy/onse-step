@@ -1,0 +1,11 @@
+.color-grid{
+    display: grid;
+    padding: 2px;
+    grid-template-columns: repeat(6, 1fr);
+    border: 2px solid lightgrey;
+    .color{
+        width: 24px;
+        height: 24px;
+        cursor: pointer;
+    }
+}

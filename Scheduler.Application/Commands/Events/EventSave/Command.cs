@@ -12,6 +12,7 @@ public class Command(
     string? color,
     Guid? groupId,
     bool isRecurrent,
+    Guid? recurrenceId,
     DateTime? recurrencyStartDate,
     DateTime? recurrencyEndDate,
     DateOnly[]? exceptDates,
@@ -24,6 +25,8 @@ public class Command(
     public string? Color { get; } = color;
     public Guid? GroupId { get; } = groupId;
     public bool IsRecurrent { get; } = isRecurrent;
+
+    public Guid? RecurrenceId { get; } = recurrenceId;
     public DateTime? RecurrencyStartDate { get; } = recurrencyStartDate;
     public DateTime? RecurrencyEndDate { get; } = recurrencyEndDate;
     public DateOnly[]? ExceptDates { get; } = exceptDates;  

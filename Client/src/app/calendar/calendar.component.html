@@ -6,7 +6,9 @@
       <app-event
       [title]="arg.event.title"
       [start]="arg.event.start"
-      [end]="arg.event.end"></app-event>
+      [end]="arg.event.end"
+      [borderColor]="arg.event.extendedProps['color'] ?? 'teal'"
+      [groupName]="arg.event.extendedProps['groupName']"></app-event>
     </ng-template>
   </full-calendar>
 </div>

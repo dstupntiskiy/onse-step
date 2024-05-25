@@ -9,7 +9,7 @@ namespace Scheduler.Application.Commands.Events.EventSave;
 
 public class CommandHandler(
     IRepository<Event> eventRepository, 
-    IRepository<Entities.Recurrence> recurrencyRepository,
+    IRepository<Recurrence> recurrencyRepository,
     IRepository<Group> groupRepository,
     IMapper mapper)
     : IRequestHandler<Command, List<EventDto>>
@@ -19,49 +19,41 @@ public class CommandHandler(
         
             List<EventDto> events = new List<EventDto>();
             var group = await groupRepository.GetById(request.GroupId ?? Guid.Empty);
+            var recurrence = await recurrencyRepository.GetById(request.RecurrenceId ?? Guid.Empty);
             if (!request.IsRecurrent)
             {
-                var ev = await this.CreateEvent(request.Name, request.StartDateTime, request.EndDateTime, request.Color,
-                    null, group: group);
+                var ev = await this.CreateEvent(request.Id, request.Name, request.StartDateTime, request.EndDateTime, request.Color,
+                    recurrence, group: group);
                 events.Add(ev);
             }
             else
             {
-                List<DateTime> eventStartDates = new List<DateTime>();
-                var currentEventStartTime = request.RecurrencyStartDate.Value.Date + request.StartDateTime.TimeOfDay;
-                var duration = request.EndDateTime - request.StartDateTime;
-
-                while (currentEventStartTime <= request.RecurrencyEndDate)
+                if (recurrence == null)
                 {
-                    if (Array.Exists(request.DaysOfWeek, day => day == currentEventStartTime.DayOfWeek))
-                    {
-                        var currenEventEndTime = currentEventStartTime + duration;
-                        if (this.IsOverlap(currentEventStartTime, currenEventEndTime))
-                        {
-                            throw new ValidationException(
-                                $"В период {currentEventStartTime} - {currenEventEndTime} уже существует другое событие");
-                        }
-                        eventStartDates.Add(currentEventStartTime);
-                    }
-                    
-                    currentEventStartTime = currentEventStartTime.AddDays(1);
+                    events = await this.CreateRecurrentEvents(request, group, cancellationToken);
                 }
-                
-                var recurrence = new Recurrence()
+                else
                 {
-                    DaysOfWeek = request.DaysOfWeek,
-                    StartDate = request.RecurrencyStartDate,
-                    EndDate = request.RecurrencyEndDate,
-                    ExceptDates = request.ExceptDates
-                };
-                var createdRecurrence = await recurrencyRepository.AddAsync(recurrence);
-
-                foreach (var start in eventStartDates)
-                {
-                    var endDateTime = start + duration;
-                    var ev = await this.CreateEvent(request.Name, start, endDateTime, request.Color,
-                        createdRecurrence, group);
-                    events.Add(ev);
+                    var recurEvents = eventRepository.Query().Where(x => x.Recurrence.Id == recurrence.Id).ToList();
+                    foreach (var ev in recurEvents)
+                    {
+                        var duration = request.EndDateTime - request.StartDateTime;
+                        var startTime = ev.StartDateTime.Date + request.StartDateTime.TimeOfDay;
+                        var endTime = startTime + duration;
+                        if (this.IsOverlap(startTime, endTime, ev.Id))
+                        {
+                            throw new ValidationException($"В период {startTime} - {endTime} уже существует другое событие");
+                        }
+                    }
+                    foreach (var ev in recurEvents)
+                    {
+                        var duration = request.EndDateTime - request.StartDateTime;
+                        var startTime = ev.StartDateTime.Date + request.StartDateTime.TimeOfDay;
+                        var endTime = startTime + duration;
+                        var createdEvent = await CreateEvent(ev.Id, request.Name, startTime,
+                            endTime, request.Color, recurrence, group);
+                        events.Add(createdEvent);
+                    }
                 }
             }
 
@@ -69,6 +61,7 @@ public class CommandHandler(
     }
 
     private async Task<EventDto> CreateEvent(
+        Guid id,
         string name,
         DateTime startDateTime,
         DateTime endDateTime,
@@ -79,12 +72,13 @@ public class CommandHandler(
         if (endDateTime < startDateTime)
             throw new ValidationException($"Конец события {endDateTime} меньше, чем начало {startDateTime}");
         
-        if (this.IsOverlap(startDateTime, endDateTime))
+        if (this.IsOverlap(startDateTime, endDateTime, id))
         {
             throw new ValidationException($"В период {startDateTime} - {endDateTime} уже существует другое событие");
         }
         var ev = new Event()
         {
+            Id = id,
             Name = name,
             StartDateTime = startDateTime,
             EndDateTime = endDateTime,
@@ -92,14 +86,69 @@ public class CommandHandler(
             Color = color,
             Recurrence = recurrence
         };
-        var createdEvent = await eventRepository.AddAsync(ev);
+        var existingEvent = await eventRepository.GetById(id);
+        Event createdEvent;
+        if (existingEvent == null)
+        {
+            createdEvent = await eventRepository.AddAsync(ev);
+        }
+        else
+        {
+            createdEvent = await eventRepository.UpdateAsync(ev, CancellationToken.None);
+
+        }
         return mapper.Map<EventDto>(createdEvent);
     }
 
-    private bool IsOverlap(DateTime newStart, DateTime newEnd)
+    private bool IsOverlap(DateTime newStart, DateTime newEnd, Guid currentEventId)
     {
         return eventRepository.Query().Any(x =>
-            (newStart <= x.StartDateTime && newEnd > x.StartDateTime)
-            || (newStart < x.EndDateTime && newStart >= x.StartDateTime));
+            ((newStart <= x.StartDateTime && newEnd > x.StartDateTime)
+            || (newStart < x.EndDateTime && newStart >= x.StartDateTime))
+            && x.Id != currentEventId);
+    }
+
+    private async Task<List<EventDto>> CreateRecurrentEvents(Command request, Group group, CancellationToken cancellationToken)
+    {
+        List<EventDto> events = new List<EventDto>();
+        List<DateTime> eventStartDates = new List<DateTime>();
+        
+        var currentEventStartTime = request.RecurrencyStartDate.Value.Date.AddDays(1) + request.StartDateTime.TimeOfDay;// need to remove offset
+        var duration = request.EndDateTime - request.StartDateTime;
+
+        while (currentEventStartTime <= request.RecurrencyEndDate.Value.AddDays(1))// need to remove offset
+        {
+            if (Array.Exists(request.DaysOfWeek, day => day == currentEventStartTime.DayOfWeek))
+            {
+                var currenEventEndTime = currentEventStartTime + duration;
+                if (this.IsOverlap(currentEventStartTime, currenEventEndTime, request.Id))
+                {
+                    throw new ValidationException(
+                        $"В период {currentEventStartTime} - {currenEventEndTime} уже существует другое событие");
+                }
+                eventStartDates.Add(currentEventStartTime);
+            }
+            
+            currentEventStartTime = currentEventStartTime.AddDays(1);
+        }
+        
+        var recurrence = new Recurrence()
+            {
+                DaysOfWeek = request.DaysOfWeek,
+                StartDate = request.RecurrencyStartDate,
+                EndDate = request.RecurrencyEndDate,
+                ExceptDates = request.ExceptDates
+            };
+        recurrence = await recurrencyRepository.AddAsync(recurrence);
+
+        foreach (var start in eventStartDates)
+        {
+            var endDateTime = start + duration;
+            var ev = await this.CreateEvent(request.Id, request.Name, start, endDateTime, request.Color,
+                recurrence, group);
+            events.Add(ev);
+        }
+
+        return events;
     }
 }

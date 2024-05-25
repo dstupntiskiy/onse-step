@@ -40,8 +40,11 @@ export abstract class BaseHttpService {
         );
   }
 
-  protected delete<TResult>(method: string, options?: IAngularHttpRequestOptions): Observable<TResult> {
-      return this.http.delete<TResult>(`${this.base}/${this.route}/${method}`, options)
+  protected delete<TResult, TData>(method: string, id?: TData, options?: IAngularHttpRequestOptions): Observable<TResult> {
+    if(!options){
+      options = { responseType: 'json'}
+    }  
+    return this.http.delete<TResult>(`${this.base}/${this.route}/${method}/${id}`, options)
         .pipe(
           catchError(this.handleError.bind(this))
         );

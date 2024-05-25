@@ -84,17 +84,16 @@ export class CalendarComponent {
     dialogRef.afterClosed().subscribe((result: EventResult) => {
       if (result && result.events){
           result.events?.forEach(ev => {
-            var event = this.getEvent(ev)
+            var event = this.getEvent(ev as EventModel)
             this.calendarApi.addEvent(event);
           })
         
-        this.snackBarService.success('Событие ' + result.events[0]?.name + ' создано')
+        this.snackBarService.success('Событие создано')
       }
     })
   };
 
   handleEventClick(info: EventClickArg){
-    console.log(info.event)
     const dialogRef = this.dialog.open(EventDialogComponent, {
       data: { title: 'Событие', 
           event: {
@@ -103,6 +102,7 @@ export class CalendarComponent {
             endDateTime: info.event.end,
             name: info.event.title,
             group: { id: info.event.extendedProps['groupId'] },
+            color: info.event.extendedProps['color'],
             recurrence: {
               startDate: info.event.extendedProps['recurrencyStartDate'],
               endDate: info.event.extendedProps['recurrencyEndDate'],
@@ -115,25 +115,31 @@ export class CalendarComponent {
      }); 
 
     dialogRef.afterClosed().subscribe((result: EventResult) => {
-      const event = this.calendarApi.getEventById(info.event.id);
+      var event = this.calendarApi.getEventById(info.event.id);
       if(event){
         if (result?.action == 'save' && result.events){
-          event.remove()
-          var ev = result.events[0]
-          var newEvent = this.getEvent(ev)
-          this.calendarApi.addEvent(newEvent);
+          result.events.forEach((ev) => {
+            var e = ev as EventModel;
+            event = this.calendarApi.getEventById(e.id);
+            event?.remove()
+            this.calendarApi.addEvent(this.getEvent(e));
+          });
           this.calendarApi.refetchEvents();
-          this.snackBarService.success('Событие ' + ev.name + ' обновлено')
+          this.calendarApi.refetchEvents();
+          this.snackBarService.success('Событие обновлено')
         }
         if (result?.action == 'delete'){
-          event.remove()
+          result.events?.forEach((result) => {
+            var eventId = result as string
+            var eventToDelete = this.calendarApi.getEventById(eventId);
+            eventToDelete?.remove();
+          })
+          this.calendarApi.refetchEvents();
         }
         if (result?.action == 'deleteOne' && result.events){
-          var ev = result.events[0]
           event.remove()
-          this.calendarApi.addEvent(this.getEvent(ev));
           this.calendarApi.refetchEvents();
-          this.snackBarService.success('Событие ' + ev.name + ' обновлено')
+          this.snackBarService.success('Событие  удалено')
         }
       }
     });
@@ -159,14 +165,16 @@ export class CalendarComponent {
     event.title = eventData.name
     event.extendedProps =  { 
       groupId: eventData.group?.id,
+      groupName: eventData.group?.name,
       exceptDates: eventData.recurrence?.exceptdates,
       recurrencyStartDate: eventData.recurrence?.startDate,
       recurrencyEndDate: eventData.recurrence?.endDate,
       daysOfWeek: eventData.recurrence?.daysOfWeek, 
-      recurrenceId: eventData.recurrence?.id
+      recurrenceId: eventData.recurrence?.id,
+      color: eventData.color
     }
     event.id = eventData.id
-    event.color = eventData.color
+    event.color = 'white'
     event.start = eventData.startDateTime
     event.end = eventData.endDateTime
 

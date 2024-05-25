@@ -6,9 +6,20 @@
         </div>
     </div>
     <form [formGroup]="eventForm">
-    <mat-form-field class="input event-name">
-        <input matInput placeholder="Название" formControlName="name">
-    </mat-form-field>
+    <div class="fields-row">
+        <mat-form-field class="input event-name">
+            <input matInput placeholder="Название" formControlName="name">
+        </mat-form-field>
+        <button (click)="isColorSelectorOpen = !isColorSelectorOpen" class="color-selector" 
+            [style.background-color]="color"
+            cdkOverlayOrigin #trigger="cdkOverlayOrigin"></button>
+        <ng-template
+            cdkConnectedOverlay
+            [cdkConnectedOverlayOrigin]="trigger"
+            [cdkConnectedOverlayOpen]="isColorSelectorOpen">
+            <app-palette (onColorSelect)="colorSelected($event)"></app-palette>
+        </ng-template>
+    </div>
     <div class="fields-row">
         <mat-checkbox formControlName="isRecur" (change)="changeIsRecur($event.checked)">
             Еженедельное событие

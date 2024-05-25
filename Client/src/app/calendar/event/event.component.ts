@@ -10,10 +10,12 @@ import { getFormattedTime } from '../../shared/helpers/time-helper';
 })
 export class EventComponent {
   @Input() title: string;
+  borderColor = input('teal')
   start = input('', {
     transform: (value: Date) => getFormattedTime(value)
   });
   end = input('', {
     transform: (value: Date) => getFormattedTime(value)
   });
+  groupName = input('');
 }

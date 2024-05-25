@@ -17,6 +17,7 @@ export interface EventRequestModel{
   recurrencyEndDate?: Date;
   exceptDates?: string[];
   daysOfWeek?: number[]; 
+  recurrenceId?: string;
 }
 @Injectable({
   providedIn: 'root'
@@ -37,6 +38,10 @@ export class EventService extends BaseHttpService{
     var eventRequest = this.getEventRequestModel(event)
     return this.post<EventModel[]>('', eventRequest);
    }
+
+   deleteEvent(event: EventModel):Observable<void>{
+    return this.delete('', event.id)
+   }
    
   private getEventRequestModel(event: EventModel): EventRequestModel{
     const eventRequestModel: EventRequestModel = {
@@ -50,7 +55,8 @@ export class EventService extends BaseHttpService{
       exceptDates: event.recurrence?.exceptdates,
       groupId: event.group?.id,
       recurrencyStartDate: event.recurrence?.startDate,
-      recurrencyEndDate: event.recurrence?.endDate
+      recurrencyEndDate: event.recurrence?.endDate,
+      recurrenceId: event.recurrence?.id
     }
     return eventRequestModel; 
   }   
