@@ -53,11 +53,13 @@
         width: 100%
     }
 
-    .color-selector{
-        width: 56px;
-        height: 56px;
-        border-radius: 4px;
-        border: 0;
-        cursor: pointer;
+    .color-wrapper{
+        .color-selector{
+            width: 56px;
+            height: 56px;
+            border-radius: 4px;
+            border: 0;
+            cursor: pointer;
+        }
     }
 }
