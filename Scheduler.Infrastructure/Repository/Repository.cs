@@ -33,7 +33,7 @@ public class Repository<TEntity>(ISession session) : IRepository<TEntity>
             }
             else
             {
-                await session.SaveAsync(entity, entity.Id);
+                await session.SaveOrUpdateAsync(entity);
             }
 
             await transaction.CommitAsync();

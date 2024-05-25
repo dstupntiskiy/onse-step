@@ -1,7 +1,6 @@
 export class Client{
     id: string;
-    firstName: string;
-    lastName: string;
+    name: string;
     phone: string;
-    socialMedia: string;
+    socialMediaLink: string;
 }

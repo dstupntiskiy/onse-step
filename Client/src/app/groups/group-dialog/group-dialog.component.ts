@@ -1,4 +1,4 @@
-import { Component, Inject, inject } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
@@ -7,7 +7,7 @@ import { MatInputModule } from '@angular/material/input';
 import { Group } from '../../shared/models/group-model';
 import { GroupService } from '../group.service';
 import { Guid } from 'typescript-guid';
-import { catchError, finalize, timeout } from 'rxjs';
+import { finalize } from 'rxjs';
 import { SnackBarService } from '../../services/snack-bar.service';
 import { SpinnerService } from '../../shared/spinner/spinner.service';
 
@@ -38,7 +38,6 @@ export class GroupDialogComponent {
     private dialogRef: MatDialogRef<GroupDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data : { title : string, group: Group }, 
     private groupService: GroupService,
-    private snackbarService: SnackBarService,
     private spinnerService: SpinnerService
   ){
   }

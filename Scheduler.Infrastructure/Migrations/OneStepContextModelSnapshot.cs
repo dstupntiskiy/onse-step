@@ -36,11 +36,9 @@ namespace Scheduler.Infrastructure.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Phone")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("SocialMediaLink")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");

@@ -1,1 +1,23 @@
-<p>clients works!</p>
+<div class="clients-content">
+    <button mat-stroked-button (click)="handleAddClientClick()">Добавить</button>
+    <table mat-table [dataSource]="clients">
+        <ng-container matColumnDef="id">
+            <th mat-header-cell *matHeaderCellDef>ID</th>
+            <td mat-cell *matCellDef="let element">{{element.id}}</td>
+        </ng-container>
+        <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>Имя</th>
+            <td mat-cell *matCellDef="let element">{{element.name}}</td>
+        </ng-container>
+        <ng-container matColumnDef="phone">
+            <th mat-header-cell *matHeaderCellDef>Телефон</th>
+            <td mat-cell *matCellDef="let element">{{element.phone}}</td>
+        </ng-container>
+        <ng-container matColumnDef="socialMediaLink">
+            <th mat-header-cell *matHeaderCellDef>Соц сеть</th>
+            <td mat-cell *matCellDef="let element">{{element.socialMediaLink}}</td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+</div>

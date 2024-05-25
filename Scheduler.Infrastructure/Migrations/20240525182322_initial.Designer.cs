@@ -12,7 +12,7 @@ using Scheduler.Infrastructure.Data;
 namespace Scheduler.Infrastructure.Migrations
 {
     [DbContext(typeof(OneStepContext))]
-    [Migration("20240525171934_initial")]
+    [Migration("20240525182322_initial")]
     partial class initial
     {
         /// <inheritdoc />
@@ -39,11 +39,9 @@ namespace Scheduler.Infrastructure.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Phone")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("SocialMediaLink")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
