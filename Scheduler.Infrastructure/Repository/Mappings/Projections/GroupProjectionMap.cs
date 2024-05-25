@@ -7,7 +7,7 @@ public class GroupProjectionMap : BaseEntityMap<GroupProjection>
 {
     public GroupProjectionMap()
     {
-        this.Table(nameof(Group).ToLower());
+        this.Table(nameof(Application.Entities.Group).ToLower());
         this.Map(x => x.Name);
     }
 }

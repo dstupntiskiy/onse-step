@@ -6,15 +6,14 @@ public class EventMap: AuditableEntityMap<Event>
 {
     public EventMap()
     {
-        this.Map(x => x.Color);
-        this.Map(x => x.Name);
-        this.Map(x => x.EndDateTime);
-        this.Map(x => x.StartDateTime);
-        this.References(x => x.Group)
+        this.Map(x => x.Color).Column("`Color`");
+        this.Map(x => x.Name).Column("`Name`");
+        this.Map(x => x.EndDateTime).Column("`EndDateTime`");
+        this.Map(x => x.StartDateTime).Column("`StartDateTime`");
+        this.References(x => x.Group).Column("`GroupId`")
             .NotFound.Ignore()
-            .Column($"{nameof(Group).ToLower()}id");
-        this.References(x => x.Recurrence)
-            .NotFound.Ignore()
-            .Column($"{nameof(Recurrence)}id");
+            .Nullable();
+        this.References(x => x.Recurrence).Column("`RecurrenceId`")
+            .NotFound.Ignore();
     }    
 }

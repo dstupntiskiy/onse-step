@@ -43,6 +43,7 @@ public class Startup
         services.AddTransient<IRepository<Recurrence>, Repository<Recurrence>>();
         services.AddTransient<IRepository<Group>, Repository<Group>>();
         services.AddTransient<IRepository<Event>, Repository<Event>>();
+        services.AddTransient<IRepository<Client>, Repository<Client>>();
         AppContext.SetSwitch("System.Runtime.Serialization.EnableUnsafeBinaryFormatterSerialization", true);
     }
 

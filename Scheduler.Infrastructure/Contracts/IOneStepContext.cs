@@ -8,5 +8,6 @@ public interface IOneStepContext
     DbSet<Group> Group { get; set; }
     DbSet<Event> Event { get; set; }
     DbSet<Recurrence> Recurrence { get; set; }
+    DbSet<Client> Client { get; set; }
     Task<int> SaveChanges();
 }

@@ -7,6 +7,6 @@ public class AuditableEntityMap<TEntity> : BaseEntityMap<TEntity>
 {
     protected AuditableEntityMap()
     {
-        this.Map(x => x.CreateDate);
+        this.Map(x => x.CreateDate).Column("\"CreateDate\"");
     }
 }
