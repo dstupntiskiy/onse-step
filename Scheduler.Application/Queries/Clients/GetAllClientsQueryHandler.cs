@@ -10,7 +10,7 @@ public class GetAllClientsQueryHandler(IMapper mapper, IRepository<Client> clien
 {
     public async Task<List<ClientDto>> Handle(GetAllClientsQuery request, CancellationToken cancellationToken)
     {
-        return mapper.Map<List<ClientDto>>(await clientRepository.GetAll());
+        return mapper.Map<List<ClientDto>>(await clientRepository.GetAll()).OrderByDescending(x => x.CreateDate).ToList();
     }
     
 }

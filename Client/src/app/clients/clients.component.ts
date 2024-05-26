@@ -5,13 +5,15 @@ import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { ClientDialogService } from './client-dialog/client-dialog.service';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-clients',
   standalone: true,
   imports: [
     MatTableModule,
-    MatButtonModule
+    MatButtonModule,
+    DatePipe
   ],
   providers:[
     {provide: MatDialogRef,
@@ -29,7 +31,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 })
 export class ClientsComponent {
   public clients: Client[]
-  public displayedColumns: string[] = ['id', 'name', 'phone', 'socialMediaLink']
+  public displayedColumns: string[] = ['createDate', 'name', 'phone', 'socialMediaLink']
   
 
   constructor(private clientService: ClientService,
@@ -48,9 +50,21 @@ export class ClientsComponent {
     .afterClosed().subscribe((result: Client) => {
       if(result){
         const newData = [...this.clients]
-        newData.push(result)
+        newData.unshift(result)
         this.clients = newData;
       }
     })
+  }
+
+  handleRowClick(row: Client){
+
+    this.clientDialogService.showClientDialog(row.name, row)
+      .afterClosed().subscribe((result: Client) =>{
+        if(result){
+          var index = this.clients.findIndex(x => x.id === row.id);
+          this.clients[index] = result;
+          this.clients = Object.assign([], this.clients);
+        }
+      })
   }
 }

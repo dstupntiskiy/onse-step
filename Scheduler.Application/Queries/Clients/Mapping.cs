@@ -11,6 +11,8 @@ public class Mapping : Profile
         this.CreateMap<Client, ClientDto>()
             .ForMember(x => x.Name, y => y.MapFrom(z => z.Name))
             .ForMember(x => x.Phone, y => y.MapFrom(z => z.Phone))
-            .ForMember(x => x.SocialMediaLink, y => y.MapFrom(z => z.SocialMediaLink));
+            .ForMember(x => x.SocialMediaLink, y => y.MapFrom(z => z.SocialMediaLink))
+            .ForMember(x => x.CreateDate, y=> y.MapFrom(z=> z.CreateDate));
+
     }
 }

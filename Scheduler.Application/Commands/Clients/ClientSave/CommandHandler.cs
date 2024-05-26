@@ -10,13 +10,13 @@ public class CommandHandler(IMapper mapper, IRepository<Client> clientRepository
 {
     public async Task<ClientDto> Handle(Command request, CancellationToken cancellationToken)
     {
-        var client = new Client()
-        {
-            Id = request.Id,
-            Name = request.Name,
-            SocialMediaLink = request.SocialMediaLink,
-            Phone = request.Phone
-        };
+        var client = await clientRepository.GetById(request.Id);
+        client = client == null ? new Client() : client;
+
+        client.Id = request.Id;
+        client.Name = request.Name;
+        client.SocialMediaLink = request.SocialMediaLink;
+        client.Phone = request.Phone;
 
         return mapper.Map<ClientDto>(await clientRepository.AddAsync(client));
     }

@@ -1,0 +1,9 @@
+@mixin tr-hover
+{
+    table {
+       tr:hover {
+            background-color: #CEEAF7;
+            cursor: pointer;
+       }
+    }
+}

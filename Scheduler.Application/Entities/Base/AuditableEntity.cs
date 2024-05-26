@@ -6,6 +6,6 @@ public class AuditableEntity : BaseEntity
 
     public virtual void MarkNew()
     {
-        this.CreateDate = DateTime.Now;
+        this.CreateDate = this.Id == Guid.Empty ? DateTime.Now : this.CreateDate;
     }
 }
