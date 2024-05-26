@@ -2,9 +2,9 @@ using Scheduler.Application.Entities;
 
 namespace Scheduler.Infrastructure.Repository.Mappings;
 
-public class Group : AuditableEntityMap<Application.Entities.Group>
+public class GroupMap : AuditableEntityMap<Application.Entities.Group>
 {
-    public Group()
+    public GroupMap()
     {
         Table("\"Group\"");
         

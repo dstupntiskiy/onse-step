@@ -8,6 +8,7 @@
     <form [formGroup]="eventForm">
     <div class="fields-row">
         <mat-form-field class="input event-name">
+            <mat-label>Название</mat-label>
             <input matInput placeholder="Название" formControlName="name">
         </mat-form-field>
         <div class="color-wrapper">
@@ -23,6 +24,7 @@
         </div>
     </div>
     <div class="fields-row">
+        <mat-label>Еженедельное событие</mat-label>
         <mat-checkbox formControlName="isRecur" (change)="changeIsRecur($event.checked)">
             Еженедельное событие
         </mat-checkbox>

@@ -22,7 +22,7 @@ export abstract class BaseHttpService {
     private snackbarService: SnackBarService
   ) { }
 
-  protected get<TResult>(method: string, options?: IAngularHttpRequestOptions) : Observable<TResult>{
+  protected get<TResult, TData = {}>(method: string, options?: IAngularHttpRequestOptions) : Observable<TResult>{
     return this.http.get<TResult>(`${this.base}/${this.route}/${method}`, options)
       .pipe(
         catchError(this.handleError.bind(this))

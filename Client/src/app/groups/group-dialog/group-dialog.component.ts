@@ -10,6 +10,7 @@ import { Guid } from 'typescript-guid';
 import { finalize } from 'rxjs';
 import { SnackBarService } from '../../services/snack-bar.service';
 import { SpinnerService } from '../../shared/spinner/spinner.service';
+import { GroupMembersComponent } from '../group-members/group-members.component';
 
 @Component({
   selector: 'app-group-dialog',
@@ -18,7 +19,8 @@ import { SpinnerService } from '../../shared/spinner/spinner.service';
     MatInputModule,
     MatButtonModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    GroupMembersComponent
   ],
   providers:[
     GroupService,
@@ -45,7 +47,7 @@ export class GroupDialogComponent {
   ngOnInit(){
     this.form = this.formBuilder.group({
       name: new FormControl(null, [Validators.required]),
-      style: new FormControl(null, [Validators.required])
+      style: new FormControl(null)
     })
 
     this.id = this.data.group?.id;

@@ -53,4 +53,15 @@ export class GroupsComponent {
     }});
   }
 
+  handleRowClick(row: Group){
+    this.groupDialogService.showGroupDialog(row.name, row)
+      .afterClosed().subscribe((result: Group) =>{
+        if(result){
+          var index = this.dataSource.findIndex(x => x.id === row.id)
+          this.dataSource[index] = result;
+          this.dataSource = Object.assign([], this.dataSource);
+        }
+      })
+  }
+
 }

@@ -105,6 +105,30 @@ namespace Scheduler.Infrastructure.Migrations
                     b.ToTable("Group");
                 });
 
+            modelBuilder.Entity("Scheduler.Application.Entities.GroupMemberLink", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ClientId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("GroupId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClientId");
+
+                    b.HasIndex("GroupId");
+
+                    b.ToTable("GroupMemberLink");
+                });
+
             modelBuilder.Entity("Scheduler.Application.Entities.Recurrence", b =>
                 {
                     b.Property<Guid>("Id")
@@ -144,6 +168,25 @@ namespace Scheduler.Infrastructure.Migrations
                     b.Navigation("Group");
 
                     b.Navigation("Recurrence");
+                });
+
+            modelBuilder.Entity("Scheduler.Application.Entities.GroupMemberLink", b =>
+                {
+                    b.HasOne("Scheduler.Application.Entities.Client", "Client")
+                        .WithMany()
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Scheduler.Application.Entities.Group", "Group")
+                        .WithMany()
+                        .HasForeignKey("GroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Client");
+
+                    b.Navigation("Group");
                 });
 #pragma warning restore 612, 618
         }

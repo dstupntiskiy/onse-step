@@ -1,6 +1,7 @@
 using AutoMapper;
 using Scheduler.Application.Common.Dtos;
 using Scheduler.Application.Entities;
+using Scheduler.Application.Entities.Projections;
 
 namespace Scheduler.Application.Queries.Clients;
 
@@ -14,5 +15,7 @@ public class Mapping : Profile
             .ForMember(x => x.SocialMediaLink, y => y.MapFrom(z => z.SocialMediaLink))
             .ForMember(x => x.CreateDate, y=> y.MapFrom(z=> z.CreateDate));
 
+        this.CreateMap<Client, ClientProjection>()
+            .ForMember(x => x.Name, y => y.MapFrom(z => z.Name));
     }
 }

@@ -2,13 +2,16 @@
     <div class="client-dialog-content">
         <h1 mat-dialog-title>{{ data.title }}</h1>
         <mat-form-field>
-            <input matInput placeholder="Имя" formControlName="name">
+            <mat-label>Имя</mat-label>
+            <input matInput formControlName="name">
         </mat-form-field>
         <mat-form-field>
-            <input matInput placeholder="Телефон" formControlName="phone">
+            <mat-label>Телефон</mat-label>
+            <input matInput formControlName="phone">
         </mat-form-field>
         <mat-form-field>
-            <input matInput placeholder="Соц Сеть" formControlName="socialMediaLink">
+            <mat-label>Соц Сеть</mat-label>
+            <input matInput formControlName="socialMediaLink">
         </mat-form-field>
         <div class="actions">
             <button mat-button (click)="onCloseClick()">Закрыть</button>

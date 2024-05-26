@@ -4,6 +4,7 @@ using Scheduler.Application.Common.Dtos;
 using Scheduler.Application.Interfaces;
 using Scheduler.Application.Entities;
 using System.ComponentModel.DataAnnotations;
+using Scheduler.Application.Entities.Projections;
 
 namespace Scheduler.Application.Commands.Events.EventSave;
 
@@ -18,7 +19,7 @@ public class CommandHandler(
     {
         
             List<EventDto> events = new List<EventDto>();
-            var group = await groupRepository.GetById(request.GroupId ?? Guid.Empty);
+            var group = mapper.Map<Group>(await groupRepository.GetById(request.GroupId ?? Guid.Empty));
             var recurrence = await recurrencyRepository.GetById(request.RecurrenceId ?? Guid.Empty);
             if (!request.IsRecurrent)
             {
@@ -76,27 +77,18 @@ public class CommandHandler(
         {
             throw new ValidationException($"В период {startDateTime} - {endDateTime} уже существует другое событие");
         }
-        var ev = new Event()
-        {
-            Id = id,
-            Name = name,
-            StartDateTime = startDateTime,
-            EndDateTime = endDateTime,
-            Group = group,
-            Color = color,
-            Recurrence = recurrence
-        };
-        var existingEvent = await eventRepository.GetById(id);
-        Event createdEvent;
-        if (existingEvent == null)
-        {
-            createdEvent = await eventRepository.AddAsync(ev);
-        }
-        else
-        {
-            createdEvent = await eventRepository.UpdateAsync(ev, CancellationToken.None);
+        var ev = await eventRepository.GetById(id);
+        ev = ev == null ? new Event() : ev; 
+        ev.Id = id;
+        ev.Name = name;
+        ev.StartDateTime = startDateTime;
+        ev.EndDateTime = endDateTime;
+        ev.Group = group;
+        ev.Color = color;
+        ev.Recurrence = recurrence;
 
-        }
+        var createdEvent = await eventRepository.AddAsync(ev);
+
         return mapper.Map<EventDto>(createdEvent);
     }
 

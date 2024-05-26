@@ -44,6 +44,7 @@ public class Startup
         services.AddTransient<IRepository<Group>, Repository<Group>>();
         services.AddTransient<IRepository<Event>, Repository<Event>>();
         services.AddTransient<IRepository<Client>, Repository<Client>>();
+        services.AddTransient<IRepository<GroupMemberLink>, Repository<GroupMemberLink>>();
         AppContext.SetSwitch("System.Runtime.Serialization.EnableUnsafeBinaryFormatterSerialization", true);
     }
 

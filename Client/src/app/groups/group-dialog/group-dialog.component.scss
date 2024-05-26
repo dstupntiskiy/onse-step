@@ -3,7 +3,23 @@
     display: flex;
     flex-direction: column;
     gap: 16px;
-    width: 300px;
+    width: 500px;
+    
+    .field-row{
+        display: flex;
+        flex-direction: row;
+        gap: 16px;
+        justify-content: space-between;
+        width: 100%;
+
+        mat-form-field{
+            flex-grow: 1;
+        }
+    }
+
+    h3{
+        margin: 0;
+    }
 
     .actions{
         display: flex;

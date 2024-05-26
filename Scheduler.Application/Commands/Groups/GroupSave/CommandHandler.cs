@@ -11,13 +11,14 @@ namespace Scheduler.Application.Commands.Groups.GroupSave;
     {
         public async Task<GroupDto> Handle(Command request, CancellationToken cancellationToken)
         {
-            var group = new Group()
-            {
-                Name = request.Name,
-                Style = request.Style
-            };
 
-            if (groupRepository.Query().Any(x => x.Name.Equals((group.Name))))
+            var group = await groupRepository.GetById(request.Id);
+            group = group == null ? new Group() : group;
+
+            group.Name = request.Name;
+            group.Style = request.Style;
+
+            if (groupRepository.Query().Any(x => x.Name.Equals(group.Name) && x.Id != request.Id))
             {
                 throw new ValidationException($"Группа с именем {group.Name} уже существует");
             }

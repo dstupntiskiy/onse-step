@@ -1,12 +1,18 @@
 <form [formGroup]="form">
     <div class="group-dialog-content">
         <h1 mat-dialog-title>{{ data.title }}</h1>
-        <mat-form-field>
-            <input matInput placeholder="Название" formControlName="name">
-        </mat-form-field>
-        <mat-form-field>
-            <input matInput placeholder="Направление" formControlName="style">
-        </mat-form-field>
+        <div class="field-row">
+            <mat-form-field>
+                <mat-label>Название</mat-label>
+                <input matInput formControlName="name">
+            </mat-form-field>
+            <mat-form-field>
+                <mat-label>Направление</mat-label>
+                <input matInput formControlName="style">
+            </mat-form-field>
+        </div>
+        <h3>Состав группы</h3>
+        <app-group-members [group]="this.data.group"></app-group-members>
         <div class="actions">
             <button mat-button (click)="onCloseClick()">Закрыть</button>
             <button mat-raised-button color="accent" (click)="submit()">Сохранить</button>
