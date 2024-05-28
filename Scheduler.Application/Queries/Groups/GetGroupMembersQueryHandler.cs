@@ -10,16 +10,11 @@ namespace Scheduler.Application.Queries.Groups;
 public class GetGroupMembersQueryHandler(
     IMapper mapper,
     IRepository<Group> groupRepository,
-    IRepository<GroupMemberLink> groupMembersRepository) : IRequestHandler<GetGroupMembersQuery, GroupMembersDto>
+    IRepository<GroupMemberLink> groupMembersRepository) : IRequestHandler<GetGroupMembersQuery, List<GroupMemberDto>>
 {
-    public async Task<GroupMembersDto> Handle(GetGroupMembersQuery request, CancellationToken cancellationToken)
+    public async Task<List<GroupMemberDto>> Handle(GetGroupMembersQuery request, CancellationToken cancellationToken)
     {
-        var result = new GroupMembersDto();
-        result.Group = mapper.Map<GroupProjection>(await groupRepository.GetById(request.GroupId));
-
-        result.Members = mapper.Map<List<ClientProjection>>(groupMembersRepository.Query()
-            .Where(x => x.Group.Id == request.GroupId).Select(x => x.Client).ToList());
-
-        return result;
+        return mapper.Map<List<GroupMemberDto>>(groupMembersRepository.Query()
+            .Where(x => x.Group.Id == request.GroupId).ToList());
     }
 }

@@ -1,39 +1,142 @@
-import { Component, Input } from '@angular/core';
+import { Component, ComponentRef, ElementRef, Input, OutputRefSubscription, QueryList, Signal, ViewChildren, effect, viewChild, viewChildren } from '@angular/core';
 import { Group } from '../../shared/models/group-model';
 import { MatInputModule } from '@angular/material/input';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import { GroupService } from '../group.service';
+import { GroupMember } from '../../shared/models/group-members';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Client } from '../../shared/models/client-model';
-import { GroupMembers } from '../../shared/models/group-members';
-
-const MEMBERS = ['Ann', 'Glen', 'Vanya']
+import { Observable, Subscription, catchError, debounceTime, filter, finalize, map, of, switchMap } from 'rxjs';
+import { ClientService } from '../../clients/client.service';
+import { MAT_FORM_FIELD_DEFAULT_OPTIONS, MatFormFieldModule } from '@angular/material/form-field';
+import { AsyncPipe, CommonModule } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
+import { SnackBarService } from '../../services/snack-bar.service';
+import { SpinnerService } from '../../shared/spinner/spinner.service';
+import { MemberComponent } from '../../group/group-members/member/member.component';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-group-members',
   standalone: true,
   imports: [
     MatInputModule,
-    MatAutocompleteModule
+    MatAutocompleteModule,
+    MatFormFieldModule,
+    MatButtonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    AsyncPipe,
+    CommonModule,
+    MemberComponent,
+    MatIconModule
   ],
   providers:[
-    GroupService
+    GroupService,
+    {
+      provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,
+      useValue: {
+        subscriptSizing: 'dynamic'
+      }
+    }
   ],
   templateUrl: './group-members.component.html',
   styleUrl: './group-members.component.scss'
 })
 export class GroupMembersComponent {
   @Input() group: Group
-  public members: string[] = []; 
-  constructor(private groupService: GroupService){}
+  public members: GroupMember[] = []; 
+
+
+  public clientControl = new FormControl();
+  public options: Client[] = [];
+  filteredOptions: Observable<Client[]>
+  public selectedClient?: Client;
+
+  private subscriptions: OutputRefSubscription[] = []
+  
+  memberRefs: Signal<readonly MemberComponent[]> = viewChildren(MemberComponent)
+  
+  constructor(
+    private groupService: GroupService,
+    private clientService: ClientService,
+    private snackbarService: SnackBarService,
+    private spinnerService: SpinnerService
+  ){
+    effect(() =>{
+      this.subscriptions.forEach(s => s.unsubscribe());
+      this.subscriptions = [];
+
+      this.memberRefs().forEach(memberRef =>{
+        const sub = memberRef.removeMemberOutput.subscribe((groupMemberId: string) =>{
+          this.spinnerService.loadingOn();
+          this.groupService.removeClientFromGroup(groupMemberId)
+          .pipe(
+            finalize(() => this.spinnerService.loadingOff())
+          )
+          .subscribe(() =>{
+            var member = this.members.find(x=> x.id === groupMemberId) as GroupMember
+            var index = this.members.indexOf(member)
+            this.members.splice(index, 1)
+          })
+        })
+        this.subscriptions.push(sub)
+      })
+    })
+  }
 
   ngOnInit(){
-    this.groupService.getGroupMembers(this.group.id).subscribe((result: GroupMembers) =>{
+    this.filteredOptions = this.clientControl.valueChanges.pipe(
+      debounceTime(300),
+      filter(value =>{
+        if(this.selectedClient || value === ''){
+          return false
+        }
+        return true
+      }),
+      switchMap(value => this.clientService.getClientsByQuery(value).pipe(
+        catchError(error => {
+          this.snackbarService.error("Не удалось выполнить поиск");
+          return of([])
+        })
+      ))
+    )
+
+    this.groupService.getGroupMembers(this.group.id).subscribe((result: GroupMember[]) =>{
       if(result){
-        result.members?.forEach(element => {
-          this.members.push(element.name);
+        result.forEach(element => {
+          this.members.push(element);
         });
         this.members = Object.assign([], this.members);
       }
     })
+    
   }
+
+  public onOptionSelected(){
+    this.selectedClient = this.clientControl.value;
+  }
+
+  public displayFn(client: Client): string{
+    return client && client.name ? client.name : '';
+  }
+
+  public addMember(){
+    this.spinnerService.loadingOn();
+    if (this.selectedClient){
+      this.groupService.addClientToGroup(this.group.id, this.selectedClient?.id)
+        .pipe(
+          finalize(() => {
+            this.spinnerService.loadingOff()
+            this.clientControl.reset('')
+            this.selectedClient = undefined;
+            this.options = [];
+          })
+        )
+        .subscribe((result: GroupMember) =>{
+          this.members.unshift(result);
+        })
+      }
+      this.spinnerService.loadingOff()
+    }
 }

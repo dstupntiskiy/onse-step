@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Scheduler.Web")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8f14b164838dbda6d48e81e0f8a47dc05507da80")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f4e6a7a076cddaff718b8b43987cb2eca086a2a3")]
 [assembly: System.Reflection.AssemblyProductAttribute("Scheduler.Web")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Scheduler.Web")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -2,7 +2,7 @@ import { Component, Inject } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
+import { MAT_FORM_FIELD_DEFAULT_OPTIONS, MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { Group } from '../../shared/models/group-model';
 import { GroupService } from '../group.service';
@@ -25,6 +25,12 @@ import { GroupMembersComponent } from '../group-members/group-members.component'
   providers:[
     GroupService,
     SnackBarService,
+    {
+      provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,
+      useValue: {
+        subscriptSizing: 'dynamic'
+      }
+    }
   ],
   templateUrl: './group-dialog.component.html',
   styleUrl: './group-dialog.component.scss'
@@ -33,7 +39,7 @@ export class GroupDialogComponent {
   public form: FormGroup; 
   public get name() { return this.form.get('name')}
   public get style() { return this.form.get('style')}
-  public id: string = Guid.EMPTY.toString();
+  public isNew: boolean;
 
 
   constructor(private formBuilder: FormBuilder,
@@ -45,12 +51,12 @@ export class GroupDialogComponent {
   }
 
   ngOnInit(){
+    this.isNew = !this.data.group?.id 
     this.form = this.formBuilder.group({
       name: new FormControl(null, [Validators.required]),
       style: new FormControl(null)
     })
 
-    this.id = this.data.group?.id;
     this.name?.setValue(this.data.group?.name);
     this.style?.setValue(this.data.group?.style);
   }
@@ -62,7 +68,7 @@ export class GroupDialogComponent {
   submit(){
     if (this.form.valid){
       const group: Group = {
-        id: this.id,
+        id: this.data.group?.id,
         name: this.name?.value,
         style: this.style?.value
       }

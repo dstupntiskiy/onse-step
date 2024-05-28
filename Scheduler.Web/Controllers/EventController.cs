@@ -28,7 +28,7 @@ public class EventController(IMediator mediator) : ControllerBase
         return await mediator.Send(cmd);
     }
 
-    [HttpDelete("{id}")]
+    [HttpDelete]
     public async Task<IActionResult> Delete(Guid id)
     {
         var cmd = new Application.Commands.Events.EventDelete.Command(id);

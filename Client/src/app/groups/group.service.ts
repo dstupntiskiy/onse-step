@@ -4,8 +4,7 @@ import { Observable } from 'rxjs';
 import { BaseHttpService, IAngularHttpRequestOptions } from '../services/base-http.service';
 import { HttpClient } from '@angular/common/http';
 import { SnackBarService } from '../services/snack-bar.service';
-import { Client } from '../shared/models/client-model';
-import { GroupMembers } from '../shared/models/group-members';
+import { GroupMember } from '../shared/models/group-members';
 
 export interface GroupData{
   title: string
@@ -28,10 +27,26 @@ export class GroupService extends BaseHttpService{
       return this.post<Group>('', group)
     }
 
-    getGroupMembers(groupId: string): Observable<GroupMembers>{
+    getGroupMembers(groupId: string): Observable<GroupMember[]>{
       var options: IAngularHttpRequestOptions = {
         params: { groupId: groupId }
       }
-      return this.get<GroupMembers>('GetGroupMembers', options)
+      return this.get<GroupMember[]>('GetGroupMembers', options)
+    }
+
+    addClientToGroup(groupId: string, clientId: string): Observable<GroupMember>{
+      var data = {
+        groupId: groupId,
+        clientId: clientId
+      }
+
+      return this.post<GroupMember>('AddClientToGroup', data);
+    }
+    
+    removeClientFromGroup(groupMemberLinkId: string) : Observable<void>{
+        var options: IAngularHttpRequestOptions = {
+          params: { groupMemberLinkId: groupMemberLinkId}
+        }
+        return this.delete('DeleteClientFromGroup', options)
     }
 }

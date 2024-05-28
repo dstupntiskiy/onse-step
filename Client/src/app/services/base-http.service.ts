@@ -22,7 +22,7 @@ export abstract class BaseHttpService {
     private snackbarService: SnackBarService
   ) { }
 
-  protected get<TResult, TData = {}>(method: string, options?: IAngularHttpRequestOptions) : Observable<TResult>{
+  protected get<TResult>(method: string, options?: IAngularHttpRequestOptions) : Observable<TResult>{
     return this.http.get<TResult>(`${this.base}/${this.route}/${method}`, options)
       .pipe(
         catchError(this.handleError.bind(this))
@@ -40,11 +40,11 @@ export abstract class BaseHttpService {
         );
   }
 
-  protected delete<TResult, TData>(method: string, id?: TData, options?: IAngularHttpRequestOptions): Observable<TResult> {
+  protected delete<TResult>(method: string, options?: IAngularHttpRequestOptions): Observable<TResult> {
     if(!options){
       options = { responseType: 'json'}
     }  
-    return this.http.delete<TResult>(`${this.base}/${this.route}/${method}/${id}`, options)
+    return this.http.delete<TResult>(`${this.base}/${this.route}/${method}`, options)
         .pipe(
           catchError(this.handleError.bind(this))
         );

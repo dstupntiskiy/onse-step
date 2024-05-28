@@ -4,7 +4,7 @@ using Scheduler.Application.Entities.Projections;
 
 namespace Scheduler.Application.Queries.Groups;
 
-public class GetGroupMembersQuery(Guid groupId) : IRequest<GroupMembersDto>
+public class GetGroupMembersQuery(Guid groupId) : IRequest<List<GroupMemberDto>>
 {
     public Guid GroupId { get; } = groupId;
 }

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BaseHttpService } from '../../services/base-http.service';
+import { BaseHttpService, IAngularHttpRequestOptions } from '../../services/base-http.service';
 import { HttpClient } from '@angular/common/http';
 import { SnackBarService } from '../../services/snack-bar.service';
 import { Observable } from 'rxjs';
@@ -40,7 +40,10 @@ export class EventService extends BaseHttpService{
    }
 
    deleteEvent(event: EventModel):Observable<void>{
-    return this.delete('', event.id)
+    var options: IAngularHttpRequestOptions = {
+      params: {id: event.id}
+    }
+    return this.delete('', options)
    }
    
   private getEventRequestModel(event: EventModel): EventRequestModel{

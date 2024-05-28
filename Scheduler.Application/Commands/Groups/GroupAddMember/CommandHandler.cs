@@ -12,9 +12,9 @@ public class CommandHandler(
     IMapper mapper, 
     IRepository<GroupMemberLink> groupMemberRepository,
     IRepository<Group> groupRepository,
-    IRepository<Client> clientRepository) : IRequestHandler<Command, ClientProjection>
+    IRepository<Client> clientRepository) : IRequestHandler<Command, GroupMemberDto>
 {
-    public async Task<ClientProjection> Handle(Command request, CancellationToken cancellationToken)
+    public async Task<GroupMemberDto> Handle(Command request, CancellationToken cancellationToken)
     {
         if (groupMemberRepository.Query().Any(x =>
                 x.Group.Id == request.GroupId
@@ -30,7 +30,6 @@ public class CommandHandler(
             Group = group,
             Client = client
         };
-        await groupMemberRepository.AddAsync(groupMember);
-        return mapper.Map<ClientProjection>(client);
+        return mapper.Map<GroupMemberDto>(await groupMemberRepository.AddAsync(groupMember));
     }
 }

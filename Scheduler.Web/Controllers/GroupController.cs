@@ -30,13 +30,21 @@ public class GroupController(IMediator mediator) : ControllerBase
     }
 
     [HttpPost("AddClientToGroup")]
-    public async Task<ClientProjection> AddClientToGroup(Command cmd)
+    public async Task<GroupMemberDto> AddClientToGroup(Command cmd)
     {
         return await mediator.Send(cmd);
     }
 
+    [HttpDelete("DeleteClientFromGroup")]
+    public async Task<IActionResult> DeleteClientFromGroup(Guid groupMemberLinkId)
+    {
+        var cmd = new Application.Commands.Groups.GroupRemoveMember.Command(groupMemberLinkId);
+        await mediator.Send(cmd);
+        return this.Ok();
+    }
+
     [HttpGet("GetGroupMembers")]
-    public async Task<GroupMembersDto> GetGroupMembers(Guid groupId)
+    public async Task<List<GroupMemberDto>> GetGroupMembers(Guid groupId)
     {
         return await mediator.Send(new GetGroupMembersQuery(groupId));
     }

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BaseHttpService } from '../../services/base-http.service';
+import { BaseHttpService, IAngularHttpRequestOptions } from '../../services/base-http.service';
 import { HttpClient } from '@angular/common/http';
 import { SnackBarService } from '../../services/snack-bar.service';
 import { Observable } from 'rxjs';
@@ -14,6 +14,9 @@ export class RecurrenceService extends BaseHttpService {
    }
 
    deleteRecurrence(id : string): Observable<string[]>{
-    return this.delete('', id);
+    var options: IAngularHttpRequestOptions = {
+      params: { id: id}
+    }
+    return this.delete('', options);
    }
 }

@@ -1,5 +1,4 @@
 using Scheduler.Application.Entities.Base;
-using Scheduler.Application.Entities.Projections;
 
 namespace Scheduler.Application.Entities;
 

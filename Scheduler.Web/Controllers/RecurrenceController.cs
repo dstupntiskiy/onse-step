@@ -8,7 +8,7 @@ namespace Scheduler.Controllers;
 [Route("api/[controller]")]
 public class RecurrenceController(IMediator mediator) : ControllerBase
 {
-    [HttpDelete("{id}")]
+    [HttpDelete]
     public async Task<List<Guid>> Delete(Guid id)
     {
         var cmd = new Command(id);

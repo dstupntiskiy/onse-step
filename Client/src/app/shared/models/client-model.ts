@@ -3,4 +3,6 @@ export class Client{
     name: string;
     phone: string;
     socialMediaLink: string;
+
+    constructor(){}
 }

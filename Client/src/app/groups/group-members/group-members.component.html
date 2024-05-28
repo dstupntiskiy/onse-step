@@ -1,5 +1,25 @@
 <div class="members-content">
-    @for(member of members; track member){
-        <p>{{member}}</p>
-    }
+    <div class="field-row">
+        <div class="add-member">
+            <mat-form-field>
+                <input matInput [formControl]="clientControl" [matAutocomplete]="auto" placeholder="Добавить участника">
+                <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="onOptionSelected()">
+                    @for (option of filteredOptions | async; track option) {
+                    <mat-option [value]="option">{{option.name}}</mat-option>
+                    }
+                </mat-autocomplete>
+            </mat-form-field>
+            <button class="add-button" mat-icon-button (click)="addMember()" [disabled]="!selectedClient">
+                <mat-icon>add</mat-icon>    
+            </button>
+        </div>
+        @if(members.length > 0){
+            <span>Количество участников: {{members.length}}</span>
+        }
+    </div>
+    <div class="member-list">
+        @for(member of members; track member){
+            <app-member [member]="member"></app-member>
+        }
+    </div>
 </div>

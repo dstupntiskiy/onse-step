@@ -11,8 +11,10 @@
                 <input matInput formControlName="style">
             </mat-form-field>
         </div>
-        <h3>Состав группы</h3>
-        <app-group-members [group]="this.data.group"></app-group-members>
+        @if(!isNew){
+            <h3>Состав группы</h3>
+            <app-group-members [group]="this.data.group"></app-group-members>
+        }
         <div class="actions">
             <button mat-button (click)="onCloseClick()">Закрыть</button>
             <button mat-raised-button color="accent" (click)="submit()">Сохранить</button>
