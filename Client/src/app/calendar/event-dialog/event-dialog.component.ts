@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, output } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
 import { MatButtonModule } from '@angular/material/button'
 import { MatInputModule } from '@angular/material/input'
@@ -22,6 +22,9 @@ import { Guid } from 'typescript-guid';
 import {OverlayModule} from '@angular/cdk/overlay';
 import { PaletteComponent } from '../../shared/components/palette/palette.component';
 import { RecurrenceService } from '../recurrence/recurrence.service';
+import { ParticipantsDialogService } from '../participants-dialog/participants-dialog.service';
+import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
+import { Participant } from '../../shared/models/participant-model';
 
 export interface EventModel{
   id: string,
@@ -82,9 +85,16 @@ const WEEKDAYS: Weekday[] = [
   styleUrl: './event-dialog.component.scss',
   providers:[
     GroupService,
+    ParticipantsDialogService,
     provideNativeDateAdapter(),
     { provide: MAT_DATE_LOCALE, useValue: 'ru-RU' },
-    { provide: DateAdapter, useClass: CustomDateAdapter}
+    { provide: DateAdapter, useClass: CustomDateAdapter},
+    {
+      provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,
+      useValue: {
+        subscriptSizing: 'dynamic'
+      }
+    }
   ]
 })
 export class EventDialogComponent {
@@ -98,6 +108,9 @@ export class EventDialogComponent {
   pickerEnd: Date;
   color: string;
   isColorSelectorOpen: boolean = false;
+
+  groupParticipantsCount: number = 0;
+  participantsCount: number = 0;
 
   private initialEvent: EventModel;
 
@@ -119,6 +132,7 @@ export class EventDialogComponent {
     private spinnerService: SpinnerService,
     private eventService: EventService,
     private recurrenceService: RecurrenceService,
+    private participantsDialogService: ParticipantsDialogService,
     @Inject(MAT_DIALOG_DATA) public data: {title: string, event: EventModel}
   ){}
 
@@ -146,7 +160,20 @@ export class EventDialogComponent {
     .subscribe((groups: Group[]) =>{
       this.groups = groups
       this.group?.setValue(this.groups.find(x => x.id === this.data.event.group?.id))
-    });
+  });
+  if(this.data.event.group?.id !== undefined){
+    this.group?.disable();
+    this.groupService.getGroupMembersCount(this.initialEvent.group?.id as string)
+      .subscribe((result: number) =>{
+        this.groupParticipantsCount = result;
+      })
+  }
+
+  this.eventService.getParticipantsCount(this.data.event.id).subscribe(
+    (result: number) =>{
+      this.participantsCount = result;
+    }
+  );
 
   this.data.event.name ? this.name?.setValue(this.data.event.name) : ''
   this.start?.setValue(getFormattedTime(this.data.event.startDateTime))
@@ -156,7 +183,7 @@ export class EventDialogComponent {
 
   this.day = this.data.event.startDateTime.toLocaleDateString('ru-RU');
   this.isRecur?.setValue(!!this.data.event.recurrence?.startDate);
-  if (this.isRecur?.value){
+  if (this.isRecur?.value || !this.isNew){
     this.isRecur?.disable();
 
     this.recurStart?.disable();
@@ -190,7 +217,6 @@ export class EventDialogComponent {
           exceptdates: this.initialEvent.recurrence?.exceptdates,
           startDate: this.recurStart?.value,
           endDate: this.recurEnd?.value,
-          //endDate: addHours(this.recurEnd?.value, 24),
           id: this.initialEvent.recurrence?.id ?? Guid.EMPTY.toString()
         }
       }
@@ -246,6 +272,10 @@ export class EventDialogComponent {
         }
       })
     }
+  }
+
+  onParticipantsClick(){
+    this.participantsDialogService.showParticipantsDialog(this.initialEvent.id, this.initialEvent.group)
   }
 
   colorSelected(color: string){

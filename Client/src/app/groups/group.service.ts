@@ -27,6 +27,13 @@ export class GroupService extends BaseHttpService{
       return this.post<Group>('', group)
     }
 
+    getGroupMembersCount(groupId: string): Observable<number>{
+      var options: IAngularHttpRequestOptions = {
+        params: { groupId: groupId }
+      }
+      return this.get<number>('GetGroupMembersCount', options)
+    }
+
     getGroupMembers(groupId: string): Observable<GroupMember[]>{
       var options: IAngularHttpRequestOptions = {
         params: { groupId: groupId }

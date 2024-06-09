@@ -6,16 +6,14 @@ using Scheduler.Application.Interfaces;
 
 namespace Scheduler.Application.Queries.Events;
 
-public class GetEventParticipantsQueryHandler(
-    IMapper mapper,
+public class GetEventParticipantsCountQueryHandler(
     IRepository<EventParticipance> eventParticipanceRepository,
-    IRepository<Client> clientRepository) : IRequestHandler<GetEventParticipantsCountQuery, List<ClientProjection>>
+    IRepository<Client> clientRepository) : IRequestHandler<GetEventParticipantsCountQuery, int>
 {
-    public async Task<List<ClientProjection>> Handle(GetEventParticipantsCountQuery request,
+    public async Task<int> Handle(GetEventParticipantsCountQuery request,
         CancellationToken cancellationToken)
     {
-        return mapper.Map<List<ClientProjection>>(eventParticipanceRepository.Query()
-            .Where(x => x.Event.Id == request.EventId)
-            .Select(x => x.Client).ToList());
+        return eventParticipanceRepository.Query()
+            .Count(x => x.Event.Id == request.EventId);
     }
 }

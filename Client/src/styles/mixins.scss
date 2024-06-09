@@ -7,3 +7,9 @@
        }
     }
 }
+
+@mixin hover{
+    :hover{
+        background-color: #CEEAF7;
+    }
+}

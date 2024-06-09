@@ -30,5 +30,6 @@ public class OneStepContext: DbContext, IOneStepContext
     public DbSet<Event> Event { get; set; }
     public DbSet<Recurrence> Recurrence { get; set; }
     public DbSet<Client> Client { get; set; }
+    public DbSet<EventParticipance> EventParticipance { get; set; }
     public DbSet<GroupMemberLink> GroupMemberLink { get; set; }
 }

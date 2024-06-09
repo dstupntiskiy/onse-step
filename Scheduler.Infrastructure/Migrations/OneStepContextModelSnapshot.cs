@@ -28,7 +28,7 @@ namespace Scheduler.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("CreateDate")
+                    b.Property<DateTime?>("CreateDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Name")
@@ -55,7 +55,7 @@ namespace Scheduler.Infrastructure.Migrations
                     b.Property<string>("Color")
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("CreateDate")
+                    b.Property<DateTime?>("CreateDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime>("EndDateTime")
@@ -83,13 +83,37 @@ namespace Scheduler.Infrastructure.Migrations
                     b.ToTable("Event");
                 });
 
+            modelBuilder.Entity("Scheduler.Application.Entities.EventParticipance", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ClientId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("CreateDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("EventId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClientId");
+
+                    b.HasIndex("EventId");
+
+                    b.ToTable("EventParticipance");
+                });
+
             modelBuilder.Entity("Scheduler.Application.Entities.Group", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("CreateDate")
+                    b.Property<DateTime?>("CreateDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Name")
@@ -113,7 +137,7 @@ namespace Scheduler.Infrastructure.Migrations
                     b.Property<Guid>("ClientId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("CreateDate")
+                    b.Property<DateTime?>("CreateDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("GroupId")
@@ -134,7 +158,7 @@ namespace Scheduler.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("CreateDate")
+                    b.Property<DateTime?>("CreateDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("DaysOfWeekJson")
@@ -167,6 +191,25 @@ namespace Scheduler.Infrastructure.Migrations
                     b.Navigation("Group");
 
                     b.Navigation("Recurrence");
+                });
+
+            modelBuilder.Entity("Scheduler.Application.Entities.EventParticipance", b =>
+                {
+                    b.HasOne("Scheduler.Application.Entities.Client", "Client")
+                        .WithMany()
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Scheduler.Application.Entities.Event", "Event")
+                        .WithMany()
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Client");
+
+                    b.Navigation("Event");
                 });
 
             modelBuilder.Entity("Scheduler.Application.Entities.GroupMemberLink", b =>

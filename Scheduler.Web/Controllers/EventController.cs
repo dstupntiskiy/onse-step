@@ -2,6 +2,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Scheduler.Application.Commands.Events.EventSave;
 using Scheduler.Application.Common.Dtos;
+using Scheduler.Application.Entities.Projections;
 using Scheduler.Application.Queries.Events;
 
 namespace Scheduler.Controllers;
@@ -35,5 +36,33 @@ public class EventController(IMediator mediator) : ControllerBase
         await mediator.Send(cmd);
 
         return this.Ok();
+    }
+
+    [HttpPost("AddParticipant")]
+    public async Task<IActionResult> AddParticipant(Application.Commands.Events.EventParticipantAdd.Command cmd)
+    {
+        throw new Exception("T");
+        await mediator.Send(cmd);
+        return Ok();
+    }
+    
+    [HttpDelete("RemoveParticipant")]
+    public async Task<IActionResult> RemoveParticipant(Guid eventId, Guid clientId)
+    {
+        await mediator.Send(new Application.Commands.Events.EventParticipantRemove.Command(eventId, clientId));
+        return Ok();
+    }
+
+    [HttpGet("GetParticipantsCount")]
+    public async Task<int> GetParticipantsCount(Guid eventId)
+    {
+        var cmd = new GetEventParticipantsCountQuery(eventId);
+        return await mediator.Send(cmd);
+    }
+
+    [HttpGet("GetEventAttendies")]
+    public async Task<List<EventAttendenceDto>> GetEventAttendies(Guid eventId)
+    {
+        return await mediator.Send(new GetEventAttendentsQuery(eventId));
     }
 }

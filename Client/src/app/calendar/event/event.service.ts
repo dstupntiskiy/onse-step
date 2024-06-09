@@ -4,6 +4,8 @@ import { HttpClient } from '@angular/common/http';
 import { SnackBarService } from '../../services/snack-bar.service';
 import { Observable } from 'rxjs';
 import { EventModel } from '../event-dialog/event-dialog.component';
+import { Participant } from '../../shared/models/participant-model';
+import { Attendence } from '../../shared/models/attendence-model';
 
 export interface EventRequestModel{
   id: string;
@@ -19,6 +21,12 @@ export interface EventRequestModel{
   daysOfWeek?: number[]; 
   recurrenceId?: string;
 }
+
+export interface AddParticipantModel{
+  clientId: string;
+  eventId: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -45,7 +53,39 @@ export class EventService extends BaseHttpService{
     }
     return this.delete('', options)
    }
-   
+
+   getParticipantsCount(eventId: string): Observable<number>{
+    var options: IAngularHttpRequestOptions = {
+      params: {EventId: eventId}
+    }
+    return this.get<number>("GetParticipantsCount", options)
+   }
+
+   getAttendents(eventId: string): Observable<Attendence[]>{
+    var options: IAngularHttpRequestOptions = {
+      params: {EventId: eventId}
+    }
+    return this.get<Attendence[]>("GetEventAttendies", options)
+   }
+
+   addAttendy(eventId: string, clientId: string): Observable<void>{
+    var data: AddParticipantModel = {
+        eventId: eventId,
+        clientId: clientId
+      }
+    return this.post("AddParticipant", data)
+   }
+
+   removeAttendy(eventId: string, clientId: string): Observable<void>{
+    var options: IAngularHttpRequestOptions = {
+      params: {
+        eventId: eventId,
+        clientId: clientId
+      }
+    }
+    return this.delete("RemoveParticipant", options)
+   }
+
   private getEventRequestModel(event: EventModel): EventRequestModel{
     const eventRequestModel: EventRequestModel = {
       id: event.id,

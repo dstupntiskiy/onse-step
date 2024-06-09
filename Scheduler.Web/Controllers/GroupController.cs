@@ -23,6 +23,12 @@ public class GroupController(IMediator mediator) : ControllerBase
         return await mediator.Send(new GetAllGroupQuery());
     }
 
+    [HttpGet("GetGroupMembersCount")]
+    public async Task<int> GetGroupMembersCount(Guid groupId)
+    {
+        return await mediator.Send(new GetGroupMembersCountQuery(groupId));
+    }
+
     [HttpPost]
     public async Task<GroupDto> Add(Application.Commands.Groups.GroupSave.Command cmd)
     {

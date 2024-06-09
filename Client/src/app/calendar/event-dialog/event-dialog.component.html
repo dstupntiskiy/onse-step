@@ -5,7 +5,7 @@
             <span class="event-day">{{ day }}</span>
         </div>
     </div>
-    <form [formGroup]="eventForm">
+    <form [formGroup]="eventForm" class="event-dialog-content">
     <div class="fields-row">
         <mat-form-field class="input event-name">
             <mat-label>Название</mat-label>
@@ -24,7 +24,6 @@
         </div>
     </div>
     <div class="fields-row">
-        <mat-label>Еженедельное событие</mat-label>
         <mat-checkbox formControlName="isRecur" (change)="changeIsRecur($event.checked)">
             Еженедельное событие
         </mat-checkbox>
@@ -81,6 +80,11 @@
             }
         </mat-select>
     </mat-form-field>
+    @if(!isNew && !!group){
+        <div class="participants" >
+            <a (click)="onParticipantsClick()">Участники группы: {{participantsCount}}/{{ groupParticipantsCount }}</a>
+        </div>
+    }
     <div class="actions" mat-dialog-actions>
         <div class="actions-left">
             <button *ngIf="!isNew" mat-raised-button color="warn" (click)="onDelete()">Удалить</button>

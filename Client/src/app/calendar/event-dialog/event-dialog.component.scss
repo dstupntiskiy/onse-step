@@ -22,6 +22,12 @@
 
     }
 
+    .event-dialog-content{
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
     .fields-row{
         display: flex;
         justify-content: space-between;
@@ -51,6 +57,11 @@
 
     .event-group{
         width: 100%
+    }
+
+    .participants{
+        cursor: pointer;
+        color: #2A629A;
     }
 
     .color-wrapper{

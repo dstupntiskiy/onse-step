@@ -1,1 +1,10 @@
-<p>participants-dialog works!</p>
+<div class="participants-dialog">
+    <div class="participants-dialog-header">
+        <h1 mat-dialog-title>{{ data.title }}</h1>
+    </div>
+    <div class="participants-fialog-content">
+        @for(attendy of attendants; track attendy){
+            <app-participant [attendy]="attendy" [eventId]="data.eventId"></app-participant>
+        }
+    </div>
+</div>

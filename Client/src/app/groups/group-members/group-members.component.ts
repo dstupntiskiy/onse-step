@@ -1,20 +1,20 @@
-import { Component, ComponentRef, ElementRef, Input, OutputRefSubscription, QueryList, Signal, ViewChildren, effect, viewChild, viewChildren } from '@angular/core';
+import { Component,  Input, OutputRefSubscription, Signal, effect, viewChildren } from '@angular/core';
 import { Group } from '../../shared/models/group-model';
 import { MatInputModule } from '@angular/material/input';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import { GroupService } from '../group.service';
-import { GroupMember } from '../../shared/models/group-members';
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Client } from '../../shared/models/client-model';
-import { Observable, Subscription, catchError, debounceTime, filter, finalize, map, of, switchMap } from 'rxjs';
+import { Observable, catchError, debounceTime, filter, finalize, of, switchMap } from 'rxjs';
 import { ClientService } from '../../clients/client.service';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS, MatFormFieldModule } from '@angular/material/form-field';
 import { AsyncPipe, CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { SnackBarService } from '../../services/snack-bar.service';
 import { SpinnerService } from '../../shared/spinner/spinner.service';
-import { MemberComponent } from '../../group/group-members/member/member.component';
+import { MemberComponent } from './member/member.component';
 import { MatIconModule } from '@angular/material/icon';
+import { GroupMember } from '../../shared/models/group-members';
 
 @Component({
   selector: 'app-group-members',
