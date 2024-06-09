@@ -167,13 +167,10 @@ export class EventDialogComponent {
       .subscribe((result: number) =>{
         this.groupParticipantsCount = result;
       })
+    this.refetchParticipants();
   }
 
-  this.eventService.getParticipantsCount(this.data.event.id).subscribe(
-    (result: number) =>{
-      this.participantsCount = result;
-    }
-  );
+  
 
   this.data.event.name ? this.name?.setValue(this.data.event.name) : ''
   this.start?.setValue(getFormattedTime(this.data.event.startDateTime))
@@ -276,6 +273,7 @@ export class EventDialogComponent {
 
   onParticipantsClick(){
     this.participantsDialogService.showParticipantsDialog(this.initialEvent.id, this.initialEvent.group)
+      .afterClosed().subscribe(() => this.refetchParticipants())
   }
 
   colorSelected(color: string){
@@ -311,5 +309,13 @@ export class EventDialogComponent {
       form.get('weekdays')?.setErrors(error);
       return error;
       }
+  }
+
+  private refetchParticipants(){
+    this.eventService.getParticipantsCount(this.data.event.id).subscribe(
+      (result: number) =>{
+        this.participantsCount = result;
+      }
+    );
   }
 }

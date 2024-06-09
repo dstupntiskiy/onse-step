@@ -14,7 +14,7 @@ public class CommandHandler(IRepository<EventParticipance> eventParticipanceRepo
             var participance = eventParticipanceRepository.Query()
                 .Single(x => x.Event.Id == request.EventId && x.Client.Id == request.ClientId);
 
-            eventParticipanceRepository.DeleteAsync(participance.Id, cancellationToken);
+            await eventParticipanceRepository.DeleteAsync(participance.Id, cancellationToken);
         }
         catch (Exception e)
         {

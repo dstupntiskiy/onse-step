@@ -2,7 +2,7 @@
     <div class="participant">
         <p>{{ attendy().client.name }}</p>
         <p>
-            <mat-slide-toggle labelPosition="before" [checked]="attendy().isAttendant" (change)="onCheck($event)">
+            <mat-slide-toggle labelPosition="before" [formControl]="isAttendant">
                 <span class="label">Посещение</span>
             </mat-slide-toggle>
         </p>

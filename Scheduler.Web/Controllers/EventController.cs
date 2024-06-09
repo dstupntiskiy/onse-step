@@ -41,7 +41,6 @@ public class EventController(IMediator mediator) : ControllerBase
     [HttpPost("AddParticipant")]
     public async Task<IActionResult> AddParticipant(Application.Commands.Events.EventParticipantAdd.Command cmd)
     {
-        throw new Exception("T");
         await mediator.Send(cmd);
         return Ok();
     }
