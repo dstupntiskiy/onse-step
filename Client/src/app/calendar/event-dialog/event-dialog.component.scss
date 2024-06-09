@@ -55,8 +55,20 @@
         justify-content: space-between;
     }
 
+    .fields-row.group{
+        align-items: center;
+    }
+
     .event-group{
-        width: 100%
+        width: 100%;
+        position: relative;
+
+        
+    }
+
+    .edit-group-button{
+        margin: 8px;
+        cursor: pointer;
     }
 
     .participants{

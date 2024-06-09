@@ -24,7 +24,8 @@ import { PaletteComponent } from '../../shared/components/palette/palette.compon
 import { RecurrenceService } from '../recurrence/recurrence.service';
 import { ParticipantsDialogService } from '../participants-dialog/participants-dialog.service';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
-import { Participant } from '../../shared/models/participant-model';
+import { MatIconModule } from '@angular/material/icon';
+import { GroupDialogService } from '../../groups/group-dialog/group-dialog.service';
 
 export interface EventModel{
   id: string,
@@ -80,12 +81,14 @@ const WEEKDAYS: Weekday[] = [
     MatDatepickerModule,
     MatNativeDateModule,
     OverlayModule,
-    PaletteComponent ],
+    PaletteComponent,
+    MatIconModule ],
   templateUrl: './event-dialog.component.html',
   styleUrl: './event-dialog.component.scss',
   providers:[
     GroupService,
     ParticipantsDialogService,
+    GroupDialogService,
     provideNativeDateAdapter(),
     { provide: MAT_DATE_LOCALE, useValue: 'ru-RU' },
     { provide: DateAdapter, useClass: CustomDateAdapter},
@@ -133,6 +136,7 @@ export class EventDialogComponent {
     private eventService: EventService,
     private recurrenceService: RecurrenceService,
     private participantsDialogService: ParticipantsDialogService,
+    private groupDialogService: GroupDialogService,
     @Inject(MAT_DIALOG_DATA) public data: {title: string, event: EventModel}
   ){}
 
@@ -163,10 +167,7 @@ export class EventDialogComponent {
   });
   if(this.data.event.group?.id !== undefined){
     this.group?.disable();
-    this.groupService.getGroupMembersCount(this.initialEvent.group?.id as string)
-      .subscribe((result: number) =>{
-        this.groupParticipantsCount = result;
-      })
+    this.refetchGroupMembersCount();
     this.refetchParticipants();
   }
 
@@ -281,6 +282,11 @@ export class EventDialogComponent {
     this.isColorSelectorOpen = false;
   }
 
+  onEditGroupClick(){
+    this.groupDialogService.showGroupDialog(this.group?.value.name, this.group?.value)
+      .afterClosed().subscribe(() => this.refetchGroupMembersCount())
+  }
+
   private validateDates(){
     return (form: FormGroup) => {
         const start = form.get('start')?.value;
@@ -317,5 +323,12 @@ export class EventDialogComponent {
         this.participantsCount = result;
       }
     );
+  }
+
+  private refetchGroupMembersCount(){
+    this.groupService.getGroupMembersCount(this.initialEvent.group?.id as string)
+      .subscribe((result: number) =>{
+        this.groupParticipantsCount = result;
+      })
   }
 }

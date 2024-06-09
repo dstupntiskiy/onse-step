@@ -2,7 +2,8 @@ using MediatR;
 
 namespace Scheduler.Application.Commands.Groups.GroupRemoveMember;
 
-public class Command(Guid groupMemberLinkId) : IRequest
+public class Command(Guid groupId, Guid clientId) : IRequest
 {
-    public Guid GroupMemberLinkId { get; set; } = groupMemberLinkId;
+    public Guid GroupId { get; set; } = groupId;
+    public Guid ClientId { get; set; } = clientId;
 }

@@ -15,9 +15,9 @@ import { GroupMember } from '../../../shared/models/group-members';
 })
 export class MemberComponent {
  member = input<GroupMember>(new GroupMember)
- removeMemberOutput = output<string>();
+ removeMemberOutput = output<GroupMember>();
 
- removeMember(id: string){
-  this.removeMemberOutput.emit(id);
+ removeMember(member: GroupMember){
+  this.removeMemberOutput.emit(member);
  }
 }

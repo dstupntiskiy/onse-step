@@ -72,14 +72,19 @@
             </mat-select>
         </mat-form-field>
     </div>
-    <mat-form-field class="event-group">
-        <mat-label>Группа</mat-label>
-        <mat-select formControlName="group" >
-            @for (option of groups; track option){
-                <mat-option [value]="option">{{option.name}}</mat-option>
-            }
-        </mat-select>
-    </mat-form-field>
+    <div class="fields-row group">
+        <mat-form-field class="event-group">
+            <mat-label>Группа</mat-label>
+            <mat-select formControlName="group" >
+                @for (option of groups; track option){
+                    <mat-option [value]="option">{{option.name}}</mat-option>
+                }
+            </mat-select>
+        </mat-form-field>
+        @if(!isNew &&!!group?.value){
+            <mat-icon (click)="onEditGroupClick()" class="edit-group-button">edit</mat-icon>
+        }
+    </div>
     @if(!isNew && !!group){
         <div class="participants" >
             <a (click)="onParticipantsClick()">Участники группы: {{participantsCount}}/{{ groupParticipantsCount }}</a>

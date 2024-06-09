@@ -50,9 +50,12 @@ export class GroupService extends BaseHttpService{
       return this.post<GroupMember>('AddClientToGroup', data);
     }
     
-    removeClientFromGroup(groupMemberLinkId: string) : Observable<void>{
+    removeClientFromGroup(groupMember: GroupMember) : Observable<void>{
         var options: IAngularHttpRequestOptions = {
-          params: { groupMemberLinkId: groupMemberLinkId}
+          params: { 
+            groupId: groupMember.group.id,
+            clientId: groupMember.member.id
+          }
         }
         return this.delete('DeleteClientFromGroup', options)
     }

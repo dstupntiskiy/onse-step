@@ -1,8 +1,8 @@
-import { ChangeDetectorRef, Component, computed, input, model, signal } from '@angular/core';
-import {MatSlideToggleChange, MatSlideToggleModule} from '@angular/material/slide-toggle';
+import { Component, input, model } from '@angular/core';
+import { MatSlideToggleModule} from '@angular/material/slide-toggle';
 import { Attendence } from '../../shared/models/attendence-model';
 import { EventService } from '../event/event.service';
-import { catchError, finalize, of, startWith, switchMap, tap } from 'rxjs';
+import { catchError, of, switchMap } from 'rxjs';
 import { SnackBarService } from '../../services/snack-bar.service';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 
@@ -23,11 +23,9 @@ export class ParticipantComponent {
 
   isAttendant = new FormControl<boolean>(false)
 
-  private prevValue: boolean = false;
 
   constructor(private eventService: EventService,
     private snackBarService: SnackBarService,
-    private cdr: ChangeDetectorRef
   ){}
 
   ngOnInit(){

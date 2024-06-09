@@ -68,14 +68,14 @@ export class GroupMembersComponent {
       this.subscriptions = [];
 
       this.memberRefs().forEach(memberRef =>{
-        const sub = memberRef.removeMemberOutput.subscribe((groupMemberId: string) =>{
+        const sub = memberRef.removeMemberOutput.subscribe((groupMember: GroupMember) =>{
           this.spinnerService.loadingOn();
-          this.groupService.removeClientFromGroup(groupMemberId)
+          this.groupService.removeClientFromGroup(groupMember)
           .pipe(
             finalize(() => this.spinnerService.loadingOff())
           )
           .subscribe(() =>{
-            var member = this.members.find(x=> x.id === groupMemberId) as GroupMember
+            var member = this.members.find(x=> x.id === groupMember.id) as GroupMember
             var index = this.members.indexOf(member)
             this.members.splice(index, 1)
           })

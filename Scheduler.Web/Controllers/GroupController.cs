@@ -42,9 +42,9 @@ public class GroupController(IMediator mediator) : ControllerBase
     }
 
     [HttpDelete("DeleteClientFromGroup")]
-    public async Task<IActionResult> DeleteClientFromGroup(Guid groupMemberLinkId)
+    public async Task<IActionResult> DeleteClientFromGroup(Guid groupId, Guid clientId)
     {
-        var cmd = new Application.Commands.Groups.GroupRemoveMember.Command(groupMemberLinkId);
+        var cmd = new Application.Commands.Groups.GroupRemoveMember.Command(groupId, clientId);
         await mediator.Send(cmd);
         return this.Ok();
     }
