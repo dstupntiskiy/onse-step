@@ -7,7 +7,7 @@ import { MatInputModule } from '@angular/material/input';
 import { Group } from '../../shared/models/group-model';
 import { GroupService } from '../group.service';
 import { Guid } from 'typescript-guid';
-import { finalize } from 'rxjs';
+import { catchError, finalize } from 'rxjs';
 import { SnackBarService } from '../../services/snack-bar.service';
 import { SpinnerService } from '../../shared/spinner/spinner.service';
 import { GroupMembersComponent } from '../group-members/group-members.component';
@@ -75,7 +75,7 @@ export class GroupDialogComponent {
       this.spinnerService.loadingOn();
       this.groupService.saveGroup(group)
       .pipe(
-        finalize(() => this.spinnerService.loadingOff())
+        finalize(() => this.spinnerService.loadingOff()),
       )
       .subscribe(
         (result: Group) =>{

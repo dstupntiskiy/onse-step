@@ -45,7 +45,11 @@ export class DeleteDialogComponent {
     }
 
     private openConfirmationDialog(result: DeleteResult): MatDialogRef<ConfirmationDialogComponent>{
-      var confDialogRef = this.dialog.open(ConfirmationDialogComponent, {data: {message: 'Вы уверены что хотите удалить событие: ' + this.data.eventName}})
+      var confDialogRef = this.dialog.open(ConfirmationDialogComponent, 
+        {data: 
+          {
+            message: 'Вы уверены что хотите удалить событие: ' + this.data.eventName
+          }})
       confDialogRef.afterClosed().subscribe((result) => {
         if (result == true){
           var action : DeleteResult = {delete : result}

@@ -7,7 +7,6 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-
         .add-member{
             display: flex;
             gap: 16px;
@@ -17,5 +16,6 @@
     .member-list{
         max-height: 300px;
         overflow-y: scroll;
+        margin-top: 6px;
     }
 }

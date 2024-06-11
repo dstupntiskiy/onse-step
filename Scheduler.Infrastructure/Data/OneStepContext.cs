@@ -32,4 +32,5 @@ public class OneStepContext: DbContext, IOneStepContext
     public DbSet<Client> Client { get; set; }
     public DbSet<EventParticipance> EventParticipance { get; set; }
     public DbSet<GroupMemberLink> GroupMemberLink { get; set; }
+    public DbSet<GroupPayment> GroupPayment { get; set; }
 }

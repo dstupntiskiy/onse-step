@@ -2,7 +2,7 @@ using Scheduler.Application.Entities;
 
 namespace Scheduler.Infrastructure.Repository.Mappings;
 
-public class GroupMap : AuditableEntityMap<Application.Entities.Group>
+public class GroupMap : AuditableEntityMap<Group>
 {
     public GroupMap()
     {

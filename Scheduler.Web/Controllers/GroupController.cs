@@ -2,7 +2,6 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Scheduler.Application.Commands.Groups.GroupAddMember;
 using Scheduler.Application.Common.Dtos;
-using Scheduler.Application.Entities.Projections;
 using Scheduler.Application.Queries.Groups;
 
 namespace Scheduler.Controllers;

@@ -152,6 +152,31 @@ namespace Scheduler.Infrastructure.Migrations
                     b.ToTable("GroupMemberLink");
                 });
 
+            modelBuilder.Entity("Scheduler.Application.Entities.GroupPayment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("Comment")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("CreateDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("GroupMemberLinkId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GroupMemberLinkId");
+
+                    b.ToTable("GroupPayment");
+                });
+
             modelBuilder.Entity("Scheduler.Application.Entities.Recurrence", b =>
                 {
                     b.Property<Guid>("Id")
@@ -229,6 +254,17 @@ namespace Scheduler.Infrastructure.Migrations
                     b.Navigation("Client");
 
                     b.Navigation("Group");
+                });
+
+            modelBuilder.Entity("Scheduler.Application.Entities.GroupPayment", b =>
+                {
+                    b.HasOne("Scheduler.Application.Entities.GroupMemberLink", "GroupMemberLink")
+                        .WithMany()
+                        .HasForeignKey("GroupMemberLinkId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("GroupMemberLink");
                 });
 #pragma warning restore 612, 618
         }

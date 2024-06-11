@@ -1,14 +1,16 @@
 import { Component, Signal, input, output, signal } from '@angular/core';
-import { Client } from '../../../shared/models/client-model';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule} from '@angular/material/icon'
 import { GroupMember } from '../../../shared/models/group-members';
+import { PaymentComponent } from '../../../shared/components/payment/payment.component';
 
 @Component({
   selector: 'app-member',
   standalone: true,
   imports: [
-    MatButtonModule, MatIconModule
+    MatButtonModule, 
+    MatIconModule,
+    PaymentComponent
   ],
   templateUrl: './member.component.html',
   styleUrl: './member.component.scss'

@@ -7,7 +7,6 @@ using Scheduler.Infrastructure.Extentions;
 using Scheduler.Infrastructure.Repository;
 using Scheduler.Mappings;
 using Scheduler.Middleware;
-using Serilog;
 
 namespace Scheduler;
 
@@ -26,7 +25,6 @@ public class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         var appCore = typeof(BaseEntity).Assembly;
-        services.AddLogging(z => z.AddSerilog());
         services.AddDbContext<OneStepContext>(x =>
             x.UseNpgsql(this.Configuration.GetConnectionString("DefaultConnection")));
         services.AddEndpointsApiExplorer();
@@ -35,7 +33,11 @@ public class Startup
             options.CustomSchemaIds(type => type.FullName?.Replace("+", "."));
         });
         services.AddControllers(z => z.EnableEndpointRouting = false)
-            .AddJsonOptions(option => option.JsonSerializerOptions.IncludeFields = true);
+            .AddJsonOptions(option =>
+            {
+                option.JsonSerializerOptions.IncludeFields = true;
+                option.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+            });
         services.AddNHibernate(this.Configuration.GetConnectionString("DefaultConnection"));
         services.AddAutoMapper(typeof(MappingProfile));
         services.AddAutoMapper(appCore);
@@ -46,6 +48,7 @@ public class Startup
         services.AddTransient<IRepository<Client>, Repository<Client>>();
         services.AddTransient<IRepository<GroupMemberLink>, Repository<GroupMemberLink>>();
         services.AddTransient<IRepository<EventParticipance>, Repository<EventParticipance>>();
+        services.AddTransient<IRepository<GroupPayment>, Repository<GroupPayment>>();
         AppContext.SetSwitch("System.Runtime.Serialization.EnableUnsafeBinaryFormatterSerialization", true);
     }
 

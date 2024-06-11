@@ -1,14 +1,17 @@
 .participants-dialog{
     margin: 16px;
     width: 300px;
+    
+}
+.participants-dialog-content{
     gap: 16px;
     display: flex;
     flex-direction: column;
-}
-.participants-fialog-content{
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+    .attendies-list{
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
 }
 .actions{
     display: flex;

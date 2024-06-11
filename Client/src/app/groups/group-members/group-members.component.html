@@ -14,12 +14,14 @@
             </button>
         </div>
         @if(members.length > 0){
-            <span>Количество участников: {{members.length}}</span>
+            <span>Участники: {{members.length}}</span>
         }
     </div>
     <div class="member-list">
         @for(member of members; track member){
-            <app-member [member]="member"></app-member>
+            <div class="member-row">
+                <app-member [member]="member"></app-member>
+            </div>
         }
     </div>
 </div>

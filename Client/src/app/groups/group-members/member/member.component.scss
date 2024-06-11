@@ -1,9 +1,21 @@
+@import '../../../../styles/mixins.scss';
+
+.member-row:hover{
+    @include hover;
+}
 .member{
     display: flex;
     justify-content: space-between;
     align-items: center;
 
     p{
-        margin: 0 16px;
+        margin: 0;
+    }
+
+    .right-block{
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        
     }
 }

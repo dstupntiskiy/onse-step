@@ -1,13 +1,12 @@
 import { Component, Inject, input } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { Group } from '../../shared/models/group-model';
-import { GroupService } from '../../groups/group.service';
 import { SpinnerService } from '../../shared/spinner/spinner.service';
 import { finalize } from 'rxjs';
-import { ParticipantComponent } from '../participant/participant.component';
 import { EventService } from '../event/event.service';
 import { Attendence } from '../../shared/models/attendence-model';
 import { MatButtonModule } from '@angular/material/button';
+import { ParticipantComponent } from './participant/participant.component';
 
 @Component({
   selector: 'app-participants-dialog',
