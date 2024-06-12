@@ -1,0 +1,19 @@
+@import '../../../../styles/mixins.scss';
+
+.visitor-row{
+    @include hover;
+    margin: 0 6px;
+    .visitor{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        p{
+            margin: 0;
+        }
+
+        .right-block{
+
+        }
+    }
+}

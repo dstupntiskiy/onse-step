@@ -1,0 +1,22 @@
+<div class="payment-dialog">
+    <h1 mat-dialog-title>{{ data.title }}</h1>
+    <div class="payment-dialog-content">
+        <div class="fields">
+            <mat-form-field>
+                <mat-label>Сумма (RSD)</mat-label>
+                <input type="number" matInput [formControl]="amount">
+            </mat-form-field>
+            <mat-form-field>
+                <mat-label>Комментарий</mat-label>
+                <input matInput [formControl]="comment">
+            </mat-form-field>
+        </div>
+        <div class="actions">
+            <button mat-button mat-raised-button color="warn" (click)="onDelete()">Удалить</button>
+            <div class="right-buttons">
+                <button mat-button (click)="onClose()">Закрыть</button>
+                <button mat-raised-button color="accent" (click)="onSave()">Сохранить</button>
+            </div>
+        </div>
+    </div>
+</div>

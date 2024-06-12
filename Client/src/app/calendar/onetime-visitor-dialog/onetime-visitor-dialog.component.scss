@@ -1,0 +1,27 @@
+.onetime-visitors-dialog{
+    margin: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-height: 200px;
+    min-width: 250px;
+
+    .onetime-visitors-dialog-content{
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+
+        .add-client{
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .visitors-list{
+            max-height: 300px;
+            overflow-y: scroll; 
+        }
+
+    }
+}

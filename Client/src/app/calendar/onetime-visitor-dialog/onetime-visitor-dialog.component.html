@@ -1,0 +1,16 @@
+<div class="onetime-visitors-dialog">
+    <h1 mat-dialog-title>{{ data.title }}</h1>
+    <div class="onetime-visitors-dialog-content">
+        <div class="add-client">
+            <app-add-client (selectedClient$$)="onClientSelect($event)" [clearControl]="clearControlSubject"></app-add-client>
+            <button class="add-button" mat-icon-button (click)="addVisitor()" [disabled]="!selectedClient">
+                <mat-icon>add</mat-icon>    
+            </button>
+        </div>
+        <div class="visitors-list">
+            @for(visitor of onetimeVisitors; track visitor){
+                <app-onetime-visitor [visitor]="visitor">asdasd</app-onetime-visitor>
+            }
+        </div>
+    </div>
+</div>

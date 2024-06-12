@@ -1,0 +1,21 @@
+@import '../../../../styles//mixins.scss';
+
+.participant-content:hover .label{
+    visibility: visible;
+}
+.participant-content .label{
+    visibility: hidden;
+}
+.participant-content{
+    @include hover;
+    .participant{
+        padding: 12px;
+        display: flex;
+        justify-content: space-between;
+        border-radius: 4px;
+
+        p{
+            margin: 0;            
+        }
+    }
+}

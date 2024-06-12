@@ -1,0 +1,38 @@
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    margin: 0; 
+}
+
+.payment-dialog{
+    margin: 16px;
+    min-width: 400px;
+    .payment-dialog-content{
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+
+        .fields{
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+
+            input{
+                max-width: 200px;
+            }
+        }
+
+        .actions{
+            display: flex;
+            justify-content: space-between;
+
+           .right-buttons{
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+           }
+        }
+    }
+}
