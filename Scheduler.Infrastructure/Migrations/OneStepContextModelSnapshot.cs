@@ -177,6 +177,50 @@ namespace Scheduler.Infrastructure.Migrations
                     b.ToTable("GroupPayment");
                 });
 
+            modelBuilder.Entity("Scheduler.Application.Entities.OneTimeVisit", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ClientId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("CreateDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("EventId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClientId");
+
+                    b.HasIndex("EventId");
+
+                    b.ToTable("OneTimeVisit");
+                });
+
+            modelBuilder.Entity("Scheduler.Application.Entities.OneTimeVisitPayment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("Comment")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("CreateDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("OneTimeVisitPayment");
+                });
+
             modelBuilder.Entity("Scheduler.Application.Entities.Recurrence", b =>
                 {
                     b.Property<Guid>("Id")
@@ -265,6 +309,25 @@ namespace Scheduler.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("GroupMemberLink");
+                });
+
+            modelBuilder.Entity("Scheduler.Application.Entities.OneTimeVisit", b =>
+                {
+                    b.HasOne("Scheduler.Application.Entities.Client", "Client")
+                        .WithMany()
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Scheduler.Application.Entities.Event", "Event")
+                        .WithMany()
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Client");
+
+                    b.Navigation("Event");
                 });
 #pragma warning restore 612, 618
         }

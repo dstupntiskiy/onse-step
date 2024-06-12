@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Scheduler.Application.Interfaces;
 using Scheduler.Application.Entities;
 using Scheduler.Application.Entities.Base;
+using Scheduler.Extentions;
 using Scheduler.Infrastructure.Data;
 using Scheduler.Infrastructure.Extentions;
 using Scheduler.Infrastructure.Repository;
@@ -24,31 +25,11 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        var appCore = typeof(BaseEntity).Assembly;
         services.AddDbContext<OneStepContext>(x =>
-            x.UseNpgsql(this.Configuration.GetConnectionString("DefaultConnection")));
-        services.AddEndpointsApiExplorer();
-        services.AddSwaggerGen(options =>
-        {
-            options.CustomSchemaIds(type => type.FullName?.Replace("+", "."));
-        });
-        services.AddControllers(z => z.EnableEndpointRouting = false)
-            .AddJsonOptions(option =>
-            {
-                option.JsonSerializerOptions.IncludeFields = true;
-                option.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
-            });
-        services.AddNHibernate(this.Configuration.GetConnectionString("DefaultConnection"));
-        services.AddAutoMapper(typeof(MappingProfile));
-        services.AddAutoMapper(appCore);
-        services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(appCore));
-        services.AddTransient<IRepository<Recurrence>, Repository<Recurrence>>();
-        services.AddTransient<IRepository<Group>, Repository<Group>>();
-        services.AddTransient<IRepository<Event>, Repository<Event>>();
-        services.AddTransient<IRepository<Client>, Repository<Client>>();
-        services.AddTransient<IRepository<GroupMemberLink>, Repository<GroupMemberLink>>();
-        services.AddTransient<IRepository<EventParticipance>, Repository<EventParticipance>>();
-        services.AddTransient<IRepository<GroupPayment>, Repository<GroupPayment>>();
+                x.UseNpgsql(this.Configuration.GetConnectionString("DefaultConnection")))
+            .AddNHibernate(this.Configuration.GetConnectionString("DefaultConnection"))
+            .AddWebApi()
+            .AddRepositories();
         AppContext.SetSwitch("System.Runtime.Serialization.EnableUnsafeBinaryFormatterSerialization", true);
     }
 

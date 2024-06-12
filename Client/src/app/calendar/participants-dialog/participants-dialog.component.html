@@ -4,7 +4,7 @@
     </div>
     <div class="participants-dialog-content">
         <div class="attendies-list">
-            @for(attendy of attendants; track attendy){
+            @for(attendy of attendants(); track attendy){
                 <app-participant [attendy]="attendy" [eventId]="data.eventId"></app-participant>
             }
         </div>

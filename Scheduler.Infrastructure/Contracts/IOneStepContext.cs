@@ -12,5 +12,7 @@ public interface IOneStepContext
     DbSet<GroupMemberLink> GroupMemberLink { get; set; }
     DbSet<EventParticipance> EventParticipance { get; set; }
     DbSet<GroupPayment> GroupPayment { get; set; }
+    DbSet<OneTimeVisit> OneTimeVisit { get; set; }
+    DbSet<OneTimeVisitPayment> OneTimeVisitPayment { get; set; }
     Task<int> SaveChanges();
 }

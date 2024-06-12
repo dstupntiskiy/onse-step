@@ -33,4 +33,6 @@ public class OneStepContext: DbContext, IOneStepContext
     public DbSet<EventParticipance> EventParticipance { get; set; }
     public DbSet<GroupMemberLink> GroupMemberLink { get; set; }
     public DbSet<GroupPayment> GroupPayment { get; set; }
+    public DbSet<OneTimeVisit> OneTimeVisit { get; set; }
+    public DbSet<OneTimeVisitPayment> OneTimeVisitPayment { get; set; }
 }

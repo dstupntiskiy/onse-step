@@ -64,4 +64,16 @@ public class EventController(IMediator mediator) : ControllerBase
     {
         return await mediator.Send(new GetEventAttendentsQuery(eventId));
     }
+
+    [HttpGet("GetOneTimeVisitors")]
+    public async Task<List<OneTimeVisitDto>> GetOneTimeVisitors(Guid eventId)
+    {
+        return await mediator.Send(new GetOneTimeVisitsQuery(eventId));
+    }
+
+    [HttpPost("SaveOneTimeVisitor")]
+    public async Task<OneTimeVisitDto> SaveOneTimeVisitor(Application.Commands.Events.EventOneTimeVisitSave.Command cmd)
+    {
+        return await mediator.Send(cmd);
+    }
 }
