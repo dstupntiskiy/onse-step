@@ -1,6 +1,8 @@
+using Scheduler.Application.Entities.Interfaces;
+
 namespace Scheduler.Application.Entities.Base;
 
-public class AuditableEntity : BaseEntity
+public class AuditableEntity : BaseEntity, IAuditableEntity
 {
     public virtual DateTime? CreateDate { get; set; }
 

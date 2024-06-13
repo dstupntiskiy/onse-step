@@ -3,18 +3,17 @@ import { Group } from '../../shared/models/group-model';
 import { MatInputModule } from '@angular/material/input';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import { GroupService } from '../group.service';
-import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Client } from '../../shared/models/client-model';
-import { Observable, catchError, debounceTime, filter, finalize, of, switchMap } from 'rxjs';
-import { ClientService } from '../../clients/client.service';
+import { BehaviorSubject, finalize } from 'rxjs';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS, MatFormFieldModule } from '@angular/material/form-field';
 import { AsyncPipe, CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
-import { SnackBarService } from '../../services/snack-bar.service';
 import { SpinnerService } from '../../shared/spinner/spinner.service';
 import { MemberComponent } from './member/member.component';
 import { MatIconModule } from '@angular/material/icon';
 import { GroupMember } from '../../shared/models/group-members';
+import { AddClientComponent } from '../../shared/components/add-client/add-client.component';
 
 @Component({
   selector: 'app-group-members',
@@ -29,7 +28,8 @@ import { GroupMember } from '../../shared/models/group-members';
     AsyncPipe,
     CommonModule,
     MemberComponent,
-    MatIconModule
+    MatIconModule,
+    AddClientComponent
   ],
   providers:[
     GroupService,
@@ -46,12 +46,8 @@ import { GroupMember } from '../../shared/models/group-members';
 export class GroupMembersComponent {
   @Input() group: Group
   public members: GroupMember[] = []; 
-
-
-  public clientControl = new FormControl();
-  public options: Client[] = [];
-  filteredOptions: Observable<Client[]>
-  public selectedClient?: Client;
+  clearControlSubject = new BehaviorSubject<boolean>(false)
+  selectedClient?: Client;
 
   private subscriptions: OutputRefSubscription[] = []
   
@@ -59,8 +55,6 @@ export class GroupMembersComponent {
   
   constructor(
     private groupService: GroupService,
-    private clientService: ClientService,
-    private snackbarService: SnackBarService,
     private spinnerService: SpinnerService
   ){
     effect(() =>{
@@ -86,22 +80,6 @@ export class GroupMembersComponent {
   }
 
   ngOnInit(){
-    this.filteredOptions = this.clientControl.valueChanges.pipe(
-      debounceTime(300),
-      filter(value =>{
-        if(this.selectedClient || value === ''){
-          return false
-        }
-        return true
-      }),
-      switchMap(value => this.clientService.getClientsByQuery(value).pipe(
-        catchError(error => {
-          this.snackbarService.error("Не удалось выполнить поиск");
-          return of([])
-        })
-      ))
-    )
-
     this.groupService.getGroupMembers(this.group.id).subscribe((result: GroupMember[]) =>{
       if(result){
         result.forEach(element => {
@@ -113,24 +91,19 @@ export class GroupMembersComponent {
     
   }
 
-  public onOptionSelected(){
-    this.selectedClient = this.clientControl.value;
-  }
-
-  public displayFn(client: Client): string{
-    return client && client.name ? client.name : '';
+  public onClientSelect(client: Client){
+    this.selectedClient = client
   }
 
   public addMember(){
     this.spinnerService.loadingOn();
     if (this.selectedClient){
-      this.groupService.addClientToGroup(this.group.id, this.selectedClient?.id)
+      this.groupService.addClientToGroup(this.group.id, this.selectedClient.id)
         .pipe(
           finalize(() => {
             this.spinnerService.loadingOff()
-            this.clientControl.reset('')
+            this.clearControlSubject.next(true)
             this.selectedClient = undefined;
-            this.options = [];
           })
         )
         .subscribe((result: GroupMember) =>{

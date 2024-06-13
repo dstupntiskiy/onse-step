@@ -8,6 +8,6 @@ public class CommandHandler(IRepository<GroupPayment> groupPaymentRepository) : 
 {
     public async Task Handle(Command request, CancellationToken cancellationToken)
     {
-        await groupPaymentRepository.DeleteAsync(request.paymentId, cancellationToken);
+        await groupPaymentRepository.DeleteAsync(request.PaymentId, cancellationToken);
     }
 }

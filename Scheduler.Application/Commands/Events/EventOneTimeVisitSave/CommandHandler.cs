@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using System.Reflection.Metadata;
 using AutoMapper;
 using MediatR;
 using Scheduler.Application.Common.Dtos;

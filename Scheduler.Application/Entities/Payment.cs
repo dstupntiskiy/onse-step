@@ -1,4 +1,5 @@
 using Scheduler.Application.Entities.Base;
+using Scheduler.Application.Entities.Interfaces;
 
 namespace Scheduler.Application.Entities;
 

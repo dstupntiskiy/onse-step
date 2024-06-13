@@ -2,6 +2,10 @@
     <div class="visitor">
         <p>{{ visitor()?.client?.name }}</p>
         <div class="right-block">
+            <app-payment 
+                [payment]="visitor().payment" 
+                [paymentType]="paymentType"
+                [memberId]="visitor().id"></app-payment>
             <button mat-icon-button (click)="removeVisitor()">
                 <mat-icon>clear</mat-icon>
             </button>

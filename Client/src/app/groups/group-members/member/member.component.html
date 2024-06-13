@@ -2,7 +2,7 @@
     <div class="member">
         <p>{{ member().member.name }}</p>
         <div class="right-block">
-            <app-payment [payment]="member().payment" [memberId]="member().id"></app-payment>
+            <app-payment [payment]="member().payment" [paymentType]="paymentType" [memberId]="member().id"></app-payment>
             <button mat-icon-button (click)="removeMember(member())">
                 <mat-icon>clear</mat-icon>
             </button>

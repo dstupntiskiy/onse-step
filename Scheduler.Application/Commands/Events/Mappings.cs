@@ -9,7 +9,7 @@ public class Mappings : Profile
     public Mappings()
     {
         CreateMap<OneTimeVisit, OneTimeVisitDto>()
-            .ForMember(x => x.ClientId, y => y.MapFrom(z => z.Client.Id))
+            .ForMember(x => x.Client, y => y.MapFrom(z => z.Client))
             .ForMember(x => x.EventId, y => y.MapFrom(z => z.Event.Id));
     }
 }

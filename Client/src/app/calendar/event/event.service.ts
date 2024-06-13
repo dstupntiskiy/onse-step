@@ -6,6 +6,7 @@ import { Observable } from 'rxjs';
 import { EventModel } from '../event-dialog/event-dialog.component';
 import { Participant } from '../../shared/models/participant-model';
 import { Attendence } from '../../shared/models/attendence-model';
+import { OnetimeVisitorModel } from '../../shared/models/onetime-visitor-model';
 
 export interface EventRequestModel{
   id: string;
@@ -86,6 +87,37 @@ export class EventService extends BaseHttpService{
     return this.delete("RemoveParticipant", options)
    }
 
+   getOneTimeVisitors(eventId: string): Observable<OnetimeVisitorModel[]>{
+    var options: IAngularHttpRequestOptions = {
+      params: {eventId: eventId}
+    }
+    return this.get<OnetimeVisitorModel[]>('GetOneTimeVisitors', options)
+   }
+
+   getOnetimeVisitorsCount(eventId: string): Observable<number>{
+    var options: IAngularHttpRequestOptions = {
+      params: {eventId: eventId}
+    }
+    return this.get<number>('GetOneTimeVisitorsCount', options)
+   }
+
+   saveOnetimeVisitor(eventId: string, clientId: string): Observable<OnetimeVisitorModel>{
+    var data = {
+      eventId: eventId,
+      clientId: clientId
+    }
+
+    return this.post('SaveOneTimeVisitor', data)
+   }
+
+   removeOnetimeVisitor(visitorId: string): Observable<void>{
+    var options: IAngularHttpRequestOptions = {
+      params: {visitorId: visitorId}
+    }
+
+    return this.delete('RemoveOnetimeVisitor', options)
+   }
+   
   private getEventRequestModel(event: EventModel): EventRequestModel{
     const eventRequestModel: EventRequestModel = {
       id: event.id,

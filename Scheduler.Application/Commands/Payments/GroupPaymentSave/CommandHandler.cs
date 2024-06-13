@@ -15,12 +15,12 @@ public class CommandHandler(
     public async Task<GroupPaymentDto> Handle(Command request, CancellationToken cancellationToken)
     {
         if (groupPaymentRepository.Query()
-            .Any(x => x.GroupMemberLink.Id == request.GroupMemberLinkId && x.Id != request.Id))
+            .Any(x => x.GroupMemberLink.Id == request.EntityId && x.Id != request.Id))
         {
             throw new ValidationException("Оплата уже добавлена");
         }
 
-        var groupMemberLink = await groupMemberLinkRepository.GetById(request.GroupMemberLinkId);
+        var groupMemberLink = await groupMemberLinkRepository.GetById(request.EntityId);
         var payment = new GroupPayment()
         {
             Amount = request.Amount,

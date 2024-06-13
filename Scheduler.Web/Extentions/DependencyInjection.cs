@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Scheduler.Application.Entities;
 using Scheduler.Application.Entities.Base;
 using Scheduler.Application.Interfaces;
-using Scheduler.Infrastructure.Data;
 using Scheduler.Infrastructure.Repository;
 using Scheduler.Mappings;
 

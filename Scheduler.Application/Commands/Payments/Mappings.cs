@@ -19,5 +19,7 @@ public class Mapping : Profile
             .ForMember(x => x.Amount, y => y.MapFrom(z => z.Amount))
             .ForMember(x => x.Comment, y => y.MapFrom(z => z.Comment));
 
+        CreateMap<OneTimeVisitPayment, OnetimePaymentDto>()
+            .ForMember(x => x.OnetimeVisitId, y => y.MapFrom(z => z.OneTimeVisit.Id));
     }
 }

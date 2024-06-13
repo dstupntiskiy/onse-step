@@ -70,10 +70,24 @@ public class EventController(IMediator mediator) : ControllerBase
     {
         return await mediator.Send(new GetOneTimeVisitsQuery(eventId));
     }
+    
+    [HttpGet("GetOneTimeVisitorsCount")]
+    public async Task<int> GetOneTimeVisitorsCount(Guid eventId)
+    {
+        return await mediator.Send(new GetOneTimeVisitsCountQuery(eventId));
+    }
 
     [HttpPost("SaveOneTimeVisitor")]
     public async Task<OneTimeVisitDto> SaveOneTimeVisitor(Application.Commands.Events.EventOneTimeVisitSave.Command cmd)
     {
         return await mediator.Send(cmd);
+    }
+
+    [HttpDelete("RemoveOnetimeVisitor")]
+    public async Task<IActionResult> RemoveOnetimeVisitor(Guid visitorId)
+    {
+        await mediator.Send(new Application.Commands.Events.EventOnetimeVisitorRemove.Command(visitorId));
+
+        return Ok();
     }
 }

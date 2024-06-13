@@ -1,4 +1,4 @@
-import { Component, Inject, output } from '@angular/core';
+import { Component, Inject, inject, output } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
 import { MatButtonModule } from '@angular/material/button'
 import { MatInputModule } from '@angular/material/input'
@@ -26,6 +26,7 @@ import { ParticipantsDialogService } from '../participants-dialog/participants-d
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { GroupDialogService } from '../../groups/group-dialog/group-dialog.service';
+import { OnetimeVisitorDialogService } from '../onetime-visitor-dialog/onetime-visitor-dialog.service';
 
 export interface EventModel{
   id: string,
@@ -88,6 +89,7 @@ const WEEKDAYS: Weekday[] = [
   providers:[
     GroupService,
     ParticipantsDialogService,
+    OnetimeVisitorDialogService,
     GroupDialogService,
     provideNativeDateAdapter(),
     { provide: MAT_DATE_LOCALE, useValue: 'ru-RU' },
@@ -114,6 +116,9 @@ export class EventDialogComponent {
 
   groupParticipantsCount: number = 0;
   participantsCount: number = 0;
+  onetimeVisitorsCount: number = 0;
+
+  onetimeVisitorDialogService = inject(OnetimeVisitorDialogService)
 
   private initialEvent: EventModel;
 
@@ -171,7 +176,7 @@ export class EventDialogComponent {
     this.refetchParticipants();
   }
 
-  
+  this.refetchOnetimeVisitorsCount()
 
   this.data.event.name ? this.name?.setValue(this.data.event.name) : ''
   this.start?.setValue(getFormattedTime(this.data.event.startDateTime))
@@ -287,6 +292,11 @@ export class EventDialogComponent {
       .afterClosed().subscribe(() => this.refetchGroupMembersCount())
   }
 
+  onOnetimeVisitorsClick(){
+    this.onetimeVisitorDialogService.showOnetimeVisitorsDialog(this.initialEvent.id)
+      .afterClosed().subscribe(() => this.refetchOnetimeVisitorsCount())
+  }
+
   private validateDates(){
     return (form: FormGroup) => {
         const start = form.get('start')?.value;
@@ -329,6 +339,13 @@ export class EventDialogComponent {
     this.groupService.getGroupMembersCount(this.initialEvent.group?.id as string)
       .subscribe((result: number) =>{
         this.groupParticipantsCount = result;
+      })
+  }
+
+  private refetchOnetimeVisitorsCount(){
+    this.eventService.getOnetimeVisitorsCount(this.initialEvent.id)
+      .subscribe((result: number) =>{
+        this.onetimeVisitorsCount = result;
       })
   }
 }

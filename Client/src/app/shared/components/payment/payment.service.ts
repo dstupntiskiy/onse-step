@@ -9,11 +9,14 @@ export interface PaymentRequest{
   id: string;
   amount: number;
   comment?: string;
+  entityId: string;
 }
 
-export interface GroupPaymentRequest extends PaymentRequest{
-  groupMemberLinkId: string;
+export enum PaymentType{
+  Group,
+  Onetime
 }
+
 
 @Injectable({
   providedIn: 'root'
@@ -26,21 +29,33 @@ export class PaymentService extends BaseHttpService{
     super(http, snackbarService)
    }
 
-   saveGroupPayment(payment: PaymentModel, groupMemberLinkId: string): Observable<PaymentModel>{
-    var data: GroupPaymentRequest = {
+   savePayment(payment: PaymentModel, entityId: string, paymentType: PaymentType): Observable<PaymentModel>{
+    var data: PaymentRequest = {
       amount: payment.amount,
       id: payment.id,
       comment: payment.comment,
-      groupMemberLinkId: groupMemberLinkId
+      entityId: entityId
     }
 
-    return this.post<PaymentModel>('GroupPaymentSave', data)
+    switch (paymentType){
+      case PaymentType.Group:
+        return this.post<PaymentModel>('GroupPaymentSave', data)
+      case PaymentType.Onetime:
+        return this.post<PaymentModel>('OnetimePaymentSave', data)
+
+    }
    }
 
-   deletePayment(paymentId: string){
+   deletePayment(paymentId: string, paymentType: PaymentType){
     var options: IAngularHttpRequestOptions = {
       params: {paymentId: paymentId}
     }
-    return this.delete('', options)
+
+    switch (paymentType){
+      case PaymentType.Group:
+        return this.delete('GroupPaymentDelete', options)
+      case PaymentType.Onetime:
+        return this.delete('OnwetimePaymentDelete', options)
+    }
    }
 }

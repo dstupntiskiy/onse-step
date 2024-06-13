@@ -3,6 +3,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule} from '@angular/material/icon'
 import { GroupMember } from '../../../shared/models/group-members';
 import { PaymentComponent } from '../../../shared/components/payment/payment.component';
+import { PaymentType } from '../../../shared/components/payment/payment.service';
 
 @Component({
   selector: 'app-member',
@@ -18,6 +19,7 @@ import { PaymentComponent } from '../../../shared/components/payment/payment.com
 export class MemberComponent {
  member = input<GroupMember>(new GroupMember)
  removeMemberOutput = output<GroupMember>();
+ paymentType: PaymentType = PaymentType.Group
 
  removeMember(member: GroupMember){
   this.removeMemberOutput.emit(member);

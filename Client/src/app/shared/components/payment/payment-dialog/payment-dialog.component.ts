@@ -5,7 +5,7 @@ import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
-import { PaymentService } from '../payment.service';
+import { PaymentService, PaymentType } from '../payment.service';
 import { catchError, finalize, of } from 'rxjs';
 import { SpinnerService } from '../../../spinner/spinner.service';
 import { ConfirmationDialogComponent } from '../../../dialog/confirmation-dialog/confirmation-dialog.component';
@@ -45,7 +45,8 @@ export class PaymentDialogComponent {
     @Inject(MAT_DIALOG_DATA) public data : { 
       payment: PaymentModel,
       memberId: string, 
-      title: string
+      title: string,
+      paymentType: PaymentType
     },
     public dialog: MatDialog
   ){}
@@ -69,7 +70,7 @@ export class PaymentDialogComponent {
       payment.comment = this.comment.value as string
       
       this.spinnerService.loadingOn()
-      this.paymentService.saveGroupPayment(payment, this.data.memberId)
+      this.paymentService.savePayment(payment, this.data.memberId, this.data.paymentType)
         .pipe(
           finalize(() => this.spinnerService.loadingOff())
         )
@@ -86,7 +87,7 @@ export class PaymentDialogComponent {
     confDialogRef.afterClosed().subscribe((result) =>{
       if(result == true){
         this.spinnerService.loadingOn()
-        this.paymentService.deletePayment(this.data.payment.id)
+        this.paymentService.deletePayment(this.data.payment.id, this.data.paymentType)
         .pipe(
           finalize(() => this.spinnerService.loadingOff()),
           catchError(() => {
