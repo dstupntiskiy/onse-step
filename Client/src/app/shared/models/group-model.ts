@@ -3,3 +3,8 @@ export class Group{
     name?: string;
     style?: string;
 }
+
+export class GroupWithDetails extends Group{
+    membersCount: number;
+    payedCount: number
+}

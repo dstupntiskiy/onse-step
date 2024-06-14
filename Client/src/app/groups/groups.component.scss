@@ -3,4 +3,12 @@
 .groups-content{
     margin: 16px;
     @include tr-hover;
+
+    .red{
+        color: red;
+    }
+
+    .align-text-right{
+        text-align: right;
+    }
 }

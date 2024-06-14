@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Group } from '../shared/models/group-model';
+import { Group, GroupWithDetails } from '../shared/models/group-model';
 import { Observable } from 'rxjs';
 import { BaseHttpService, IAngularHttpRequestOptions } from '../services/base-http.service';
 import { HttpClient } from '@angular/common/http';
@@ -21,6 +21,17 @@ export class GroupService extends BaseHttpService{
 
     getGoups(): Observable<Group[]>{
       return this.get<Group[]>('GetAll');
+    }
+
+    getGoupsWithDetails(): Observable<GroupWithDetails[]>{
+      return this.get<GroupWithDetails[]>('GetAllWithDetails');
+    }
+
+    getGoupWithDetails(groupId: string): Observable<GroupWithDetails>{
+      var options: IAngularHttpRequestOptions = {
+        params: { groupId: groupId }
+      }
+      return this.get<GroupWithDetails>('GetGroupWithDetails', options);
     }
 
     saveGroup(group: Group): Observable<Group>{
