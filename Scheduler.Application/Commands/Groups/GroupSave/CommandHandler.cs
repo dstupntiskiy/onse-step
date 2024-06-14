@@ -13,7 +13,7 @@ namespace Scheduler.Application.Commands.Groups.GroupSave;
         {
 
             var group = await groupRepository.GetById(request.Id);
-            group = group == null ? new Group() : group;
+            group = group ?? new Group();
 
             group.Name = request.Name;
             group.Style = request.Style;

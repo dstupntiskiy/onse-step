@@ -1,5 +1,6 @@
 export class EvenExtendedProps{
     groupdId: string;
+    coachId: string;
 }
 
 export class EventBase{

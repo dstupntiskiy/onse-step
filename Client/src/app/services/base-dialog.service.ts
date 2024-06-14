@@ -17,7 +17,7 @@ export abstract class BaseDialogService<TDialogComponent> {
 
     }
 
-  showDialog(): MatDialogRef<TDialogComponent, any>{
+  protected showDialog(): MatDialogRef<TDialogComponent, any>{
     return this.dialog.open(this.component, { data: this.dialogData })
   }
 }

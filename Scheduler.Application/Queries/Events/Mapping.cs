@@ -14,6 +14,7 @@ public class Mapping : Profile
             .ForMember(x => x.EndDateTime, y => y.MapFrom(z => z.EndDateTime))
             .ForMember(x => x.Color, y => y.MapFrom(z => z.Color))
             .ForMember(x => x.Group, y => y.MapFrom(z => z.Group))
-            .ForMember(x=> x.Recurrence, y=>y.MapFrom(z=>z.Recurrence));
+            .ForMember(x=> x.Recurrence, y=>y.MapFrom(z=>z.Recurrence))
+            .ForMember(x => x.Coach, y=> y.MapFrom(z => z.Coach));
     }
 }

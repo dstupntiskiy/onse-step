@@ -46,10 +46,37 @@ namespace Scheduler.Infrastructure.Migrations
                     b.ToTable("Client");
                 });
 
+            modelBuilder.Entity("Scheduler.Application.Entities.Coach", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("Active")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("CreateDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Style")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Coach");
+                });
+
             modelBuilder.Entity("Scheduler.Application.Entities.Event", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("CoachId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Color")
@@ -75,6 +102,8 @@ namespace Scheduler.Infrastructure.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CoachId");
 
                     b.HasIndex("GroupId");
 
@@ -254,6 +283,10 @@ namespace Scheduler.Infrastructure.Migrations
 
             modelBuilder.Entity("Scheduler.Application.Entities.Event", b =>
                 {
+                    b.HasOne("Scheduler.Application.Entities.Coach", "Coach")
+                        .WithMany()
+                        .HasForeignKey("CoachId");
+
                     b.HasOne("Scheduler.Application.Entities.Group", "Group")
                         .WithMany()
                         .HasForeignKey("GroupId");
@@ -261,6 +294,8 @@ namespace Scheduler.Infrastructure.Migrations
                     b.HasOne("Scheduler.Application.Entities.Recurrence", "Recurrence")
                         .WithMany()
                         .HasForeignKey("RecurrenceId");
+
+                    b.Navigation("Coach");
 
                     b.Navigation("Group");
 

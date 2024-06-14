@@ -20,14 +20,12 @@ public class CommandHandler(
             throw new ValidationException("Оплата уже добавлена");
         }
 
+        var payment = await groupPaymentRepository.GetById(request.Id);
         var groupMemberLink = await groupMemberLinkRepository.GetById(request.EntityId);
-        var payment = new GroupPayment()
-        {
-            Amount = request.Amount,
-            Comment = request.Comment,
-            GroupMemberLink = groupMemberLink,
-            Id = request.Id
-        };
+        payment = payment ?? new GroupPayment();
+        payment.Amount = request.Amount;
+        payment.Comment = request.Comment;
+        payment.GroupMemberLink = groupMemberLink;
 
         try
         {

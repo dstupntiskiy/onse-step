@@ -11,4 +11,5 @@ public class Event : AuditableEntity
     public virtual Group? Group { get; set; }
     public virtual string? Color { get; set; }
     public virtual Recurrence? Recurrence { get; set; }
+    public virtual Coach? Coach { get; set; }
 }

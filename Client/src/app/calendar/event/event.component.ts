@@ -18,4 +18,5 @@ export class EventComponent {
     transform: (value: Date) => getFormattedTime(value)
   });
   groupName = input('');
+  coachName = input<string>('')
 }

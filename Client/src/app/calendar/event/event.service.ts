@@ -15,6 +15,7 @@ export interface EventRequestModel{
   endDateTime: Date;
   color?: string;
   groupId?: string;
+  coachId?: string;
   isRecurrent: boolean;
   recurrencyStartDate?: Date;
   recurrencyEndDate?: Date;
@@ -117,7 +118,7 @@ export class EventService extends BaseHttpService{
 
     return this.delete('RemoveOnetimeVisitor', options)
    }
-   
+
   private getEventRequestModel(event: EventModel): EventRequestModel{
     const eventRequestModel: EventRequestModel = {
       id: event.id,
@@ -129,6 +130,7 @@ export class EventService extends BaseHttpService{
       daysOfWeek: event.recurrence?.daysOfWeek,
       exceptDates: event.recurrence?.exceptdates,
       groupId: event.group?.id,
+      coachId: event.coach?.id,
       recurrencyStartDate: event.recurrence?.startDate,
       recurrencyEndDate: event.recurrence?.endDate,
       recurrenceId: event.recurrence?.id

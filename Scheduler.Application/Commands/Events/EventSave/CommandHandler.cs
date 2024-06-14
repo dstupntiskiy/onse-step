@@ -12,6 +12,7 @@ public class CommandHandler(
     IRepository<Event> eventRepository, 
     IRepository<Recurrence> recurrencyRepository,
     IRepository<Group> groupRepository,
+    IRepository<Coach> coachRepository,
     IMapper mapper)
     : IRequestHandler<Command, List<EventDto>>
 {
@@ -20,18 +21,19 @@ public class CommandHandler(
         
             List<EventDto> events = new List<EventDto>();
             var group = mapper.Map<Group>(await groupRepository.GetById(request.GroupId ?? Guid.Empty));
+            var coach = mapper.Map<Coach>(await coachRepository.GetById(request.CoachId ?? Guid.Empty));
             var recurrence = await recurrencyRepository.GetById(request.RecurrenceId ?? Guid.Empty);
             if (!request.IsRecurrent)
             {
                 var ev = await this.CreateEvent(request.Id, request.Name, request.StartDateTime, request.EndDateTime, request.Color,
-                    recurrence, group: group);
+                    recurrence, group: group, coach: coach);
                 events.Add(ev);
             }
             else
             {
                 if (recurrence == null)
                 {
-                    events = await this.CreateRecurrentEvents(request, group, cancellationToken);
+                    events = await this.CreateRecurrentEvents(request, group, coach, cancellationToken);
                 }
                 else
                 {
@@ -52,7 +54,7 @@ public class CommandHandler(
                         var startTime = ev.StartDateTime.Date + request.StartDateTime.TimeOfDay;
                         var endTime = startTime + duration;
                         var createdEvent = await CreateEvent(ev.Id, request.Name, startTime,
-                            endTime, request.Color, recurrence, group);
+                            endTime, request.Color, recurrence, group, coach);
                         events.Add(createdEvent);
                     }
                 }
@@ -68,7 +70,8 @@ public class CommandHandler(
         DateTime endDateTime,
         string? color,
         Recurrence? recurrence,
-        Group? group)
+        Group? group,
+        Coach? coach)
     {
         if (endDateTime < startDateTime)
             throw new ValidationException($"Конец события {endDateTime} меньше, чем начало {startDateTime}");
@@ -86,6 +89,7 @@ public class CommandHandler(
         ev.Group = group;
         ev.Color = color;
         ev.Recurrence = recurrence;
+        ev.Coach = coach;
 
         var createdEvent = await eventRepository.AddAsync(ev);
 
@@ -100,7 +104,7 @@ public class CommandHandler(
             && x.Id != currentEventId);
     }
 
-    private async Task<List<EventDto>> CreateRecurrentEvents(Command request, Group group, CancellationToken cancellationToken)
+    private async Task<List<EventDto>> CreateRecurrentEvents(Command request, Group group, Coach coach, CancellationToken cancellationToken)
     {
         List<EventDto> events = new List<EventDto>();
         List<DateTime> eventStartDates = new List<DateTime>();
@@ -137,7 +141,7 @@ public class CommandHandler(
         {
             var endDateTime = start + duration;
             var ev = await this.CreateEvent(request.Id, request.Name, start, endDateTime, request.Color,
-                recurrence, group);
+                recurrence, group, coach);
             events.Add(ev);
         }
 

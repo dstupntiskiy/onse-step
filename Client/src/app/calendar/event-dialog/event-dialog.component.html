@@ -72,6 +72,16 @@
             </mat-select>
         </mat-form-field>
     </div>
+    <div class="fields-row">
+        <mat-form-field class="input coach">
+            <mat-label>Тренер</mat-label>
+            <mat-select  formControlName="coach" >
+                @for (option of coaches; track option){
+                    <mat-option [value]="option">{{option.name}}</mat-option>
+                }
+            </mat-select>
+        </mat-form-field>
+    </div>
     <div class="fields-row group">
         <mat-form-field class="event-group">
             <mat-label>Группа</mat-label>

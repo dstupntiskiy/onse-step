@@ -27,6 +27,7 @@ export class SidebarComponent {
   navigationList: navItem[] = [
     { name: 'Календарь', link: ""}, 
     { name: 'Группы', link:'groups'},
-    { name: 'Клиенты', link:'clients'}
+    { name: 'Клиенты', link:'clients'},
+    { name: 'Тренеры', link:'coaches'}
   ]
 }

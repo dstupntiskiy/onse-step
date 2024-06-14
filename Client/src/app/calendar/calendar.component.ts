@@ -102,6 +102,7 @@ export class CalendarComponent {
             endDateTime: info.event.end,
             name: info.event.title,
             group: { id: info.event.extendedProps['groupId'] },
+            coach: { id: info.event.extendedProps['coachId'] },
             color: info.event.extendedProps['color'],
             recurrence: {
               startDate: info.event.extendedProps['recurrencyStartDate'],
@@ -166,6 +167,8 @@ export class CalendarComponent {
     event.extendedProps =  { 
       groupId: eventData.group?.id,
       groupName: eventData.group?.name,
+      coachId: eventData.coach?.id,
+      coachName: eventData.coach?.name,
       exceptDates: eventData.recurrence?.exceptdates,
       recurrencyStartDate: eventData.recurrence?.startDate,
       recurrencyEndDate: eventData.recurrence?.endDate,

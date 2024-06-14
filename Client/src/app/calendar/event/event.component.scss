@@ -20,5 +20,8 @@ div{
         margin:0;
         padding: 0;
         color: gray;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 }

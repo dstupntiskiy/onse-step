@@ -27,6 +27,8 @@ import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { GroupDialogService } from '../../groups/group-dialog/group-dialog.service';
 import { OnetimeVisitorDialogService } from '../onetime-visitor-dialog/onetime-visitor-dialog.service';
+import { CoachModel } from '../../shared/models/coach-model';
+import { CoachService } from '../../coaches/coach.service';
 
 export interface EventModel{
   id: string,
@@ -36,6 +38,7 @@ export interface EventModel{
   color?: string;
   group?: Group;
   recurrence?: Recurrence
+  coach?: CoachModel
 }
 
 export interface Recurrence{
@@ -91,6 +94,7 @@ const WEEKDAYS: Weekday[] = [
     ParticipantsDialogService,
     OnetimeVisitorDialogService,
     GroupDialogService,
+    CoachService,
     provideNativeDateAdapter(),
     { provide: MAT_DATE_LOCALE, useValue: 'ru-RU' },
     { provide: DateAdapter, useClass: CustomDateAdapter},
@@ -106,6 +110,7 @@ export class EventDialogComponent {
   timeOptions: string[] = getHalfHourIntervals();
   weekDaysList: Weekday[] = WEEKDAYS;
   groups: Group[];
+  coaches: CoachModel[]
   day: string;
   disableRecur: boolean;
   isNew: boolean = false;
@@ -131,6 +136,9 @@ export class EventDialogComponent {
   public get isRecur() { return this.eventForm.get('isRecur')}
   public get recurStart() { return this.eventForm.get('recurStart')}
   public get recurEnd() { return this.eventForm.get('recurEnd')}
+  public get coach() { return this.eventForm.get('coach')}
+
+  coachService = inject(CoachService)
 
   constructor(
     public dialogRef: MatDialogRef<EventDialogComponent>,
@@ -157,7 +165,8 @@ export class EventDialogComponent {
       weekdays: new FormControl(null),
       isRecur: new FormControl({disabled: true }),
       recurStart: new FormControl(null),
-      recurEnd: new FormControl(null)
+      recurEnd: new FormControl(null),
+      coach: new FormControl()
     },
   {
     validators: [
@@ -175,6 +184,12 @@ export class EventDialogComponent {
     this.refetchGroupMembersCount();
     this.refetchParticipants();
   }
+
+  this.coachService.getCoaches()
+    .subscribe((coaches: CoachModel[]) => {
+      this.coaches = coaches
+      this.coach?.setValue(this.coaches.find(x => x.id === this.data.event.coach?.id))
+    })
 
   this.refetchOnetimeVisitorsCount()
 
@@ -205,14 +220,14 @@ export class EventDialogComponent {
       var end = new Date(this.data.event.startDateTime);
 
       var result: EventResult = {action: 'save'}
-
       const data: EventModel = {
         id: this.initialEvent.id ?? Guid.EMPTY.toString(),
         startDateTime: setTimeFromStringToDate(start, this.start?.value),
         endDateTime: setTimeFromStringToDate(end, this.end?.value),
         name: this.name?.value,
         group: { id: (this.group?.value as Group)?.id },
-        color: this.color
+        color: this.color,
+        coach: { id: (this.coach?.value as CoachModel)?.id }
       }
       if (this.isRecur?.value){
         data.recurrence = {

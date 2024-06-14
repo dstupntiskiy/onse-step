@@ -11,12 +11,14 @@ public class Command(
     DateTime endDateTime,
     string? color,
     Guid? groupId,
+    Guid? coachId,
     bool isRecurrent,
     Guid? recurrenceId,
     DateTime? recurrencyStartDate,
     DateTime? recurrencyEndDate,
     DateOnly[]? exceptDates,
-    DayOfWeek[]? daysOfWeek) : IRequest<List<EventDto>>
+    DayOfWeek[]? daysOfWeek
+    ) : IRequest<List<EventDto>>
 {
     public Guid Id { get; } = id;
     public string Name { get; } = name;
@@ -24,6 +26,7 @@ public class Command(
     public DateTime EndDateTime { get; } = endDateTime;
     public string? Color { get; } = color;
     public Guid? GroupId { get; } = groupId;
+    public Guid? CoachId { get; } = coachId;
     public bool IsRecurrent { get; } = isRecurrent;
 
     public Guid? RecurrenceId { get; } = recurrenceId;

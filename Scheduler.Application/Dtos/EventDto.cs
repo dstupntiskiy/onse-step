@@ -10,6 +10,6 @@ public class EventDto : EntityDto
     public required DateTime EndDateTime { get; set; }
     public string? Color { get; set; }
     public GroupProjection? Group { get; set; }
-    
     public Recurrence? Recurrence { get; set; }
+    public CoachProjection? Coach { get; set; }
 }
