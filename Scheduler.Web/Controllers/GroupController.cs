@@ -21,6 +21,12 @@ public class GroupController(IMediator mediator) : ControllerBase
     {
         return await mediator.Send(new GetAllGroupQuery());
     }
+    
+    [HttpGet("GetAllWithDetails")]
+    public async Task<List<GroupDetailedDto>> GetAllWithDetails()
+    {
+        return await mediator.Send(new GetAllGroupsWithDetails());
+    }
 
     [HttpGet("GetGroupMembersCount")]
     public async Task<int> GetGroupMembersCount(Guid groupId)

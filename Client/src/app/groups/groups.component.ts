@@ -27,7 +27,7 @@ import { GroupDialogService } from './group-dialog/group-dialog.service';
   GroupDialogService]
 })
 export class GroupsComponent {
-  displayedColumns: string[] = ['id', 'name', 'style']
+  displayedColumns: string[] = ['name', 'style']
   dataSource: Group[]
 
   constructor(

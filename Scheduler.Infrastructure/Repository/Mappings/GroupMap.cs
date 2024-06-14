@@ -10,5 +10,6 @@ public class GroupMap : AuditableEntityMap<Group>
         
         this.Map(x => x.Name).Column("`Name`");
         this.Map(x => x.Style).Column("`Style`");
+        //HasMany(x => x.Members).Inverse().Cascade.All();
     }
 }

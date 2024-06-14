@@ -15,7 +15,6 @@ public class GetGroupMembersQueryHandler(
 {
     public async Task<List<GroupMemberDto>> Handle(GetGroupMembersQuery request, CancellationToken cancellationToken)
     {
-
         var groupMembers = groupMembersRepository.Query()
             .Where(x => x.Group.Id == request.GroupId)
             .GroupJoin(groupPaymentRepository.Query(),
