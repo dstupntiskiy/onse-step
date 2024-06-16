@@ -3,16 +3,21 @@ import { HttpEvent, HttpInterceptorFn, HttpHandlerFn, HttpRequest, HttpIntercept
 import { Router } from '@angular/router';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { MatDialog } from '@angular/material/dialog';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor
 {
   router = inject(Router);
+  constructor(private dialog: MatDialog){
+
+  }
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     return next.handle(req).pipe(
       catchError(error => {
         if (error.status === 401) {
+          this.dialog.closeAll()
           this.router.navigate(['/login']);
         }
         return throwError(error);
