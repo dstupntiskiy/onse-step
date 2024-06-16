@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Scheduler.Application.Commands.Coaches.CoachSave;
 using Scheduler.Application.Common.Dtos;
@@ -7,6 +8,7 @@ using Scheduler.Application.Queries.Coaches;
 namespace Scheduler.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("api/[controller]")]
 public class CoachController(IMediator mediator) :ControllerBase
 {

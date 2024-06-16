@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Scheduler.Infrastructure.Data;
@@ -11,9 +12,11 @@ using Scheduler.Infrastructure.Data;
 namespace Scheduler.Infrastructure.Migrations
 {
     [DbContext(typeof(OneStepContext))]
-    partial class OneStepContextModelSnapshot : ModelSnapshot
+    [Migration("20240614130206_coach")]
+    partial class coach
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -63,6 +66,7 @@ namespace Scheduler.Infrastructure.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Style")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -279,32 +283,6 @@ namespace Scheduler.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Recurrence");
-                });
-
-            modelBuilder.Entity("Scheduler.Application.Entities.User", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime?>("CreateDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Login")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<byte[]>("PasswordHash")
-                        .IsRequired()
-                        .HasColumnType("bytea");
-
-                    b.Property<byte[]>("PasswordSalt")
-                        .IsRequired()
-                        .HasColumnType("bytea");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("User");
                 });
 
             modelBuilder.Entity("Scheduler.Application.Entities.Event", b =>

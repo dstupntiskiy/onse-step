@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Scheduler.Application.Commands.Events.EventSave;
 using Scheduler.Application.Common.Dtos;
@@ -8,6 +9,7 @@ using Scheduler.Application.Queries.Events;
 namespace Scheduler.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("api/[controller]")]
 public class EventController(IMediator mediator) : ControllerBase
 {

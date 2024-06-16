@@ -21,6 +21,7 @@ public static class DependencyInjection
             .AddTransient<IRepository<GroupPayment>, Repository<GroupPayment>>()
             .AddTransient<IRepository<OneTimeVisit>, Repository<OneTimeVisit>>()
             .AddTransient<IRepository<OneTimeVisitPayment>, Repository<OneTimeVisitPayment>>()
+            .AddTransient<IRepository<User>, Repository<User>>()
             .AddTransient<IRepository<Coach>, Repository<Coach>>();
 
     public static IServiceCollection AddWebApi(this IServiceCollection services)

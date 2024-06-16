@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Scheduler.Application.Commands.Clients.ClientSave;
 using Scheduler.Application.Common.Dtos;
@@ -8,6 +9,7 @@ using Scheduler.Application.Queries.Clients;
 namespace Scheduler.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("api/[controller]")]
 public class ClientController(IMediator mediator) : ControllerBase
 {

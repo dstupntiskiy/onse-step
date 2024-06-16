@@ -23,6 +23,7 @@
     "@angular/platform-server": "^18.0.2",
     "@angular/router": "^18.0.2",
     "@angular/ssr": "^18.0.3",
+    "@auth0/angular-jwt": "^5.2.0",
     "@fullcalendar/angular": "^6.1.10",
     "@fullcalendar/core": "^6.1.11",
     "@fullcalendar/daygrid": "^6.1.11",

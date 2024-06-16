@@ -29,7 +29,8 @@ public class Startup
                 x.UseNpgsql(this.Configuration.GetConnectionString("DefaultConnection")))
             .AddNHibernate(this.Configuration.GetConnectionString("DefaultConnection"))
             .AddWebApi()
-            .AddRepositories();
+            .AddRepositories()
+            .ConfigureAuth(this.Configuration);
         AppContext.SetSwitch("System.Runtime.Serialization.EnableUnsafeBinaryFormatterSerialization", true);
     }
 
@@ -38,6 +39,8 @@ public class Startup
         app.UseHttpsRedirection()
             .UseMiddleware<ExceptionHanlingMiddleware>()
             .UseRouting()
+            .UseAuthentication()
+            .UseAuthorization()
             .UseEndpoints(z => { z.MapControllers(); })
             .UseHsts()
             .UseSwagger()

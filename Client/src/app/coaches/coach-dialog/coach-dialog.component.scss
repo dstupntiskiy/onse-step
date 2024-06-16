@@ -1,0 +1,19 @@
+.coach-dialog-content{
+    margin: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 300px;
+
+    .fields{
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .actions{
+        display: flex;
+        justify-content: flex-end;
+        gap: 16px;
+    }
+}

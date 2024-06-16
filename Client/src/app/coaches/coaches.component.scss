@@ -1,0 +1,6 @@
+@import '../../styles/mixins.scss';
+
+.coaches-content{
+    margin: 16px;
+    @include tr-hover;
+}

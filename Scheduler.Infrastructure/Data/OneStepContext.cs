@@ -36,4 +36,5 @@ public class OneStepContext: DbContext, IOneStepContext
     public DbSet<OneTimeVisit> OneTimeVisit { get; set; }
     public DbSet<OneTimeVisitPayment> OneTimeVisitPayment { get; set; }
     public DbSet<Coach> Coach { get; set; }
+    public DbSet<User> User { get; set; }
 }

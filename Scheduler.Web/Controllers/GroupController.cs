@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Scheduler.Application.Commands.Groups.GroupAddMember;
 using Scheduler.Application.Common.Dtos;
@@ -7,6 +8,7 @@ using Scheduler.Application.Queries.Groups;
 namespace Scheduler.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("api/[controller]")]
 public class GroupController(IMediator mediator) : ControllerBase
 {

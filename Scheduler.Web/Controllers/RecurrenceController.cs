@@ -1,10 +1,12 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Scheduler.Application.Commands.Recurrences.RecurrenceDelete;
 
 namespace Scheduler.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("api/[controller]")]
 public class RecurrenceController(IMediator mediator) : ControllerBase
 {

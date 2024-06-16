@@ -1,0 +1,17 @@
+<div class="coach-dialog-content">
+    <h1 mat-dialog-title>{{ data.title }}</h1>
+    <div class="fields">
+        <mat-form-field>
+            <mat-label>Имя</mat-label>
+            <input matInput [formControl]="name">
+        </mat-form-field>
+        <mat-form-field>
+            <mat-label>Направление</mat-label>
+            <input matInput [formControl]="style">
+        </mat-form-field>
+    </div>
+    <div class="actions">
+        <button mat-button (click)="onCloseClick()">Закрыть</button>
+        <button mat-raised-button color="accent" (click)="onSaveClick()">Сохранить</button>
+    </div>
+</div>

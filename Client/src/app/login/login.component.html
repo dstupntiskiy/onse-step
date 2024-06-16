@@ -1,0 +1,14 @@
+<div class="login-area">
+    <h1>Вход</h1>
+    <mat-form-field>
+        <mat-label>Логин</mat-label>
+        <input matInput [formControl]="login">
+    </mat-form-field>
+    <mat-form-field>
+        <mat-label>Пароль</mat-label>
+        <input type="password" matInput [formControl]="password">
+    </mat-form-field>
+    <div class="actions">
+        <button mat-raised-button color="accent" (click)="onLogin()">Войти</button>
+    </div>
+</div>
