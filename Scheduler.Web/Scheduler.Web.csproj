@@ -35,5 +35,12 @@
       <ProjectReference Include="..\Scheduler.Application\Scheduler.Application.csproj" />
       <ProjectReference Include="..\Scheduler.Infrastructure\Scheduler.Infrastructure.csproj" />
     </ItemGroup>
+    
+    <Target Name="CopyAngularBuildOutput" AfterTargets="Build">
+        <ItemGroup>
+            <AngularFiles Include="$(ProjectDir)..\Client\dist\browser\**\*" />
+        </ItemGroup>
+        <Copy SourceFiles="@(AngularFiles)" DestinationFolder="$(OutDir)wwwroot" />
+    </Target>
 
 </Project>

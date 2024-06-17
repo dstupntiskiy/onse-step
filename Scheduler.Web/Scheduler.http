@@ -1,6 +1,3 @@
-@Scheduler_HostAddress = http://localhost:5069
-
-GET {{Scheduler_HostAddress}}/weatherforecast/
-Accept: application/json
+@Scheduler_HostAddress = http://localhost:5000
 
 ###

@@ -32,7 +32,6 @@ public class Program
             .ConfigureLogging((_, z) => z.ClearProviders().AddSerilog(dispose: true))
             .UseDefaultServiceProvider(z => { z.ValidateScopes = true; })
             .UseKestrel()
-            .UseContentRoot(Directory.GetCurrentDirectory())
             .ConfigureAppConfiguration(
                 (z, builder) =>
                 {

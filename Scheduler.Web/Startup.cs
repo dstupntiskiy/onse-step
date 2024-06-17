@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using Scheduler.Application.Interfaces;
 using Scheduler.Application.Entities;
 using Scheduler.Application.Entities.Base;
@@ -36,7 +37,9 @@ public class Startup
 
     public void Configure(IApplicationBuilder app)
     {
-        app.UseHttpsRedirection()
+        app.UseDefaultFiles()
+            .UseStaticFiles()
+            .UseHttpsRedirection()
             .UseMiddleware<ExceptionHanlingMiddleware>()
             .UseRouting()
             .UseAuthentication()

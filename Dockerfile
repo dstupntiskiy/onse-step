@@ -35,7 +35,7 @@ EXPOSE 5000
 
 # Copy the build output and Angular build output to the final stage
 COPY --from=dotnet-build /app/publish .
-COPY --from=angular-build /app/Client/dist/shceduler-app/browser/ ./wwwroot/
+COPY --from=angular-build /app/Client/dist/browser/ ./wwwroot/
 
 # Set the entry point for the application
 ENTRYPOINT ["dotnet", "Scheduler.Web.dll"]
