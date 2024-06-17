@@ -41,7 +41,8 @@ public class Program
                         builder.Add(source);
                     }
                 })
-            .UseStartup<Startup>();
+            .UseStartup<Startup>()
+            .UseUrls("http://0.0.0.0:5000");
 
     private static Logger CreateLogger(IConfiguration configuration)
     {
