@@ -18,15 +18,15 @@ COPY Scheduler.Infrastructure/Scheduler.Infrastructure.csproj Scheduler.Infrastr
 COPY Scheduler.Web/Scheduler.Web.csproj Scheduler.Web/
 
 # Restore dependencies for each project separately
-RUN dotnet restore Scheduler.Application/Scheduler.Application.csproj --force
-RUN dotnet restore Scheduler.Infrastructure/Scheduler.Infrastructure.csproj --force
-RUN dotnet restore Scheduler.Web/Scheduler.Web.csproj --force
+RUN dotnet restore Scheduler.Application/Scheduler.Application.csproj --force -m:1
+RUN dotnet restore Scheduler.Infrastructure/Scheduler.Infrastructure.csproj --force -m:1
+RUN dotnet restore Scheduler.Web/Scheduler.Web.csproj --force -m:1
 
 COPY . .
 
-RUN dotnet build Scheduler.sln -c Release --no-self-contained 
+RUN dotnet build Scheduler.sln -c Release --no-self-contained -m:1
 
-RUN dotnet publish Scheduler.Web/Scheduler.Web.csproj -c Release -o /app/publish --no-self-contained
+RUN dotnet publish Scheduler.Web/Scheduler.Web.csproj -c Release -o /app/publish --no-self-contained -m:1
 
 # Stage 3: Create final image
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
