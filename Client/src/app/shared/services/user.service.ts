@@ -33,6 +33,10 @@ export class UserService extends BaseHttpService {
         }))
   }
 
+  isAuthenticated(isAuth: boolean){
+    this.isAthenticatedSubject.next(isAuth)
+  }
+
   private storeToken(token: string){
     localStorage.setItem('jwtToken', token)
   }

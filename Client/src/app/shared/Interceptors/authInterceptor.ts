@@ -18,7 +18,8 @@ export class AuthInterceptor implements HttpInterceptor
       catchError(error => {
         if (error.status === 401) {
           this.dialog.closeAll()
-          this.router.navigate(['/login']);
+          localStorage.removeItem('jwtToken')
+          this.router.navigate(['/login'])
         }
         return throwError(error);
       })

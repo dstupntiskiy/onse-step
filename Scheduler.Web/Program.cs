@@ -7,7 +7,8 @@ public class Program
 
     private static IConfigurationBuilder ConfigurationBuilder =>
         new ConfigurationBuilder()
-            .AddJsonFile("appsettings.json");
+            .AddJsonFile("appsettings.json")
+            .AddEnvironmentVariables();
 
     public static async Task Main()
     {

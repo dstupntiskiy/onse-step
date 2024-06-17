@@ -16,7 +16,6 @@ import { Router } from '@angular/router';
     ReactiveFormsModule
   ],
   providers:[
-    UserService
   ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss'

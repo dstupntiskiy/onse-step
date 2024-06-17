@@ -17,7 +17,6 @@ import { UserService } from './shared/services/user.service';
     SidebarComponent,
     SpinnerComponent],
   providers:[
-    UserService
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
@@ -25,5 +24,12 @@ import { UserService } from './shared/services/user.service';
 
 export class AppComponent {
   userService = inject(UserService)
+
+  ngOnInit(){
+    var token = localStorage.getItem('jwtToken')
+    if(token){
+      this.userService.isAuthenticated(true)
+    }
+  }
 }
 

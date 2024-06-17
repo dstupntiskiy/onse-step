@@ -1,7 +1,8 @@
 import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable, catchError, throwError } from 'rxjs';
 import { SnackBarService } from './snack-bar.service';
+import { UserService } from '../shared/services/user.service';
 
 export interface IAngularHttpRequestOptions {
   headers?: HttpHeaders | { [header: string]: string | string[] };
