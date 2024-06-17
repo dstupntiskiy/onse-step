@@ -31,11 +31,11 @@ RUN dotnet publish Scheduler.Web/Scheduler.Web.csproj -c Release -o /app/publish
 # Stage 3: Create final image
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
-EXPOSE 80
+EXPOSE 5000
 
 # Copy the build output and Angular build output to the final stage
 COPY --from=dotnet-build /app/publish .
-COPY --from=angular-build /app/Client/dist ./Client/
+COPY --from=angular-build /app/Client/dist/shceduler-app/browser/ ./wwwroot/
 
 # Set the entry point for the application
 ENTRYPOINT ["dotnet", "Scheduler.Web.dll"]
