@@ -191,7 +191,8 @@ export class EventDialogComponent {
       this.coach?.setValue(this.coaches.find(x => x.id === this.data.event.coach?.id))
     })
 
-  this.refetchOnetimeVisitorsCount()
+  if(!this.isNew)
+    this.refetchOnetimeVisitorsCount()
 
   this.data.event.name ? this.name?.setValue(this.data.event.name) : ''
   this.start?.setValue(getFormattedTime(this.data.event.startDateTime))
