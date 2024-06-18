@@ -99,4 +99,7 @@ export class OnetimeVisitorDialogComponent {
       })
   }
 
+  onClose(){
+    this.dialogRef.close()
+  }
 }

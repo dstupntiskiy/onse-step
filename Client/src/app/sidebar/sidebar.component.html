@@ -1,6 +1,6 @@
 
-<mat-sidenav-container id="container">
-    <mat-sidenav #snav [mode]="'side'" opened="true"  disableClose="true">
+<mat-drawer-container id="container">
+    <mat-drawer #snav [mode]="'side'" opened="true" disableClose="true">
         <mat-nav-list>
             <a mat-list-item [routerLink]="">
                 <img src="../../assets/images/one-step.svg" alt="">
@@ -8,5 +8,5 @@
             <a *ngFor="let nav of navigationList"
                 mat-list-item [routerLink]="nav.link">{{nav.name}}</a>
         </mat-nav-list>
-    </mat-sidenav>
-</mat-sidenav-container>
+    </mat-drawer >
+</mat-drawer-container>

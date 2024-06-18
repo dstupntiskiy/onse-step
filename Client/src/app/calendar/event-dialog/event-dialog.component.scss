@@ -1,4 +1,7 @@
 .dialog{
+    //width: 450px;
+    margin: 16px;
+
     .event-dialog-header{
         display: flex;
         justify-content: space-between;
@@ -43,8 +46,7 @@
         gap: 16px;
     }
 
-    width: 450px;
-    margin: 16px;
+
 
     .input{
         width: 100%;
@@ -62,8 +64,6 @@
     .event-group{
         width: 100%;
         position: relative;
-
-        
     }
 
     .edit-group-button{

@@ -4,6 +4,7 @@ import {MatListModule} from '@angular/material/list';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { MatIconModule } from '@angular/material/icon';
 
 export interface navItem{
   name: string,
@@ -17,7 +18,8 @@ export interface navItem{
     MatListModule,
     MatToolbarModule,
     CommonModule,
-    RouterModule
+    RouterModule,
+    MatIconModule
   ],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.scss'

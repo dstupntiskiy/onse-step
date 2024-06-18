@@ -4,7 +4,6 @@
     flex-direction: column;
     gap: 6px;
     min-height: 200px;
-    min-width: 350px;
 
     .onetime-visitors-dialog-content{
         display: flex;
@@ -25,6 +24,9 @@
             max-height: 300px;
             overflow-y: scroll; 
         }
-
+    }
+    .actions{
+        display: flex;
+        justify-content: flex-end;
     }
 }

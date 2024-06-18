@@ -1,4 +1,17 @@
 #container{
-    top: 64px !important;
-    position: static !important;
+    //top: 64px !important;
+    position: relative !important;
+    height: 100%;
+}
+.drawer{
+    //position: absolute;
+    top: 10px;
+    left: 10px;
+    .icon{
+        position: absolute;
+        right: -50px;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 1;
+    }
 }

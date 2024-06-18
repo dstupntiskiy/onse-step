@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, HostListener, ViewChild, computed, inject, signal } from '@angular/core';
 import { FullCalendarComponent, FullCalendarModule } from '@fullcalendar/angular';
 import { CalendarApi, CalendarOptions, EventClickArg, EventInput } from '@fullcalendar/core';
 import { CalendarService } from './calendar.service';
@@ -13,6 +13,7 @@ import { SnackBarService } from '../services/snack-bar.service';
 import { EventService } from './event/event.service';
 import { SpinnerService } from '../shared/spinner/spinner.service';
 import { finalize, map } from 'rxjs';
+import { ResizeService } from '../shared/services/resize.service';
 
 @Component({
   selector: 'app-calendar',
@@ -26,6 +27,7 @@ import { finalize, map } from 'rxjs';
 
 export class CalendarComponent {
   @ViewChild('calendar') calendarComponent: FullCalendarComponent;
+  resizeService = inject(ResizeService)
 
   calendarOptions: CalendarOptions = {
     buttonText:{
@@ -147,6 +149,8 @@ export class CalendarComponent {
   }
 
   ngOnInit(){
+   
+
     this.spinnerService.loadingOn();
     this.eventService.getEvents()
     .pipe(
@@ -157,8 +161,16 @@ export class CalendarComponent {
   }
 
   ngAfterViewInit(){
+    
+
     this.calendarApi = this.calendarComponent.getApi();
     this.calendarApi.refetchEvents()
+    this.resizeService.resize$.subscribe((result: boolean) =>{
+      console.log(result)
+      result ?
+        this.calendarApi.changeView('dayGrid')
+        : this.calendarApi.changeView('timeGridWeek')
+    })
   }
 
   private getEvent(eventData: EventModel) : EventInput{
