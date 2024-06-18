@@ -19,7 +19,11 @@ body {
 }
 .fc-day-today {
     background: #2BB3BA !important;
-} 
+}
+
+.fc-toolbar-chunk{
+    display: flex;
+}
 
 ::-webkit-scrollbar{
     background-color: transparent;

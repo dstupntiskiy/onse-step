@@ -86,7 +86,6 @@ export class OnetimeVisitorDialogComponent {
   }
 
   public onClientSelect(client: Client){
-    console.log(client)
     this.selectedClient = client
   }
 
