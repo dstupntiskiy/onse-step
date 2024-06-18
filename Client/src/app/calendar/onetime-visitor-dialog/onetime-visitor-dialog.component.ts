@@ -27,13 +27,7 @@ import { SpinnerService } from '../../shared/spinner/spinner.service';
     AddClientComponent,
     MatIconModule
   ],
-  providers: [EventService,
-    {
-      provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,
-      useValue: {
-        subscriptSizing: 'dynamic'
-      }
-    }
+  providers: [EventService
   ],
   templateUrl: './onetime-visitor-dialog.component.html',
   styleUrl: './onetime-visitor-dialog.component.scss'

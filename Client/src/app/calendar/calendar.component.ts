@@ -1,7 +1,6 @@
-import { Component, HostListener, ViewChild, computed, inject, signal } from '@angular/core';
+import { Component, ViewChild, inject } from '@angular/core';
 import { FullCalendarComponent, FullCalendarModule } from '@fullcalendar/angular';
 import { CalendarApi, CalendarOptions, EventClickArg, EventInput } from '@fullcalendar/core';
-import { CalendarService } from './calendar.service';
 import interationPlugin, { DateClickArg } from '@fullcalendar/interaction'
 import timeGridWeek from '@fullcalendar/timegrid'
 import dayGridPlugin from '@fullcalendar/daygrid'
@@ -57,7 +56,7 @@ export class CalendarComponent {
     selectable: true,
     editable: true,
     firstDay: 1,
-
+    
     height: 'calc(100vh - 32px)',
     dateClick: this.handleDateClick.bind(this),
     eventClick: this.handleEventClick.bind(this)
@@ -161,12 +160,9 @@ export class CalendarComponent {
   }
 
   ngAfterViewInit(){
-    
-
     this.calendarApi = this.calendarComponent.getApi();
     this.calendarApi.refetchEvents()
     this.resizeService.resize$.subscribe((result: boolean) =>{
-      console.log(result)
       result ?
         this.calendarApi.changeView('dayGrid')
         : this.calendarApi.changeView('timeGridWeek')

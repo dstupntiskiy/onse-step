@@ -2,12 +2,11 @@ import { Component, Inject } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { MAT_FORM_FIELD_DEFAULT_OPTIONS, MatFormFieldModule } from '@angular/material/form-field';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { Group } from '../../shared/models/group-model';
 import { GroupService } from '../group.service';
-import { Guid } from 'typescript-guid';
-import { catchError, finalize } from 'rxjs';
+import { finalize } from 'rxjs';
 import { SnackBarService } from '../../services/snack-bar.service';
 import { SpinnerService } from '../../shared/spinner/spinner.service';
 import { GroupMembersComponent } from '../group-members/group-members.component';
@@ -24,13 +23,7 @@ import { GroupMembersComponent } from '../group-members/group-members.component'
   ],
   providers:[
     GroupService,
-    SnackBarService,
-    {
-      provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,
-      useValue: {
-        subscriptSizing: 'dynamic'
-      }
-    }
+    SnackBarService
   ],
   templateUrl: './group-dialog.component.html',
   styleUrl: './group-dialog.component.scss'

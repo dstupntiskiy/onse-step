@@ -1,15 +1,11 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.FileProviders;
-using Scheduler.Application.Interfaces;
-using Scheduler.Application.Entities;
-using Scheduler.Application.Entities.Base;
 using Scheduler.Extentions;
 using Scheduler.Infrastructure.Data;
 using Scheduler.Infrastructure.Extentions;
-using Scheduler.Infrastructure.Repository;
-using Scheduler.Mappings;
 using Scheduler.Middleware;
-
+using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Builder;
 namespace Scheduler;
 
 public class Startup
@@ -37,9 +33,9 @@ public class Startup
 
     public void Configure(IApplicationBuilder app)
     {
-        app.UseDefaultFiles()
-            .UseStaticFiles()
-            .UseHttpsRedirection()
+        app.UseStaticFiles()
+            .UseSpaStaticFiles();
+        app.UseHttpsRedirection()
             .UseMiddleware<ExceptionHanlingMiddleware>()
             .UseRouting()
             .UseAuthentication()
@@ -48,6 +44,11 @@ public class Startup
             .UseHsts()
             .UseSwagger()
             .UseSwaggerUI();
+        
+        app.UseSpa(spa =>
+        {
+            spa.Options.SourcePath = "wwwroot";
+        });
         
     }
 }

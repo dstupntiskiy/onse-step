@@ -23,7 +23,6 @@ import {OverlayModule} from '@angular/cdk/overlay';
 import { PaletteComponent } from '../../shared/components/palette/palette.component';
 import { RecurrenceService } from '../recurrence/recurrence.service';
 import { ParticipantsDialogService } from '../participants-dialog/participants-dialog.service';
-import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { GroupDialogService } from '../../groups/group-dialog/group-dialog.service';
 import { OnetimeVisitorDialogService } from '../onetime-visitor-dialog/onetime-visitor-dialog.service';
@@ -97,13 +96,7 @@ const WEEKDAYS: Weekday[] = [
     CoachService,
     provideNativeDateAdapter(),
     { provide: MAT_DATE_LOCALE, useValue: 'ru-RU' },
-    { provide: DateAdapter, useClass: CustomDateAdapter},
-    {
-      provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,
-      useValue: {
-        subscriptSizing: 'dynamic'
-      }
-    }
+    { provide: DateAdapter, useClass: CustomDateAdapter}
   ]
 })
 export class EventDialogComponent {

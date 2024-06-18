@@ -39,6 +39,10 @@ public static class DependencyInjection
         services.AddAutoMapper(typeof(MappingProfile))
             .AddAutoMapper(ApplicationAssemby)
             .AddMediatR(cfg => cfg.RegisterServicesFromAssembly(ApplicationAssemby));
+        services.AddSpaStaticFiles(cfg =>
+        {
+            cfg.RootPath = "wwwroot";
+        });
 
         services.AddSwaggerGen(opt =>
         {
