@@ -9,12 +9,11 @@ export abstract class BaseDialogService<TDialogComponent> {
 
   protected component: ComponentType<TDialogComponent>;
   protected dialogData: any;
-  
+
   constructor(
     public dialog: MatDialog,
-  @Inject(MAT_DIALOG_DATA) public data: any
-  ) { 
-
+  @Inject(MAT_DIALOG_DATA) public data: any,
+  ) {
     }
 
   protected showDialog(): MatDialogRef<TDialogComponent, any>{

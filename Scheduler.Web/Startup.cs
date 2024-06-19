@@ -3,9 +3,6 @@ using Scheduler.Extentions;
 using Scheduler.Infrastructure.Data;
 using Scheduler.Infrastructure.Extentions;
 using Scheduler.Middleware;
-using Microsoft.Extensions.Hosting;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Builder;
 namespace Scheduler;
 
 public class Startup
