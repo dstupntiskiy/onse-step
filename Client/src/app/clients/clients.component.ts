@@ -3,10 +3,10 @@ import { Client } from '../shared/models/client-model';
 import { ClientService } from './client.service';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
-import { ClientDialogService } from './client-dialog/client-dialog.service';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { DatePipe } from '@angular/common';
-import { BaseDialogService } from '../services/base-dialog.service';
+import { DialogService } from '../services/dialog.service';
+import { ClientDialogComponent } from './client-dialog/client-dialog.component';
 
 @Component({
   selector: 'app-clients',
@@ -24,7 +24,6 @@ import { BaseDialogService } from '../services/base-dialog.service';
       provide: MAT_DIALOG_DATA,
       useValue: {}
     },
-    ClientDialogService,
     ClientService
   ],
   templateUrl: './clients.component.html',
@@ -33,7 +32,7 @@ import { BaseDialogService } from '../services/base-dialog.service';
 export class ClientsComponent {
   public clients: Client[]
   public displayedColumns: string[] = ['createDate', 'name', 'phone', 'socialMediaLink']
-  clientDialogService = inject(ClientDialogService)
+  dialogService = inject(DialogService)
   clientService = inject(ClientService)
 
   constructor(){}
@@ -46,7 +45,7 @@ export class ClientsComponent {
   }
 
   handleAddClientClick(){
-    this.clientDialogService.showClientDialog()
+    this.dialogService.showDialog(ClientDialogComponent, 'Клиент')
     .afterClosed().subscribe((result: Client) => {
       if(result){
         const newData = [...this.clients]
@@ -57,8 +56,7 @@ export class ClientsComponent {
   }
 
   handleRowClick(row: Client){
-
-    this.clientDialogService.showClientDialog(row.name, row)
+    this.dialogService.showDialog(ClientDialogComponent, row.name, { client: row })
       .afterClosed().subscribe((result: Client) =>{
         if(result){
           var index = this.clients.findIndex(x => x.id === row.id);

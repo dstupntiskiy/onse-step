@@ -1,11 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import {MatTableModule} from '@angular/material/table';
 import {MatButtonModule} from '@angular/material/button';
 import { GroupService } from './group.service';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Group, GroupWithDetails } from '../shared/models/group-model';
-import { GroupDialogService } from './group-dialog/group-dialog.service';
-import { map } from 'rxjs';
+import { DialogService } from '../services/dialog.service';
+import { GroupDialogComponent } from './group-dialog/group-dialog.component';
 
 @Component({
   selector: 'app-groups',
@@ -24,20 +24,19 @@ import { map } from 'rxjs';
     provide: MAT_DIALOG_DATA,
     useValue: {}
   },
-  GroupService,
-  GroupDialogService]
+  GroupService]
 })
 export class GroupsComponent {
   displayedColumns: string[] = ['name', 'style', 'counts']
   dataSource: GroupWithDetails[]
+  dialogService = inject(DialogService)
 
   constructor(
     private groupService: GroupService,
-    private groupDialogService: GroupDialogService
   ){}
 
   handleAddGroupClick(){
-    this.groupDialogService.showGroupDialog()
+    this.dialogService.showDialog(GroupDialogComponent, 'Группа')
     .afterClosed()
     .subscribe((result : Group) => {
       if (result){
@@ -58,7 +57,7 @@ export class GroupsComponent {
   }
 
   handleRowClick(row: GroupWithDetails){
-    this.groupDialogService.showGroupDialog(row.name, row)
+    this.dialogService.showDialog(GroupDialogComponent, row.name, { group: row })
       .afterClosed().subscribe(() =>{
         this.groupService.getGoupWithDetails(row.id)
           .subscribe((groupWithDetails: GroupWithDetails) =>{

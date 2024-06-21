@@ -1,6 +1,6 @@
 <div class="dialog">
     <mat-dialog-content>
-        <p>{{data.message}}</p>
+        <p>{{data()?.message}}</p>
     </mat-dialog-content>
     <mat-dialog-actions class="actions">
         <button mat-button (click)="onCloseClick()">Закрыть</button>

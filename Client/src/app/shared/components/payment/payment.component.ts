@@ -1,10 +1,11 @@
-import { Component, input, model } from '@angular/core';
+import { Component, inject, input, model } from '@angular/core';
 import { PaymentModel } from '../../models/payment-model';
 import { MatIconModule } from '@angular/material/icon';
-import { PaymentDialogService } from './payment-dialog/payment-dialog.service';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { PaymentType } from './payment.service';
+import { DialogService } from '../../../services/dialog.service';
+import { PaymentDialogComponent } from './payment-dialog/payment-dialog.component';
 
 @Component({
   selector: 'app-payment',
@@ -15,7 +16,6 @@ import { PaymentType } from './payment.service';
     MatTooltipModule
   ],
   providers:[
-    PaymentDialogService
   ],
   templateUrl: './payment.component.html',
   styleUrl: './payment.component.scss'
@@ -25,11 +25,16 @@ export class PaymentComponent {
   memberId = input.required<string>()
   paymentType = input.required<PaymentType>()
 
-  constructor(private paymentDialogService: PaymentDialogService)
+  dialogService = inject(DialogService)
+  constructor()
   {}
 
   onEditClick(){
-    this.paymentDialogService.showPaymentDialog(this.memberId(), this.paymentType(), this.payment())
+    this.dialogService.showDialog(PaymentDialogComponent, 'Оплата', {
+        payment: this.payment(),
+        memberId: this.memberId(), 
+        paymentType: this.paymentType()
+       })
       .afterClosed().subscribe((result) =>{
         if(result == true){
           this.payment.set(undefined)
@@ -38,11 +43,14 @@ export class PaymentComponent {
   }
 
   onAddPaymentClick(){
-    this.paymentDialogService.showPaymentDialog(this.memberId(), this.paymentType())
-      .afterClosed().subscribe((result: PaymentModel) =>{
-        if(result){
-          this.payment.set(result)
-        }
-      })
+    this.dialogService.showDialog(PaymentDialogComponent, 'Оплата', {
+      memberId: this.memberId(), 
+      paymentType: this.paymentType()
+    })
+    .afterClosed().subscribe((result: PaymentModel) =>{
+      if(result){
+        this.payment.set(result)
+      }
+    })
   }
 }

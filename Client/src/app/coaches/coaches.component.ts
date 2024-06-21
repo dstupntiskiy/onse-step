@@ -3,8 +3,9 @@ import { CoachService } from './coach.service';
 import { CoachModel } from '../shared/models/coach-model';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
-import { CoachDialogService } from './coach-dialog/coach-dialog.service';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { DialogService } from '../services/dialog.service';
+import { CoachDialogComponent } from './coach-dialog/coach-dialog.component';
 
 @Component({
   selector: 'app-coaches',
@@ -14,7 +15,6 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
     MatButtonModule],
   providers:[
     CoachService,
-    CoachDialogService,
     {
       provide: MatDialogRef,
       useValue: {}
@@ -29,7 +29,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 })
 export class CoachesComponent {
   coachesService = inject(CoachService)
-  coachDialogService = inject(CoachDialogService)
+  dialogService = inject(DialogService)
   dataSource: CoachModel[]
   displayedColumns: string[] = ['name', 'style']
 
@@ -40,7 +40,7 @@ export class CoachesComponent {
   }
 
   handleAddCoachClick(){
-    this.coachDialogService.showCoachDialog()
+    this.dialogService.showDialog(CoachDialogComponent, 'Тренер')
       .afterClosed().subscribe((result: CoachModel) =>{
         if(result)
         {
@@ -52,11 +52,14 @@ export class CoachesComponent {
   }
 
   handleRowClick(row: CoachModel){
-    this.coachDialogService.showCoachDialog(row.name, row)
+    this.dialogService.showDialog(CoachDialogComponent, row.name, { coach: row })
       .afterClosed().subscribe((result: CoachModel) => {
-        var index = this.dataSource.findIndex(x => x.id === row.id)
-        this.dataSource[index] = result
-        this.dataSource = Object.assign([], this.dataSource)
+        if(result)
+        {
+          var index = this.dataSource.findIndex(x => x.id === row.id)
+          this.dataSource[index] = result
+          this.dataSource = Object.assign([], this.dataSource)
+        }
       })
   }
 

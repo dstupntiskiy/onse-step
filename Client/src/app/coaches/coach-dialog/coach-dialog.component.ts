@@ -1,4 +1,4 @@
-import { Component, Inject, inject } from '@angular/core';
+import { Component, Inject, effect, inject, input, signal } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS, MatFormFieldModule } from '@angular/material/form-field';
@@ -9,6 +9,11 @@ import { CoachModel } from '../../shared/models/coach-model';
 import { CoachService } from '../coach.service';
 import { SpinnerService } from '../../shared/spinner/spinner.service';
 import { finalize } from 'rxjs';
+import { DynamicComponent } from '../../shared/dialog/base-dialog/base-dialog.component';
+
+export interface CoachDialogData{
+  coach: CoachModel
+}
 
 @Component({
   selector: 'app-coach-dialog',
@@ -20,22 +25,22 @@ import { finalize } from 'rxjs';
     ReactiveFormsModule
   ],
   providers:[
-    SpinnerService,
-    {
-      provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,
-      useValue: {
-        subscriptSizing: 'dynamic'
-      }
-    }
+    SpinnerService
   ],
   templateUrl: './coach-dialog.component.html',
   styleUrl: './coach-dialog.component.scss'
 })
-export class CoachDialogComponent {
+export class CoachDialogComponent implements DynamicComponent {
 
+  data = input<CoachDialogData>()
   constructor(private dialogRef: MatDialogRef<CoachDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data : { title : string, coach: CoachModel}
-  ){ }
+  ){
+    effect(() => {
+      this.name.setValue(this.data()?.coach?.name as string)
+      this.style.setValue(this.data()?.coach?.style as string)
+      this.active.setValue(this.data()?.coach?.active as boolean)
+    })
+   }
 
   coachService = inject(CoachService)
   spinnerService = inject(SpinnerService)
@@ -45,9 +50,7 @@ export class CoachDialogComponent {
   active = new FormControl<boolean>(true)
 
   ngOnInit(){
-    this.name.setValue(this.data.coach?.name as string)
-    this.style.setValue(this.data.coach?.style as string)
-    this.active.setValue(this.data.coach?.active as boolean)
+    
   }
 
   onCloseClick(){
@@ -57,7 +60,7 @@ export class CoachDialogComponent {
   onSaveClick(){
     if(this.name.valid && this.style.valid){
       const coach: CoachModel = {
-        id: this.data.coach?.id,
+        id: this.data()?.coach?.id as string,
         name: this.name?.value as string,
         style: this.style?.value as string,
         active: this.active?.value as boolean

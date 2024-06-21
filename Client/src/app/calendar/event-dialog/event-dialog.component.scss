@@ -1,16 +1,11 @@
 .dialog{
-    //width: 450px;
-    margin: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 
     .event-dialog-header{
         display: flex;
-        justify-content: space-between;
-
-        h1{
-        margin: 0;
-        padding: 0; 
-        line-height: 40px;
-        }
+        justify-content: flex-end;
 
         div{
             width:150px;
@@ -23,12 +18,6 @@
             }
         }
 
-    }
-
-    .event-dialog-content{
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
     }
 
     .fields-row{

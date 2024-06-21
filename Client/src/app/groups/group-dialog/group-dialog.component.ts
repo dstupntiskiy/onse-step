@@ -1,7 +1,6 @@
-import { Component, Inject } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, effect, inject, input } from '@angular/core';
+import { FormControl, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { Group } from '../../shared/models/group-model';
@@ -10,6 +9,12 @@ import { finalize } from 'rxjs';
 import { SnackBarService } from '../../services/snack-bar.service';
 import { SpinnerService } from '../../shared/spinner/spinner.service';
 import { GroupMembersComponent } from '../group-members/group-members.component';
+import { DynamicComponent } from '../../shared/dialog/base-dialog/base-dialog.component';
+import { MatDialogRef } from '@angular/material/dialog';
+
+export interface GroupDialogData{
+  group: Group
+}
 
 @Component({
   selector: 'app-group-dialog',
@@ -28,30 +33,23 @@ import { GroupMembersComponent } from '../group-members/group-members.component'
   templateUrl: './group-dialog.component.html',
   styleUrl: './group-dialog.component.scss'
 })
-export class GroupDialogComponent {
-  public form: FormGroup; 
-  public get name() { return this.form.get('name')}
-  public get style() { return this.form.get('style')}
-  public isNew: boolean;
+export class GroupDialogComponent implements DynamicComponent {
+  name = new FormControl<string>('', [Validators.required])
+  style = new FormControl<string>('')
+  public isNew: boolean = false;
 
-
-  constructor(private formBuilder: FormBuilder,
-    private dialogRef: MatDialogRef<GroupDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data : { title : string, group: Group }, 
-    private groupService: GroupService,
-    private spinnerService: SpinnerService
+  data = input.required<GroupDialogData>() 
+  groupService = inject(GroupService)
+  spinnerService = inject(SpinnerService)
+  constructor(private dialogRef: MatDialogRef<GroupDialogComponent>,
   ){
+    effect(()=>{
+      this.name?.setValue(this.data()?.group?.name as string);
+      this.style?.setValue(this.data()?.group?.style as string);
+    })
   }
 
   ngOnInit(){
-    this.isNew = !this.data.group?.id 
-    this.form = this.formBuilder.group({
-      name: new FormControl(null, [Validators.required]),
-      style: new FormControl(null)
-    })
-
-    this.name?.setValue(this.data.group?.name);
-    this.style?.setValue(this.data.group?.style);
   }
 
   onCloseClick(){
@@ -59,11 +57,11 @@ export class GroupDialogComponent {
   }
 
   submit(){
-    if (this.form.valid){
+    if (this.name.valid){
       const group: Group = {
-        id: this.data.group?.id,
-        name: this.name?.value,
-        style: this.style?.value
+        id: this.data()?.group?.id,
+        name: this.name?.value as string,
+        style: this.style?.value as string
       }
       this.spinnerService.loadingOn();
       this.groupService.saveGroup(group)

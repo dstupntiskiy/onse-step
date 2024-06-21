@@ -1,23 +1,20 @@
-<form [formGroup]="form">
     <div class="group-dialog-content">
-        <h1 mat-dialog-title>{{ data.title }}</h1>
         <div class="field-row">
             <mat-form-field>
                 <mat-label>Название</mat-label>
-                <input matInput formControlName="name">
+                <input matInput [formControl]="name">
             </mat-form-field>
             <mat-form-field>
                 <mat-label>Направление</mat-label>
-                <input matInput formControlName="style">
+                <input matInput [formControl]="style">
             </mat-form-field>
         </div>
-        @if(!isNew){
+        @if(data()?.group){
             <h3>Состав группы</h3>
-            <app-group-members [group]="this.data.group"></app-group-members>
+            <app-group-members [group]="this.data().group"></app-group-members>
         }
         <div class="actions">
             <button mat-button (click)="onCloseClick()">Закрыть</button>
             <button mat-raised-button color="accent" (click)="submit()">Сохранить</button>
         </div>
     </div>
-</form>

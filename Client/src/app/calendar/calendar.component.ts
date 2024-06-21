@@ -13,6 +13,7 @@ import { EventService } from './event/event.service';
 import { SpinnerService } from '../shared/spinner/spinner.service';
 import { finalize, map } from 'rxjs';
 import { ResizeService } from '../shared/services/resize.service';
+import { DialogService } from '../services/dialog.service';
 
 @Component({
   selector: 'app-calendar',
@@ -27,6 +28,7 @@ import { ResizeService } from '../shared/services/resize.service';
 export class CalendarComponent {
   @ViewChild('calendar') calendarComponent: FullCalendarComponent;
   resizeService = inject(ResizeService)
+  dialogService = inject(DialogService)
 
   calendarOptions: CalendarOptions = {
     buttonText:{
@@ -73,16 +75,14 @@ export class CalendarComponent {
   ){}
 
   handleDateClick(info: DateClickArg) {
-    const dialogRef = this.dialog.open(EventDialogComponent, {
-      data: { 
-        title: 'Новое Событие', 
-        event: {
-          startDateTime: info.date, 
-          isRecurrent: false},
-          id: ''}
-    });
-
-    dialogRef.afterClosed().subscribe((result: EventResult) => {
+    this.dialogService.showDialog(EventDialogComponent, 'Новое событие', 
+    { 
+      event: {
+        startDateTime: info.date, 
+        isRecurrent: false},
+        id: ''
+    })
+    .afterClosed().subscribe((result: EventResult) => {
       if (result && result.events){
           result.events?.forEach(ev => {
             var event = this.getEvent(ev as EventModel)
@@ -95,28 +95,25 @@ export class CalendarComponent {
   };
 
   handleEventClick(info: EventClickArg){
-    const dialogRef = this.dialog.open(EventDialogComponent, {
-      data: { title: 'Событие', 
-          event: {
-            id: info.event.id,
-            startDateTime: info.event.start,
-            endDateTime: info.event.end,
-            name: info.event.title,
-            group: { id: info.event.extendedProps['groupId'] },
-            coach: { id: info.event.extendedProps['coachId'] },
-            color: info.event.extendedProps['color'],
-            recurrence: {
-              startDate: info.event.extendedProps['recurrencyStartDate'],
-              endDate: info.event.extendedProps['recurrencyEndDate'],
-              id: info.event.extendedProps['recurrenceId'],
-              daysOfWeek: info.event.extendedProps['daysOfWeek'],
-              exceptDates: info.event.extendedProps['exceptDates']
-            },
-          }
-        }
-     }); 
-
-    dialogRef.afterClosed().subscribe((result: EventResult) => {
+    this.dialogService.showDialog(EventDialogComponent, 'Событие', {
+      event: {
+        id: info.event.id,
+        startDateTime: info.event.start,
+        endDateTime: info.event.end,
+        name: info.event.title,
+        group: { id: info.event.extendedProps['groupId'] },
+        coach: { id: info.event.extendedProps['coachId'] },
+        color: info.event.extendedProps['color'],
+        recurrence: {
+          startDate: info.event.extendedProps['recurrencyStartDate'],
+          endDate: info.event.extendedProps['recurrencyEndDate'],
+          id: info.event.extendedProps['recurrenceId'],
+          daysOfWeek: info.event.extendedProps['daysOfWeek'],
+          exceptDates: info.event.extendedProps['exceptDates']
+        },
+      }
+     })
+    .afterClosed().subscribe((result: EventResult) => {
       var event = this.calendarApi.getEventById(info.event.id);
       if(event){
         if (result?.action == 'save' && result.events){
@@ -126,7 +123,6 @@ export class CalendarComponent {
             event?.remove()
             this.calendarApi.addEvent(this.getEvent(e));
           });
-          this.calendarApi.refetchEvents();
           this.calendarApi.refetchEvents();
           this.snackBarService.success('Событие обновлено')
         }

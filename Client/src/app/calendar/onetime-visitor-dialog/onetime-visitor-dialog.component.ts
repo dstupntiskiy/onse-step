@@ -1,4 +1,4 @@
-import { Component, Inject, OutputRefSubscription, Signal, effect, inject, viewChildren } from '@angular/core';
+import { Component, Inject, Input, OutputRefSubscription, Signal, effect, inject, input, viewChildren } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { EventService } from '../event/event.service';
 import { CommonModule } from '@angular/common';
@@ -11,9 +11,14 @@ import { Client } from '../../shared/models/client-model';
 import { AddClientComponent } from '../../shared/components/add-client/add-client.component';
 import { MatIconModule } from '@angular/material/icon';
 import { OnetimeVisitorModel } from '../../shared/models/onetime-visitor-model';
-import { BehaviorSubject, finalize } from 'rxjs';
+import { BehaviorSubject, Observable, finalize } from 'rxjs';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 import { SpinnerService } from '../../shared/spinner/spinner.service';
+import { DynamicComponent } from '../../shared/dialog/base-dialog/base-dialog.component';
+
+export interface OnetimeVisitorDialogData{
+  eventId: string
+}
 
 @Component({
   selector: 'app-onetime-visitor-dialog',
@@ -32,26 +37,24 @@ import { SpinnerService } from '../../shared/spinner/spinner.service';
   templateUrl: './onetime-visitor-dialog.component.html',
   styleUrl: './onetime-visitor-dialog.component.scss'
 })
-export class OnetimeVisitorDialogComponent {
+export class OnetimeVisitorDialogComponent implements DynamicComponent {
   eventService = inject(EventService)
   spinnerService = inject(SpinnerService)
+
+  data = input<OnetimeVisitorDialogData>()
+
   onetimeVisitors: OnetimeVisitorModel[] = []
-  private onetimeVisitors$ = this.eventService.getOneTimeVisitors(this.data.eventId)
   clearControlSubject = new BehaviorSubject<boolean>(false)
   
   selectedClient?: Client;
-
   private subscriptions: OutputRefSubscription[] = []
   visitorRefs: Signal<readonly OnetimeVisitorComponent[]> = viewChildren(OnetimeVisitorComponent)
 
   constructor(
-    private dialogRef: MatDialogRef<OnetimeVisitorDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data : {
-      eventId: string,
-      title: string
-    })
+    private dialogRef: MatDialogRef<OnetimeVisitorDialogComponent>)
   {
     effect(() => {
+      
       this.subscriptions.forEach(s => s.unsubscribe())
       this.subscriptions = []
 
@@ -74,9 +77,10 @@ export class OnetimeVisitorDialogComponent {
   }
 
   ngOnInit(){
-    this.onetimeVisitors$.subscribe((result: OnetimeVisitorModel[]) =>{
-      this.onetimeVisitors = result
-    })
+    if (this.data() && this.data()?.eventId)
+      this.eventService.getOneTimeVisitors(this.data()?.eventId as string).subscribe((result: OnetimeVisitorModel[]) =>{
+        this.onetimeVisitors = result
+      })
   }
 
   public onClientSelect(client: Client){
@@ -84,7 +88,7 @@ export class OnetimeVisitorDialogComponent {
   }
 
   public addVisitor(){
-    this.eventService.saveOnetimeVisitor(this.data.eventId, this.selectedClient?.id as string)
+    this.eventService.saveOnetimeVisitor(this.data()?.eventId as string, this.selectedClient?.id as string)
       .subscribe((result: OnetimeVisitorModel) =>{
         this.onetimeVisitors.unshift(result)
         this.clearControlSubject.next(true)

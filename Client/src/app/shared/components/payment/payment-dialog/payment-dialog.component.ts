@@ -1,4 +1,4 @@
-import { Component, Inject, inject } from '@angular/core';
+import { Component, Inject, inject, input } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { PaymentModel } from '../../../models/payment-model';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -10,7 +10,15 @@ import { catchError, finalize, of } from 'rxjs';
 import { SpinnerService } from '../../../spinner/spinner.service';
 import { ConfirmationDialogComponent } from '../../../dialog/confirmation-dialog/confirmation-dialog.component';
 import { SnackBarService } from '../../../../services/snack-bar.service';
+import { DynamicComponent } from '../../../dialog/base-dialog/base-dialog.component';
+import { DialogService } from '../../../../services/dialog.service';
 
+export interface PaymentDialogData{
+  payment: PaymentModel,
+  memberId: string, 
+  title: string,
+  paymentType: PaymentType
+}
 @Component({
   selector: 'app-payment-dialog',
   standalone: true,
@@ -19,17 +27,11 @@ import { SnackBarService } from '../../../../services/snack-bar.service';
     MatButtonModule
   ],
   providers:[
-    {
-      provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,
-      useValue: {
-        subscriptSizing: 'dynamic'
-      }
-    }
   ],
   templateUrl: './payment-dialog.component.html',
   styleUrl: './payment-dialog.component.scss'
 })
-export class PaymentDialogComponent {
+export class PaymentDialogComponent implements DynamicComponent {
   amount = new FormControl<number>(0, 
     [Validators.required, 
       Validators.min(1),
@@ -40,20 +42,15 @@ export class PaymentDialogComponent {
   paymentService = inject(PaymentService)
   spinnerService = inject(SpinnerService)
   snackbarService = inject(SnackBarService)
+  dialogservice = inject(DialogService)
+  data = input.required<PaymentDialogData>()
 
   constructor(private dialogRef: MatDialogRef<PaymentDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data : { 
-      payment: PaymentModel,
-      memberId: string, 
-      title: string,
-      paymentType: PaymentType
-    },
-    public dialog: MatDialog
   ){}
 
   ngOnInit(){
-    this.amount.setValue(this.data.payment?.amount)
-    this.comment.setValue(this.data.payment?.comment as string)
+    this.amount.setValue(this.data().payment?.amount)
+    this.comment.setValue(this.data().payment?.comment as string)
   }
 
   onClose(){
@@ -62,7 +59,7 @@ export class PaymentDialogComponent {
 
   onSave(){
     if(this.amount.valid){
-      var payment = this.data.payment
+      var payment = this.data().payment
       if(!payment){
         payment = new PaymentModel
       }
@@ -70,7 +67,7 @@ export class PaymentDialogComponent {
       payment.comment = this.comment.value as string
       
       this.spinnerService.loadingOn()
-      this.paymentService.savePayment(payment, this.data.memberId, this.data.paymentType)
+      this.paymentService.savePayment(payment, this.data().memberId, this.data().paymentType)
         .pipe(
           finalize(() => this.spinnerService.loadingOff())
         )
@@ -81,13 +78,11 @@ export class PaymentDialogComponent {
   }
 
   onDelete(){
-    var confDialogRef = this.dialog.open(ConfirmationDialogComponent, {data:{
-      message: 'Удалить оплату?'
-    }})
+    var confDialogRef = this.dialogservice.showDialog(ConfirmationDialogComponent, '', {message: 'Удалить оплату?'})
     confDialogRef.afterClosed().subscribe((result) =>{
       if(result == true){
         this.spinnerService.loadingOn()
-        this.paymentService.deletePayment(this.data.payment.id, this.data.paymentType)
+        this.paymentService.deletePayment(this.data().payment.id, this.data().paymentType)
         .pipe(
           finalize(() => this.spinnerService.loadingOff()),
           catchError(() => {

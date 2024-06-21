@@ -1,15 +1,13 @@
 <div class="dialog">
     <div class="event-dialog-header">
-        <h1 mat-dialog-title>{{ data.title }}</h1>
         <div>
             <span class="event-day">{{ day }}</span>
         </div>
     </div>
-    <form [formGroup]="eventForm" class="event-dialog-content">
     <div class="fields-row">
         <mat-form-field class="input event-name">
             <mat-label>Название</mat-label>
-            <input matInput placeholder="Название" formControlName="name">
+            <input matInput placeholder="Название" [formControl]="name">
         </mat-form-field>
         <div class="color-wrapper">
             <button (click)="isColorSelectorOpen = !isColorSelectorOpen" class="color-selector" 
@@ -24,13 +22,13 @@
         </div>
     </div>
     <div class="fields-row">
-        <mat-checkbox formControlName="isRecur" (change)="changeIsRecur($event.checked)">
+        <mat-checkbox [formControl]="isRecur" (change)="changeIsRecur($event.checked)">
             Еженедельное событие
         </mat-checkbox>
         <ng-container *ngIf="isRecur?.value">
             <mat-form-field class="event-start">
                 <mat-label>Дни недели</mat-label>
-                <mat-select  formControlName="weekdays" multiple>
+                <mat-select  [formControl]="weekdays" multiple>
                     @for (option of weekDaysList; track option){
                         <mat-option [value]="option">{{option.name}}</mat-option>
                     }
@@ -42,13 +40,13 @@
         <div class="fields-row">
             <mat-form-field class="recur-start">
                 <mat-label>Дата старта</mat-label>
-                <input matInput [matDatepicker]="pickerStart" formControlName="recurStart">
+                <input matInput [matDatepicker]="pickerStart" [formControl]="recurStart">
                 <mat-datepicker-toggle matIconSuffix [for]="pickerStart"></mat-datepicker-toggle>
                 <mat-datepicker #pickerStart></mat-datepicker>
             </mat-form-field>
             <mat-form-field class="recur-end">
                 <mat-label>Дата окончания</mat-label>
-                <input matInput [matDatepicker]="pickerEnd" formControlName="recurEnd">
+                <input matInput [matDatepicker]="pickerEnd" [formControl]="recurEnd">
                 <mat-datepicker-toggle matIconSuffix [for]="pickerEnd"></mat-datepicker-toggle>
                 <mat-datepicker #pickerEnd></mat-datepicker>
             </mat-form-field>
@@ -57,7 +55,7 @@
     <div class="fields-row period">
         <mat-form-field class="event-start">
             <mat-label>Время начала</mat-label>
-            <mat-select  formControlName="start" >
+            <mat-select  [formControl]="start" >
                 @for (option of timeOptions; track option){
                     <mat-option [value]="option">{{option}}</mat-option>
                 }
@@ -65,7 +63,7 @@
         </mat-form-field>
         <mat-form-field class="event-end">
             <mat-label>Время окончания</mat-label>
-            <mat-select formControlName="end" >
+            <mat-select [formControl]="end" >
                 @for (option of timeOptions; track option){
                     <mat-option [value]="option">{{option}}</mat-option>
                 }
@@ -75,7 +73,7 @@
     <div class="fields-row">
         <mat-form-field class="input coach">
             <mat-label>Тренер</mat-label>
-            <mat-select  formControlName="coach" >
+            <mat-select  [formControl]="coach" >
                 @for (option of coaches; track option){
                     <mat-option [value]="option">{{option.name}}</mat-option>
                 }
@@ -85,7 +83,7 @@
     <div class="fields-row group">
         <mat-form-field class="event-group">
             <mat-label>Группа</mat-label>
-            <mat-select formControlName="group" >
+            <mat-select [formControl]="group" >
                 @for (option of groups; track option){
                     <mat-option [value]="option">{{option.name}}</mat-option>
                 }
@@ -110,5 +108,4 @@
             <button mat-raised-button color="accent" (click)="submit()">Сохранить</button>
         </div>
     </div>
-    </form>
 </div>

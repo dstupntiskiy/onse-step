@@ -1,11 +1,8 @@
 <div class="participants-dialog">
-    <div class="participants-dialog-header">
-        <h1 mat-dialog-title>{{ data.title }}</h1>
-    </div>
     <div class="participants-dialog-content">
         <div class="attendies-list">
             @for(attendy of attendants(); track attendy){
-                <app-participant [attendy]="attendy" [eventId]="data.eventId"></app-participant>
+                <app-participant [attendy]="attendy" [eventId]="data().eventId"></app-participant>
             }
         </div>
         <div class="actions">

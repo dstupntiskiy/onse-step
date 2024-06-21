@@ -1,7 +1,11 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { DynamicComponent } from '../base-dialog/base-dialog.component';
 
+export interface ConfirmationDialogData{
+  message: string;
+} 
 @Component({
   selector: 'app-confirmation-dialog',
   standalone: true,
@@ -11,11 +15,11 @@ import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/materia
   templateUrl: './confirmation-dialog.component.html',
   styleUrl: './confirmation-dialog.component.scss'
 })
-export class ConfirmationDialogComponent {
+export class ConfirmationDialogComponent implements DynamicComponent {
+  data = input<ConfirmationDialogData>()
 
-  constructor(private dialogRef: MatDialogRef<ConfirmationDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { message: string }){
-    }
+  constructor(private dialogRef: MatDialogRef<ConfirmationDialogComponent>)
+    {    }
 
     onCloseClick(){
       this.dialogRef.close();

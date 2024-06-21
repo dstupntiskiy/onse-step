@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, effect, input } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Guid } from 'typescript-guid';
@@ -10,6 +10,10 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { SnackBarService } from '../../services/snack-bar.service';
+
+export interface ClientDialogData{
+  client: Client
+}
 
 @Component({
   selector: 'app-client-dialog',
@@ -33,14 +37,21 @@ export class ClientDialogComponent {
   public get name() { return this.form.get('name')}
   public get phone() { return this.form.get('phone')}
   public get socialMediaLink() { return this.form.get('socialMediaLink')}
-  public id: string = Guid.EMPTY.toString();
+  public id: string;
+  data = input.required<ClientDialogData>()
 
   constructor(private formBuilder: FormBuilder,
-    @Inject(MAT_DIALOG_DATA) public data: { title: string, client: Client},
     private dialogRef: MatDialogRef<ClientDialogComponent>,
     private spinnerService: SpinnerService,
     private clientService: ClientService
-  ){}
+  ){
+    effect(() =>{
+      this.id = this.data().client?.id;
+      this.name?.setValue(this.data().client?.name)
+      this.phone?.setValue(this.data().client?.phone)
+      this.socialMediaLink?.setValue(this.data().client?.socialMediaLink)
+    })
+  }
 
     ngOnInit(){
       this.form = this.formBuilder.group({
@@ -48,11 +59,6 @@ export class ClientDialogComponent {
         phone: new FormControl(''),
         socialMediaLink: new FormControl('')
       })
-  
-      this.id = this.data.client?.id;
-      this.name?.setValue(this.data.client?.name)
-      this.phone?.setValue(this.data.client?.phone)
-      this.socialMediaLink?.setValue(this.data.client?.socialMediaLink)
     }
 
     onCloseClick(){
