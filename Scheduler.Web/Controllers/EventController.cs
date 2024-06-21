@@ -19,6 +19,12 @@ public class EventController(IMediator mediator) : ControllerBase
         return await mediator.Send(new GetEventQuery(id));
     }
 
+    [HttpGet("GetEventsByPeriod")]
+    public async Task<List<EventDto>> GetEventsByPeriod(DateTime startDate, DateTime endDate)
+    {
+        return await mediator.Send(new GetEventsByPeriodQuery(startDate, endDate));
+    }
+
     [HttpGet("GetAll")]
     public async Task<EventDto[]> GetAll()
     {

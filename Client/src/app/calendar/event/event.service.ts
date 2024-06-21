@@ -44,6 +44,16 @@ export class EventService extends BaseHttpService{
     return this.get<EventModel[]>('GetAll');
    }
 
+   getEventsByPeriod(startDate: string, endDate: string): Observable<EventModel[]>{
+    var options: IAngularHttpRequestOptions = {
+      params: {
+        startDate: startDate,
+        endDate: endDate
+      }
+    }
+    return this.get<EventModel[]>('GetEventsByPeriod', options)
+   }
+
    saveEvent(event: EventModel):Observable<EventModel[]>{
     var eventRequest = this.getEventRequestModel(event)
     return this.post<EventModel[]>('', eventRequest);

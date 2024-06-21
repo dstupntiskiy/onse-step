@@ -1,6 +1,6 @@
 import { Component, ViewChild, inject } from '@angular/core';
 import { FullCalendarComponent, FullCalendarModule } from '@fullcalendar/angular';
-import { CalendarApi, CalendarOptions, EventClickArg, EventInput } from '@fullcalendar/core';
+import { CalendarApi, CalendarOptions, DateInput, DateRangeInput, EventClickArg, EventInput } from '@fullcalendar/core';
 import interationPlugin, { DateClickArg } from '@fullcalendar/interaction'
 import timeGridWeek from '@fullcalendar/timegrid'
 import dayGridPlugin from '@fullcalendar/daygrid'
@@ -29,6 +29,8 @@ export class CalendarComponent {
   @ViewChild('calendar') calendarComponent: FullCalendarComponent;
   resizeService = inject(ResizeService)
   dialogService = inject(DialogService)
+
+  private initialLoadCompleted: boolean = false
 
   calendarOptions: CalendarOptions = {
     buttonText:{
@@ -60,6 +62,7 @@ export class CalendarComponent {
     firstDay: 1,
     
     height: 'calc(100vh - 32px)',
+    datesSet: this.handleDateSet.bind(this),
     dateClick: this.handleDateClick.bind(this),
     eventClick: this.handleEventClick.bind(this)
   }
@@ -93,6 +96,19 @@ export class CalendarComponent {
       }
     })
   };
+
+  handleDateSet(dateInfo: any){
+    if (this.initialLoadCompleted){
+      this.spinnerService.loadingOn();
+      this.eventService.getEventsByPeriod(dateInfo.startStr, dateInfo.endStr)
+      .pipe(
+        finalize(() => this.spinnerService.loadingOff()),
+        map((events: EventModel[]) => events.map(event => this.getEvent(event)))
+      )
+      .subscribe(x => this.events = x)
+    }
+    this.initialLoadCompleted = true
+  }
 
   handleEventClick(info: EventClickArg){
     this.dialogService.showDialog(EventDialogComponent, 'Событие', {
@@ -141,18 +157,6 @@ export class CalendarComponent {
         }
       }
     });
-  }
-
-  ngOnInit(){
-   
-
-    this.spinnerService.loadingOn();
-    this.eventService.getEvents()
-    .pipe(
-      finalize(() => this.spinnerService.loadingOff()),
-      map((events: EventModel[]) => events.map(event => this.getEvent(event)))
-    )
-    .subscribe(x => this.events = x)
   }
 
   ngAfterViewInit(){
