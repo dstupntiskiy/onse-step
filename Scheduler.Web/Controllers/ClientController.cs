@@ -20,7 +20,7 @@ public class ClientController(IMediator mediator) : ControllerBase
     }
 
     [HttpGet("GetAllByQuery")]
-    public async Task<List<ClientProjection>> GetAllByQuery(string query)
+    public async Task<List<ClientDto>> GetAllByQuery(string query)
     {
         return await mediator.Send(new GetClientsByQuery(query));
     }
