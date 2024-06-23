@@ -7,6 +7,12 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { DatePipe } from '@angular/common';
 import { DialogService } from '../services/dialog.service';
 import { ClientDialogComponent } from './client-dialog/client-dialog.component';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { SnackBarService } from '../services/snack-bar.service';
+import { MatInputModule } from '@angular/material/input';
+import { SpinnerService } from '../shared/spinner/spinner.service';
+import { debounceTime, finalize } from 'rxjs';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-clients',
@@ -14,16 +20,13 @@ import { ClientDialogComponent } from './client-dialog/client-dialog.component';
   imports: [
     MatTableModule,
     MatButtonModule,
-    DatePipe
+    DatePipe,
+    ReactiveFormsModule,
+    MatInputModule,
+    MatIconModule
   ],
   providers:[
-    {provide: MatDialogRef,
-      useValue: {}
-    },
-    {
-      provide: MAT_DIALOG_DATA,
-      useValue: {}
-    },
+    
     ClientService
   ],
   templateUrl: './clients.component.html',
@@ -34,13 +37,45 @@ export class ClientsComponent {
   public displayedColumns: string[] = ['createDate', 'name', 'phone', 'socialMediaLink']
   dialogService = inject(DialogService)
   clientService = inject(ClientService)
+  spinnerService = inject(SpinnerService)
+
+  nameFilter = new FormControl<string>('')
+  private debounceTime = 300
 
   constructor(){}
 
   ngOnInit(){
-    
-    this.clientService.getClients().subscribe((result: Client[]) =>{
-      this.clients = result
+    this.refetchClients()
+
+    this.nameFilter.valueChanges
+      .pipe(
+        debounceTime(this.debounceTime)
+      )
+      .subscribe((value) =>{
+        if(value){
+          this.spinnerService.loadingOn()
+          this.clientService.getClientsByQuery(value)
+            .pipe(
+              finalize(() => this.spinnerService.loadingOff())
+            )
+            .subscribe((result: Client[]) =>{
+              this.clients = result
+            })
+        }
+        else{
+          this.refetchClients()
+        }
+      })
+  }
+
+  private refetchClients(){
+    this.spinnerService.loadingOn()
+    this.clientService.getClients()
+      .pipe(
+        finalize(() => this.spinnerService.loadingOff())
+      )
+      .subscribe((result: Client[]) =>{
+        this.clients = result
     })
   }
 
@@ -65,4 +100,6 @@ export class ClientsComponent {
         }
       })
   }
+
+
 }

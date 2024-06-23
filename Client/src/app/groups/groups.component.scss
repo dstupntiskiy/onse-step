@@ -3,7 +3,10 @@
 .groups-content{
     margin: 16px;
     @include tr-hover;
-
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    
     .header-actions{
         display: flex;
         gap: 16px;
