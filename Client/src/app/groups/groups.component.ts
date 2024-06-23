@@ -6,13 +6,19 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Group, GroupWithDetails } from '../shared/models/group-model';
 import { DialogService } from '../services/dialog.service';
 import { GroupDialogComponent } from './group-dialog/group-dialog.component';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-groups',
   standalone: true,
   imports: [
     MatTableModule,
-    MatButtonModule
+    MatButtonModule,
+    MatCheckboxModule,
+    MatSlideToggleModule,
+    ReactiveFormsModule
   ],
   templateUrl: './groups.component.html',
   styleUrl: './groups.component.scss',
@@ -27,9 +33,11 @@ import { GroupDialogComponent } from './group-dialog/group-dialog.component';
   GroupService]
 })
 export class GroupsComponent {
-  displayedColumns: string[] = ['name', 'style', 'counts']
+  displayedColumns: string[] = ['active','name', 'style', 'counts']
   dataSource: GroupWithDetails[]
   dialogService = inject(DialogService)
+
+  onlyActive = new FormControl<boolean>(true)
 
   constructor(
     private groupService: GroupService,
@@ -51,21 +59,35 @@ export class GroupsComponent {
   }
 
   ngOnInit(){
-    this.groupService.getGoupsWithDetails().subscribe( (groups) =>
-      this.dataSource = groups
-    );
+    this.refetchGroups()
+
+    this.onlyActive.valueChanges.subscribe(() =>{
+      this.refetchGroups();
+    })
   }
 
   handleRowClick(row: GroupWithDetails){
     this.dialogService.showDialog(GroupDialogComponent, row.name, { group: row })
-      .afterClosed().subscribe(() =>{
-        this.groupService.getGoupWithDetails(row.id)
-          .subscribe((groupWithDetails: GroupWithDetails) =>{
-            var index = this.dataSource.findIndex(x => x.id === row.id)
-          this.dataSource[index] = groupWithDetails;
-          this.dataSource = Object.assign([], this.dataSource);
-          })
+      .afterClosed().subscribe((result: Group) =>{
+        if(result){
+          this.groupService.getGoupWithDetails(result.id)
+            .subscribe((groupWithDetails: GroupWithDetails) =>{
+              var index = this.dataSource.findIndex(x => x.id === result.id)
+            this.dataSource[index] = groupWithDetails;
+            this.dataSource = Object.assign([], this.dataSource);
+            })
+          }
       })
+  }
+
+  toggleOnlyActive(){
+
+  }
+
+  private refetchGroups(){
+    this.groupService.getGoupsWithDetails(this.onlyActive.value as boolean).subscribe( (groups) =>
+      this.dataSource = groups
+    );
   }
 
 }

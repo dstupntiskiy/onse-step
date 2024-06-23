@@ -54,11 +54,13 @@ export abstract class BaseHttpService {
   private handleError(error: HttpErrorResponse){
     if (error.status === 0){
       console.error("Произошла ошибка: ", error.error);
-    } 
-    else if (error.status === 401) {
-        this.snackbarService.error("Не авторизованный пользователь")
     }
-    else{
+    else if(!error.error)
+    {
+        this.snackbarService.error('Произошла неизвестная ошибка')
+    }
+    else 
+    {
         this.snackbarService.error(error.error)
     }
     return throwError(() => new Error(error.error))

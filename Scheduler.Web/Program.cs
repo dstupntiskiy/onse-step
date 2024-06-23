@@ -1,4 +1,5 @@
 using Scheduler;
+using Scheduler.Infrastructure.Data;
 using Serilog;
 using Serilog.Core;
 
@@ -16,7 +17,14 @@ public class Program
         
         try
         {
-            await CreateWebHostBuilder().Build().RunAsync();
+            var host = CreateWebHostBuilder().Build();
+
+            using (var scope = host.Services.CreateScope())
+            {
+                var dbInitializer = scope.ServiceProvider.GetRequiredService<DatabaseInitializer>();
+                dbInitializer.Initialize();
+            }
+            await host.RunAsync();
         }
         catch (Exception ex)
         {

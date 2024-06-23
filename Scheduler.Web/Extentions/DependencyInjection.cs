@@ -4,6 +4,7 @@ using Microsoft.OpenApi.Models;
 using Scheduler.Application.Entities;
 using Scheduler.Application.Entities.Base;
 using Scheduler.Application.Interfaces;
+using Scheduler.Infrastructure.Data;
 using Scheduler.Infrastructure.Repository;
 using Scheduler.Mappings;
 
@@ -23,7 +24,8 @@ public static class DependencyInjection
             .AddTransient<IRepository<OneTimeVisit>, Repository<OneTimeVisit>>()
             .AddTransient<IRepository<OneTimeVisitPayment>, Repository<OneTimeVisitPayment>>()
             .AddTransient<IRepository<User>, Repository<User>>()
-            .AddTransient<IRepository<Coach>, Repository<Coach>>();
+            .AddTransient<IRepository<Coach>, Repository<Coach>>()
+            .AddTransient<DatabaseInitializer>();
 
     public static IServiceCollection AddWebApi(this IServiceCollection services)
     {

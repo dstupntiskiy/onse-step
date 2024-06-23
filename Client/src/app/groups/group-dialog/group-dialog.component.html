@@ -9,6 +9,9 @@
                 <input matInput [formControl]="style">
             </mat-form-field>
         </div>
+        <div class="field-row">
+                <mat-slide-toggle [formControl]="active">Активность</mat-slide-toggle>
+        </div>
         @if(data()?.group){
             <h3>Состав группы</h3>
             <app-group-members [group]="this.data().group"></app-group-members>

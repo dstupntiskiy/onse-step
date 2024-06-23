@@ -11,6 +11,7 @@ import { SpinnerService } from '../../shared/spinner/spinner.service';
 import { GroupMembersComponent } from '../group-members/group-members.component';
 import { DynamicComponent } from '../../shared/dialog/base-dialog/base-dialog.component';
 import { MatDialogRef } from '@angular/material/dialog';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 export interface GroupDialogData{
   group: Group
@@ -24,6 +25,7 @@ export interface GroupDialogData{
     MatButtonModule,
     FormsModule,
     ReactiveFormsModule,
+    MatSlideToggleModule,
     GroupMembersComponent
   ],
   providers:[
@@ -36,6 +38,7 @@ export interface GroupDialogData{
 export class GroupDialogComponent implements DynamicComponent {
   name = new FormControl<string>('', [Validators.required])
   style = new FormControl<string>('')
+  active = new FormControl<boolean>(true)
   public isNew: boolean = false;
 
   data = input.required<GroupDialogData>() 
@@ -46,6 +49,7 @@ export class GroupDialogComponent implements DynamicComponent {
     effect(()=>{
       this.name?.setValue(this.data()?.group?.name as string);
       this.style?.setValue(this.data()?.group?.style as string);
+      this.active?.setValue(this.data().group.active)
     })
   }
 
@@ -61,7 +65,8 @@ export class GroupDialogComponent implements DynamicComponent {
       const group: Group = {
         id: this.data()?.group?.id,
         name: this.name?.value as string,
-        style: this.style?.value as string
+        style: this.style?.value as string,
+        active: this.active.value as boolean
       }
       this.spinnerService.loadingOn();
       this.groupService.saveGroup(group)

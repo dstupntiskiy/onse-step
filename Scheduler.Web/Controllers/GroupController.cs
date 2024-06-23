@@ -25,9 +25,9 @@ public class GroupController(IMediator mediator) : ControllerBase
     }
     
     [HttpGet("GetAllWithDetails")]
-    public async Task<List<GroupDetailedDto>> GetAllWithDetails()
+    public async Task<List<GroupDetailedDto>> GetAllWithDetails(bool onlyActive = false)
     {
-        return await mediator.Send(new GetAllGroupsWithDetails());
+        return await mediator.Send(new GetAllGroupsWithDetails(onlyActive));
     }
     
     [HttpGet("GetGroupWithDetails")]

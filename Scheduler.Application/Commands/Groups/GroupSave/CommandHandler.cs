@@ -17,6 +17,7 @@ namespace Scheduler.Application.Commands.Groups.GroupSave;
 
             group.Name = request.Name;
             group.Style = request.Style;
+            group.Active = request.Active;
 
             if (groupRepository.Query().Any(x => x.Name.Equals(group.Name) && x.Id != request.Id))
             {

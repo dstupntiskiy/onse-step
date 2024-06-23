@@ -208,7 +208,7 @@ export class EventDialogComponent {
         startDateTime: setTimeFromStringToDate(start, this.start?.value as string),
         endDateTime: setTimeFromStringToDate(end, this.end?.value as string),
         name: this.name?.value as string,
-        group: { id: (this.group?.value as Group)?.id },
+        group: { id: (this.group?.value as Group)?.id, active: true },
         color: this.color,
         coach: { id: (this.coach?.value as CoachModel)?.id }
       }

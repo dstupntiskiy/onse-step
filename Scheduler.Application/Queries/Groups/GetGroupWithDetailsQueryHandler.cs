@@ -1,3 +1,4 @@
+using AutoMapper;
 using MediatR;
 using Scheduler.Application.Common.Dtos;
 using Scheduler.Application.Entities;
@@ -5,7 +6,8 @@ using Scheduler.Application.Interfaces;
 
 namespace Scheduler.Application.Queries.Groups;
 
-public class GetGroupWithDetailsQueryHandler(IRepository<Group> groupRepository,
+public class GetGroupWithDetailsQueryHandler(IMapper mapper,
+    IRepository<Group> groupRepository,
     IRepository<GroupMemberLink> groupMembersRepository,
     IRepository<GroupPayment> groupPaymentRepository) : IRequestHandler<GetGroupWithDetailsQuery, GroupDetailedDto>
 {
@@ -38,13 +40,12 @@ public class GetGroupWithDetailsQueryHandler(IRepository<Group> groupRepository,
             .GroupBy(x => x.gr)
             .ToList();
 
-        var result = grr.Select(gr => new GroupDetailedDto()
+        var result = grr.Select(gr =>
         {
-            Name = gr.Key.Name,
-            Id = gr.Key.Id,
-            Style = gr.Key.Style,
-            MembersCount = gr.Count(g => g.member != null),
-            PayedCount = gr.Sum(g => g.payment.Count(p => p != null))
+            var group = mapper.Map<GroupDetailedDto>(gr.Key);
+            group.MembersCount = gr.Count(g => g.member != null);
+            group.PayedCount = gr.Sum(g => g.payment.Count(p => p != null));
+            return group;
         }).ToList().Single();
 
         return result;

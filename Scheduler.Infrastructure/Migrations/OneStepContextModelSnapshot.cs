@@ -142,6 +142,9 @@ namespace Scheduler.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<bool>("Active")
+                        .HasColumnType("boolean");
+
                     b.Property<DateTime?>("CreateDate")
                         .HasColumnType("timestamp with time zone");
 

@@ -1,7 +1,10 @@
 export class Group{
-    id: string;
-    name?: string;
-    style?: string;
+    id: string
+    name?: string
+    style?: string
+    active: boolean
+
+    constructor(){}
 }
 
 export class GroupWithDetails extends Group{

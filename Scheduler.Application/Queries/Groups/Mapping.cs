@@ -11,7 +11,8 @@ public class Mapping : Profile
     {
         this.CreateMap<Group, GroupDto>()
             .ForMember(x => x.Name, y => y.MapFrom(z => z.Name))
-            .ForMember(x => x.Style, y => y.MapFrom(z => z.Style));
+            .ForMember(x => x.Style, y => y.MapFrom(z => z.Style))
+            .ForMember(x => x.Active, y => y.MapFrom(z => z.Active));
 
         this.CreateMap<Group, GroupDetailedDto>()
             .ForMember(x => x.Name, y => y.MapFrom(z => z.Name))

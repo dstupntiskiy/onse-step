@@ -23,8 +23,11 @@ export class GroupService extends BaseHttpService{
       return this.get<Group[]>('GetAll');
     }
 
-    getGoupsWithDetails(): Observable<GroupWithDetails[]>{
-      return this.get<GroupWithDetails[]>('GetAllWithDetails');
+    getGoupsWithDetails(onlyActive: boolean): Observable<GroupWithDetails[]>{
+      var options: IAngularHttpRequestOptions = {
+        params: { onlyActive: String(onlyActive) }
+      }
+      return this.get<GroupWithDetails[]>('GetAllWithDetails', options);
     }
 
     getGoupWithDetails(groupId: string): Observable<GroupWithDetails>{

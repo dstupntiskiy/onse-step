@@ -8,8 +8,8 @@ public class GroupMap : AuditableEntityMap<Group>
     {
         Table("\"Group\"");
         
-        this.Map(x => x.Name).Column("`Name`");
-        this.Map(x => x.Style).Column("`Style`");
-        //HasMany(x => x.Members).Inverse().Cascade.All();
+        Map(x => x.Name).Column("`Name`");
+        Map(x => x.Style).Column("`Style`");
+        Map(x => x.Active).Column("`Active`");
     }
 }

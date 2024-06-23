@@ -4,6 +4,12 @@
     margin: 16px;
     @include tr-hover;
 
+    .header-actions{
+        display: flex;
+        gap: 16px;
+        align-items: center;
+    }
+
     .red{
         color: red;
     }
