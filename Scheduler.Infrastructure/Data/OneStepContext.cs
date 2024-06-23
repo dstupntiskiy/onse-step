@@ -18,7 +18,7 @@ public class OneStepContext: DbContext, IOneStepContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=onestep;User ID=postgres;Password=prigovor;");
+        optionsBuilder.UseNpgsql(this.Configuration.GetConnectionString("DefaultConnection"));
     }
 
     public async Task<int> SaveChanges()
