@@ -1,0 +1,34 @@
+<div class="membership-dialog-content">
+    <div class="membership-counts">
+        <mat-form-field>
+            <mat-label>Сумма</mat-label>
+            <input matInput [formControl]="amount">
+        </mat-form-field>
+        <mat-form-field>
+            <mat-label>Посещения</mat-label>
+            <input matInput [formControl]="visitsNumber">
+        </mat-form-field>
+    </div>
+    <div class="membership-dates">
+        <mat-form-field>
+            <mat-label>Начало</mat-label>
+            <input matInput [matDatepicker]="pickerStart" [formControl]="startDate">
+            <mat-datepicker-toggle matIconSuffix [for]="pickerStart"></mat-datepicker-toggle>
+            <mat-datepicker #pickerStart></mat-datepicker>
+        </mat-form-field>
+        <mat-form-field>
+            <mat-label>Конец</mat-label>
+            <input matInput [matDatepicker]="pickerEnd" [formControl]="endDate">
+            <mat-datepicker-toggle matIconSuffix [for]="pickerEnd"></mat-datepicker-toggle>
+            <mat-datepicker #pickerEnd></mat-datepicker>
+        </mat-form-field>
+    </div>
+    <mat-form-field>
+        <mat-label>Комментарий</mat-label>
+        <input matInput [formControl]="comment">
+    </mat-form-field>
+    <div class="actions">
+        <button mat-button (click)="onClose()">Закрыть</button>
+        <button mat-raised-button color="accent" (click)="onSave()">Сохранить</button>
+    </div>
+</div>

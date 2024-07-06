@@ -1,8 +1,23 @@
 .client-dialog-content{
-    margin: 16px;
     display: flex;
     flex-direction: column;
     gap: 16px;
+
+    .memberships{
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+
+        .memberships-header{
+            display: flex;
+            gap: 16px;
+            align-items: center;
+
+            h3{
+                margin: 0;
+            }
+        }
+    }
 
     .actions{
         display: flex;

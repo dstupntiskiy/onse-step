@@ -4,9 +4,9 @@ using Scheduler.Application.Entities;
 
 namespace Scheduler.Application.Commands.Payments;
 
-public class Mapping : Profile
+public class Mappings : Profile
 {
-    public Mapping()
+    public Mappings()
     {
         CreateMap<Payment, PaymentDto>()
             .ForMember(x => x.Amount, y => y.MapFrom(z => z.Amount))

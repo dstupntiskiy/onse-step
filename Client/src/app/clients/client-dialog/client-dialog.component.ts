@@ -1,4 +1,4 @@
-import { Component, Inject, effect, input } from '@angular/core';
+import { Component, Inject, effect, inject, input } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Guid } from 'typescript-guid';
@@ -10,6 +10,11 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { SnackBarService } from '../../services/snack-bar.service';
+import { DialogService } from '../../services/dialog.service';
+import { MembershipDialogComponent } from '../../membership/membership-dialog/membership-dialog.component';
+import { MembershipModel, MembershipWithDetails } from '../../shared/models/membership-model';
+import { MembershipService } from '../../membership/membership.service';
+import { MembershipComponent } from '../../membership/membership.component';
 
 export interface ClientDialogData{
   client: Client
@@ -23,7 +28,8 @@ export interface ClientDialogData{
     MatInputModule,
     MatButtonModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    MembershipComponent
   ],
   providers:[
     ClientService,
@@ -40,6 +46,10 @@ export class ClientDialogComponent {
   public id: string;
   data = input.required<ClientDialogData>()
 
+  dialogService = inject(DialogService)
+  memberships: MembershipWithDetails[] = []
+  membershipService = inject(MembershipService)
+
   constructor(private formBuilder: FormBuilder,
     private dialogRef: MatDialogRef<ClientDialogComponent>,
     private spinnerService: SpinnerService,
@@ -50,6 +60,11 @@ export class ClientDialogComponent {
       this.name?.setValue(this.data().client?.name)
       this.phone?.setValue(this.data().client?.phone)
       this.socialMediaLink?.setValue(this.data().client?.socialMediaLink)
+
+      this.membershipService.getMembershipsByClient(this.id)
+        .subscribe((result: MembershipWithDetails[]) =>{
+          this.memberships = result
+        })
     })
   }
 
@@ -63,6 +78,17 @@ export class ClientDialogComponent {
 
     onCloseClick(){
       this.dialogRef.close();
+    }
+
+    onAddMembershipClick(){
+      this.dialogService.showDialog(MembershipDialogComponent, 'Абонемент', {
+        client: this.data().client
+      })
+      .afterClosed().subscribe((result: MembershipWithDetails) =>{
+        if(result){
+          this.memberships.unshift(result)
+        }
+      })
     }
 
     submit(){

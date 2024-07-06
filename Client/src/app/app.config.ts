@@ -8,6 +8,8 @@ import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptors, withInterceptor
 import { AuthInterceptor } from './shared/Interceptors/authInterceptor';
 import { JwtModule } from '@auth0/angular-jwt';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
+import { DateAdapter, MAT_DATE_LOCALE, provideNativeDateAdapter } from '@angular/material/core';
+import { CustomDateAdapter } from './shared/adapters/custom.date.adapter';
 
 export function tokenGetter() {
   return localStorage.getItem("jwtToken");
@@ -27,6 +29,9 @@ export const appConfig: ApplicationConfig = {
         subscriptSizing: 'dynamic'
       }
     },
+    provideNativeDateAdapter(),
+    { provide: MAT_DATE_LOCALE, useValue: 'ru-RU' },
+    { provide: DateAdapter, useClass: CustomDateAdapter},
     provideRouter(routes),
     importProvidersFrom(
       JwtModule.forRoot({
