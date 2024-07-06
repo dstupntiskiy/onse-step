@@ -17,7 +17,8 @@ public class GetClientsByQueryHandler(IMapper mapper, IRepository<Client> client
             throw new ValidationException("Запрос не может быть пустым");
         }
         var clients = clientRepository.Query()
-            .Where(x => x.Name.ToLower().Contains(request.Query.ToLower())).ToList();
+            .Where(x => x.Name.ToLower().Contains(request.Query.ToLower())
+             || x.SocialMediaLink.ToLower().Contains(request.Query.ToLower())).ToList();
 
         return mapper.Map<List<ClientDto>>(clients);
     }
