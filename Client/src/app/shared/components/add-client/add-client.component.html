@@ -2,7 +2,13 @@
     <input matInput [formControl]="clientControl" [matAutocomplete]="auto" placeholder="Добавить участника">
     <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="onOptionSelected()">
         @for (option of filteredOptions$ | async; track option) {
-        <mat-option [value]="option">{{option.name}}</mat-option>
+        <mat-option [value]="option">{{option.name}} 
+            @if(option.socialMediaLink){
+                <ng-container>
+                    ({{option.socialMediaLink}})
+                </ng-container>
+            }
+        </mat-option>
         }
     </mat-autocomplete>
 </mat-form-field>
