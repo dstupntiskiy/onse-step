@@ -9,6 +9,14 @@ import { GroupMember } from '../shared/models/group-members';
 export interface GroupData{
   title: string
 }
+
+export interface GroupSaveModel{
+  id: string
+  name?: string
+  styleId?: string
+  active: boolean
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -38,7 +46,13 @@ export class GroupService extends BaseHttpService{
     }
 
     saveGroup(group: Group): Observable<Group>{
-      return this.post<Group>('', group)
+      var groupSave: GroupSaveModel = {
+        id: group.id,
+        active: group.active,
+        name: group.name,
+        styleId: group.style?.id
+      }
+      return this.post<Group>('', groupSave)
     }
 
     getGroupMembersCount(groupId: string): Observable<number>{

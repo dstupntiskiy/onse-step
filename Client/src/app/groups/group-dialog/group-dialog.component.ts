@@ -12,6 +12,9 @@ import { GroupMembersComponent } from '../group-members/group-members.component'
 import { DynamicComponent } from '../../shared/dialog/base-dialog/base-dialog.component';
 import { MatDialogRef } from '@angular/material/dialog';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { StyleService } from '../../styles/style.service';
+import { StyleModel } from '../../shared/models/style-model';
+import { MatSelectModule } from '@angular/material/select';
 
 export interface GroupDialogData{
   group: Group
@@ -26,7 +29,8 @@ export interface GroupDialogData{
     FormsModule,
     ReactiveFormsModule,
     MatSlideToggleModule,
-    GroupMembersComponent
+    GroupMembersComponent,
+    MatSelectModule
   ],
   providers:[
     GroupService,
@@ -37,18 +41,27 @@ export interface GroupDialogData{
 })
 export class GroupDialogComponent implements DynamicComponent {
   name = new FormControl<string>('', [Validators.required])
-  style = new FormControl<string>('')
+  style = new FormControl<StyleModel| null>(null)
   active = new FormControl<boolean>(true)
+
   public isNew: boolean = false;
+  styles: StyleModel[] = []
 
   data = input.required<GroupDialogData>() 
   groupService = inject(GroupService)
   spinnerService = inject(SpinnerService)
+  styleService = inject(StyleService)
+
   constructor(private dialogRef: MatDialogRef<GroupDialogComponent>,
   ){
     effect(()=>{
+      this.styleService.getAllStyles()
+        .subscribe((styles: StyleModel[]) =>{
+          this.styles = styles
+          this.style.setValue(this.styles.find(x => x.id === this.data().group.style?.id) as StyleModel)
+        })
+
       this.name?.setValue(this.data()?.group?.name as string);
-      this.style?.setValue(this.data()?.group?.style as string);
       this.active?.setValue(this.data().group.active)
     })
   }
@@ -65,7 +78,7 @@ export class GroupDialogComponent implements DynamicComponent {
       const group: Group = {
         id: this.data()?.group?.id,
         name: this.name?.value as string,
-        style: this.style?.value as string,
+        style: this.style?.value as StyleModel,
         active: this.active.value as boolean
       }
       this.spinnerService.loadingOn();

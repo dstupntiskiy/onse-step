@@ -17,5 +17,6 @@ public interface IOneStepContext
     DbSet<Coach> Coach { get; set; }
     DbSet<User> User { get; set; }
     DbSet<Membership> Membership { get; set; }
+    DbSet<Style> Style { get; set; }
     Task<int> SaveChanges();
 }

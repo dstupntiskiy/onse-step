@@ -30,6 +30,7 @@ export class SidebarComponent {
     { name: 'Календарь', link: ""}, 
     { name: 'Группы', link:'groups'},
     { name: 'Клиенты', link:'clients'},
-    { name: 'Тренеры', link:'coaches'}
+    { name: 'Тренеры', link:'coaches'},
+    { name: 'Направления', link:'styles'}
   ]
 }

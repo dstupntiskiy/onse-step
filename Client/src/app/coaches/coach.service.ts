@@ -5,6 +5,12 @@ import { BaseHttpService, IAngularHttpRequestOptions } from '../services/base-ht
 import { Observable } from 'rxjs';
 import { CoachModel } from '../shared/models/coach-model';
 
+export interface CoachSaveModel{
+  id: string
+  name: string
+  active?: boolean
+  styleId?: string
+}
 @Injectable({
   providedIn: 'root'
 })
@@ -24,6 +30,12 @@ export class CoachService extends BaseHttpService{
    }
 
    SaveCoach(coach: CoachModel): Observable<CoachModel>{
-    return this.post<CoachModel>('', coach)
+    var coachSave: CoachSaveModel = {
+      id: coach.id,
+      active: coach.active,
+      name: coach.name as string,
+      styleId: coach.style?.id
+    }
+    return this.post<CoachModel>('', coachSave)
    }
 }

@@ -9,7 +9,9 @@ public class GroupMap : AuditableEntityMap<Group>
         Table("\"Group\"");
         
         Map(x => x.Name).Column("`Name`");
-        Map(x => x.Style).Column("`Style`");
+        References(x => x.Style).Column("`StyleId`")
+            .NotFound.Ignore()
+            .Nullable();
         Map(x => x.Active).Column("`Active`");
     }
 }

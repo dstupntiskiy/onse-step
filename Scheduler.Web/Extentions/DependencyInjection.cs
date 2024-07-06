@@ -26,6 +26,7 @@ public static class DependencyInjection
             .AddTransient<IRepository<User>, Repository<User>>()
             .AddTransient<IRepository<Coach>, Repository<Coach>>()
             .AddTransient<IRepository<Membership>, Repository<Membership>>()
+            .AddTransient<IRepository<Style>, Repository<Style>>()
             .AddTransient<DatabaseInitializer>();
 
     public static IServiceCollection AddWebApi(this IServiceCollection services)

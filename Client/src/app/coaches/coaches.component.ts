@@ -14,15 +14,7 @@ import { CoachDialogComponent } from './coach-dialog/coach-dialog.component';
     MatTableModule,
     MatButtonModule],
   providers:[
-    CoachService,
-    {
-      provide: MatDialogRef,
-      useValue: {}
-    },
-    {
-      provide: MAT_DIALOG_DATA,
-      useValue: {}
-    }
+    CoachService
   ],
   templateUrl: './coaches.component.html',
   styleUrl: './coaches.component.scss'

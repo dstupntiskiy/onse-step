@@ -1,7 +1,9 @@
+import { StyleModel } from "./style-model";
+
 export class Group{
     id: string
     name?: string
-    style?: string
+    style?: StyleModel
     active: boolean
 
     constructor(){}

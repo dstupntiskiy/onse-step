@@ -6,7 +6,11 @@
         </mat-form-field>
         <mat-form-field>
             <mat-label>Направление</mat-label>
-            <input matInput [formControl]="style">
+            <mat-select [formControl]="style">
+                @for(option of styles; track style){
+                    <mat-option [value]="option">{{option.name}}</mat-option>
+                }
+            </mat-select>
         </mat-form-field>
     </div>
     <div class="actions">

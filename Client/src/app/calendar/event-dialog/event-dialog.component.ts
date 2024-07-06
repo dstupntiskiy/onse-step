@@ -210,7 +210,7 @@ export class EventDialogComponent {
         name: this.name?.value as string,
         group: { id: (this.group?.value as Group)?.id, active: true },
         color: this.color,
-        coach: { id: (this.coach?.value as CoachModel)?.id }
+        coach: { id: (this.coach?.value as CoachModel)?.id as string }
       }
       if (this.isRecur?.value){
         data.recurrence = {

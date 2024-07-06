@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Scheduler.Infrastructure.Data;
@@ -11,9 +12,11 @@ using Scheduler.Infrastructure.Data;
 namespace Scheduler.Infrastructure.Migrations
 {
     [DbContext(typeof(OneStepContext))]
-    partial class OneStepContextModelSnapshot : ModelSnapshot
+    [Migration("20240706181458_style")]
+    partial class style
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -62,12 +65,10 @@ namespace Scheduler.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("StyleId")
-                        .HasColumnType("uuid");
+                    b.Property<string>("Style")
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("StyleId");
 
                     b.ToTable("Coach");
                 });
@@ -154,12 +155,10 @@ namespace Scheduler.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("StyleId")
-                        .HasColumnType("uuid");
+                    b.Property<string>("Style")
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("StyleId");
 
                     b.ToTable("Group");
                 });
@@ -369,15 +368,6 @@ namespace Scheduler.Infrastructure.Migrations
                     b.ToTable("User");
                 });
 
-            modelBuilder.Entity("Scheduler.Application.Entities.Coach", b =>
-                {
-                    b.HasOne("Scheduler.Application.Entities.Style", "Style")
-                        .WithMany()
-                        .HasForeignKey("StyleId");
-
-                    b.Navigation("Style");
-                });
-
             modelBuilder.Entity("Scheduler.Application.Entities.Event", b =>
                 {
                     b.HasOne("Scheduler.Application.Entities.Coach", "Coach")
@@ -416,15 +406,6 @@ namespace Scheduler.Infrastructure.Migrations
                     b.Navigation("Client");
 
                     b.Navigation("Event");
-                });
-
-            modelBuilder.Entity("Scheduler.Application.Entities.Group", b =>
-                {
-                    b.HasOne("Scheduler.Application.Entities.Style", "Style")
-                        .WithMany()
-                        .HasForeignKey("StyleId");
-
-                    b.Navigation("Style");
                 });
 
             modelBuilder.Entity("Scheduler.Application.Entities.GroupMemberLink", b =>
