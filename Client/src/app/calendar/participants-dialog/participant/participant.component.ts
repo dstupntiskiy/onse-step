@@ -5,6 +5,7 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { Attendence } from '../../../shared/models/attendence-model';
 import { EventService } from '../../event/event.service';
 import { SnackBarService } from '../../../services/snack-bar.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-participant',
@@ -38,20 +39,26 @@ export class ParticipantComponent {
           {
             return this.eventService.addAttendy(this.eventId(), this.attendy().client.id)
               .pipe(
-                catchError(() =>{
-                  this.snackBarService.error("Не удалось отметить участника")
-                  this.isAttendant.setValue(false, {emitEvent: false})
-                  return of(false)
+                catchError((error: HttpErrorResponse) =>{
+                  if(error.status != 200){
+                    this.snackBarService.error("Не удалось удалить участника")
+                    this.isAttendant.setValue(true, {emitEvent: false})
+                    return of(false)
+                  }
+                  return of(true)
                 })
               )
           }
           else{
             return this.eventService.removeAttendy(this.eventId(), this.attendy().client.id)
               .pipe(
-                catchError(() => {
-                  this.snackBarService.error("Не удалось удалить участника")
-                  this.isAttendant.setValue(true, {emitEvent: false})
-                  return of(true)
+                catchError((error: HttpErrorResponse) => {
+                  if(error.status != 200){
+                    this.snackBarService.error("Не удалось удалить участника")
+                    this.isAttendant.setValue(true, {emitEvent: false})
+                    return of(true)
+                  }
+                  return of(false)
                 })
               )
           }
