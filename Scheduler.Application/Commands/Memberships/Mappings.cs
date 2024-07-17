@@ -14,7 +14,8 @@ public class Mappings : Profile
             .ForMember(x => x.StartDate, y => y.MapFrom(z => z.StartDate))
             .ForMember(x => x.EndDate, y => y.MapFrom(z => z.EndDate))
             .ForMember(x => x.VisitsNumber, y => y.MapFrom(z => z.VisitsNumber))
-            .ForMember(x => x.Client, y => y.MapFrom(z => z.Client));
+            .ForMember(x => x.Client, y => y.MapFrom(z => z.Client))
+            .ForMember(x => x.Style, y => y.MapFrom(z => z.Style));
         
         CreateMap<Membership, MembershipWithDetailsDto>()
             .ForMember(x => x.Amount, y => y.MapFrom(z => z.Amount))
@@ -22,7 +23,8 @@ public class Mappings : Profile
             .ForMember(x => x.StartDate, y => y.MapFrom(z => z.StartDate))
             .ForMember(x => x.EndDate, y => y.MapFrom(z => z.EndDate))
             .ForMember(x => x.VisitsNumber, y => y.MapFrom(z => z.VisitsNumber))
-            .ForMember(x => x.Client, y => y.MapFrom(z => z.Client));
+            .ForMember(x => x.Client, y => y.MapFrom(z => z.Client))
+            .ForMember(x => x.Style, y => y.MapFrom(z => z.Style));
 
     }
 }

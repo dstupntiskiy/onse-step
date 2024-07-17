@@ -10,4 +10,5 @@ public record Command(
     DateTime EndDate,
     int VisitsNumber,
     Guid ClientId,
+    Guid StyleId,
     string? Comment) : IRequest<MembershipDto>;

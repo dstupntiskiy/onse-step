@@ -1,4 +1,5 @@
 import { Client } from "./client-model"
+import { StyleModel } from "./style-model"
 
 export class MembershipModel{
     amount: number
@@ -7,6 +8,7 @@ export class MembershipModel{
     startDate: Date
     endDate: Date
     client: Client
+    style: StyleModel
 
     constructor(){}
 }

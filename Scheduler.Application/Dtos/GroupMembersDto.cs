@@ -7,6 +7,5 @@ public class GroupMemberDto : AuditableEntity
 {
     public GroupProjection Group { get; set; }
     public ClientProjection Member { get; set; }
-    
-    public PaymentDto? Payment { get; set; }
+    public MembershipWithDetailsDto? Membership { get; set; }
 }

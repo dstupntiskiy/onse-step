@@ -10,4 +10,5 @@ public class MembershipDto
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
     public ClientProjection Client { get; set; }
+    public StyleDto Style { get; set; }
 }

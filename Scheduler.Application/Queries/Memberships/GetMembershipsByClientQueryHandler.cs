@@ -2,7 +2,6 @@ using AutoMapper;
 using MediatR;
 using Scheduler.Application.Common.Dtos;
 using Scheduler.Application.Entities;
-using Scheduler.Application.Entities.Projections;
 using Scheduler.Application.Interfaces;
 
 namespace Scheduler.Application.Queries.Memberships;
@@ -21,7 +20,9 @@ public class GetMembershipsByClientQueryHandler(IMapper mapper,
         {
             var membershipWithDetails = mapper.Map<MembershipWithDetailsDto>(x);
             membershipWithDetails.Visited = participance.Count(y =>
-                x.StartDate <= y.Event.StartDateTime && x.EndDate > y.Event.StartDateTime);
+                x.StartDate <= y.Event.StartDateTime 
+                && x.EndDate > y.Event.StartDateTime
+                && x.Style.Id == y.Event.Group?.Style?.Id);
             return membershipWithDetails;
         }).ToList();
         return membershipsWithDetails;

@@ -10,4 +10,5 @@ public class Membership : AuditableEntity
     public virtual DateTime StartDate { get; set; }
     public virtual DateTime EndDate { get; set; }
     public virtual Client Client { get; set; }
+    public virtual Style Style { get; set; }
 }

@@ -5,33 +5,37 @@ using Scheduler.Application.Common.Dtos;
 using Scheduler.Application.Entities;
 using Scheduler.Application.Entities.Projections;
 using Scheduler.Application.Interfaces;
+using Scheduler.Application.Services;
 
 namespace Scheduler.Application.Queries.Groups;
 
 public class GetGroupMembersQueryHandler(
     IMapper mapper,
-    IRepository<GroupPayment> groupPaymentRepository,
+    MembershipService membershipService,
+    IRepository<Group> groupRepository,
+    IRepository<Membership> membershipRepository,
     IRepository<GroupMemberLink> groupMembersRepository) : IRequestHandler<GetGroupMembersQuery, List<GroupMemberDto>>
 {
     public async Task<List<GroupMemberDto>> Handle(GetGroupMembersQuery request, CancellationToken cancellationToken)
     {
-        var groupMembers = groupMembersRepository.Query()
-            .Where(x => x.Group.Id == request.GroupId)
-            .GroupJoin(groupPaymentRepository.Query(),
-                member => member.Id,
-                payment => payment.GroupMemberLink.Id,
-                (member, payment) => new { member, payment = payment.DefaultIfEmpty() })
-            .SelectMany( z => z.payment, (member, payment) => 
-                    new GroupMemberDto()
-                {
-                    Id = member.member.Id,
-                    Member = mapper.Map<ClientProjection>(member.member.Client),
-                    Group = mapper.Map<GroupProjection>(member.member.Group),
-                    Payment = mapper.Map<PaymentDto>(payment)
-                })
-            .ToList()
-            .OrderBy(x => x.Member.Name).ToList();
+        var group = await groupRepository.GetById(request.GroupId);
 
-        return groupMembers;
+       
+       var groupMembers = groupMembersRepository.Query()
+           .Where(x => x.Group.Id == request.GroupId)
+           .Select(member => new 
+           {
+               Member = member,
+               Membership = group.Style == null ? null : membershipService.GetActualMembership(group.Style.Id, member.Client.Id)
+           }).ToList();
+
+       var membersWithDetails = groupMembers.Select(x =>
+       {
+           var member = mapper.Map<GroupMemberDto>(x.Member);
+           member.Membership = x.Membership;
+           return member;
+       }).ToList();
+
+        return membersWithDetails;
     }
 }

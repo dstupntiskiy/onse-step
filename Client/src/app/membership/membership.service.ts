@@ -12,6 +12,7 @@ export interface IMembershipSave{
   endDate: string,
   visitsNumber: number,
   clientId: string,
+  styleId: string,
   comment?: string
 }
 @Injectable({

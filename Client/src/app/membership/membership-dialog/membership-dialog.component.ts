@@ -8,6 +8,9 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { IMembershipSave, MembershipService } from '../membership.service';
 import { MatDialogRef } from '@angular/material/dialog';
 import { MembershipModel } from '../../shared/models/membership-model';
+import { MatSelectModule } from '@angular/material/select';
+import { StyleService } from '../../styles/style.service';
+import { StyleModel } from '../../shared/models/style-model';
 
 export interface MembershipDialogData{
   client: Client,
@@ -16,6 +19,7 @@ export interface MembershipDialogData{
   endDate?: string,
   visitsNumber?: number,
   comment?: string,
+  style: StyleModel
   id?: string
 }
 @Component({
@@ -27,6 +31,7 @@ export interface MembershipDialogData{
     ReactiveFormsModule,
     MatDatepickerModule,
     MatNativeDateModule,
+    MatSelectModule
   ],
   templateUrl: './membership-dialog.component.html',
   styleUrl: './membership-dialog.component.scss'
@@ -36,16 +41,24 @@ export class MembershipDialogComponent {
   startDate = new FormControl<string>('',[Validators.required])
   endDate = new FormControl<string>('', [Validators.required])
   visitsNumber = new FormControl<number>(8, [Validators.required])
+  style = new FormControl<StyleModel | null>(null, [Validators.required])
   comment = new FormControl<string>('')
   id: string = ''
   client: Client
-
+  styles: StyleModel[] = []
 
   data = input.required<MembershipDialogData>()
   membershipService = inject(MembershipService)
+  styleService = inject(StyleService)
 
   constructor(public dialogRef: MatDialogRef<MembershipDialogComponent>){
     effect(() => {
+      this.styleService.getAllStyles()
+        .subscribe((styles: StyleModel[]) =>{
+          this.styles = styles
+          this.style.setValue(this.styles.find(x => x.id === this.data()?.style?.id) as StyleModel)
+        })
+
       this.id = this.data()?.id as string
       this.amount.setValue(this.data()?.amount as number)
       this.startDate.setValue(this.data()?.startDate as string)
@@ -53,8 +66,6 @@ export class MembershipDialogComponent {
       this.visitsNumber.setValue(this.data()?.visitsNumber as number)
       this.comment.setValue(this.data()?.comment as string)
       this.client = this.data()?.client
-
-      
     })
   }
 
@@ -67,6 +78,7 @@ export class MembershipDialogComponent {
         startDate: this.startDate.value as string,
         endDate: this.endDate.value as string,
         comment: this.comment.value as string,
+        styleId: this.style.value?.id as string,
         visitsNumber: this.visitsNumber.value as number
       }
       

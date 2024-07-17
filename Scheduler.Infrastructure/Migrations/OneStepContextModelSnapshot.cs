@@ -237,12 +237,17 @@ namespace Scheduler.Infrastructure.Migrations
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<Guid>("StyleId")
+                        .HasColumnType("uuid");
+
                     b.Property<int>("VisitsNumber")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ClientId");
+
+                    b.HasIndex("StyleId");
 
                     b.ToTable("Membership");
                 });
@@ -465,7 +470,15 @@ namespace Scheduler.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Scheduler.Application.Entities.Style", "Style")
+                        .WithMany()
+                        .HasForeignKey("StyleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Client");
+
+                    b.Navigation("Style");
                 });
 
             modelBuilder.Entity("Scheduler.Application.Entities.OneTimeVisit", b =>
