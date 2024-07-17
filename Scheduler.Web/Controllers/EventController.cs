@@ -38,26 +38,22 @@ public class EventController(IMediator mediator) : ControllerBase
     }
 
     [HttpDelete]
-    public async Task<IActionResult> Delete(Guid id)
+    public async Task<Guid> Delete(Guid id)
     {
         var cmd = new Application.Commands.Events.EventDelete.Command(id);
-        await mediator.Send(cmd);
-
-        return this.Ok();
+        return await mediator.Send(cmd);
     }
 
     [HttpPost("AddParticipant")]
-    public async Task<IActionResult> AddParticipant(Application.Commands.Events.EventParticipantAdd.Command cmd)
+    public async Task<Guid> AddParticipant(Application.Commands.Events.EventParticipantAdd.Command cmd)
     {
-        await mediator.Send(cmd);
-        return Ok();
+        return await mediator.Send(cmd);
     }
     
     [HttpDelete("RemoveParticipant")]
-    public async Task<IActionResult> RemoveParticipant(Guid eventId, Guid clientId)
+    public async Task<Guid> RemoveParticipant(Guid eventId, Guid clientId)
     {
-        await mediator.Send(new Application.Commands.Events.EventParticipantRemove.Command(eventId, clientId));
-        return Ok();
+        return await mediator.Send(new Application.Commands.Events.EventParticipantRemove.Command(eventId, clientId));
     }
 
     [HttpGet("GetParticipantsCount")]
@@ -92,10 +88,8 @@ public class EventController(IMediator mediator) : ControllerBase
     }
 
     [HttpDelete("RemoveOnetimeVisitor")]
-    public async Task<IActionResult> RemoveOnetimeVisitor(Guid visitorId)
+    public async Task<Guid> RemoveOnetimeVisitor(Guid visitorId)
     {
-        await mediator.Send(new Application.Commands.Events.EventOnetimeVisitorRemove.Command(visitorId));
-
-        return Ok();
+        return await mediator.Send(new Application.Commands.Events.EventOnetimeVisitorRemove.Command(visitorId));
     }
 }

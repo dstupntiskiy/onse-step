@@ -10,9 +10,9 @@ namespace Scheduler.Application.Commands.Events.EventParticipantAdd;
 public class CommandHandler(IMapper mapper,
     IRepository<Client> clientRepository,
     IRepository<EventParticipance> eventParticipanceRepository,
-    IRepository<Event> eventRepository) : IRequestHandler<Command>
+    IRepository<Event> eventRepository) : IRequestHandler<Command,Guid>
 {
-    public async Task Handle(Command request, CancellationToken cancellationToken)
+    public async Task<Guid> Handle(Command request, CancellationToken cancellationToken)
     {
         if(eventParticipanceRepository.Query().Any(x => x.Event.Id == request.EventId && x.Client.Id == request.ClientId))
         {
@@ -27,6 +27,7 @@ public class CommandHandler(IMapper mapper,
             Event = ev
         };
 
-        await eventParticipanceRepository.AddAsync(participance);
+        participance = await eventParticipanceRepository.AddAsync(participance);
+        return participance.Id;
     }
 }

@@ -4,9 +4,9 @@ using Scheduler.Application.Entities;
 
 namespace Scheduler.Application.Commands.Events.EventDelete;
 
-public class CommandHandler(IRepository<Event> eventRepository, IRepository<Entities.Recurrence> recurrenceRepository): IRequestHandler<Command>
+public class CommandHandler(IRepository<Event> eventRepository, IRepository<Entities.Recurrence> recurrenceRepository): IRequestHandler<Command,Guid>
 {
-    public async Task Handle(Command request, CancellationToken cancellationToken)
+    public async Task<Guid> Handle(Command request, CancellationToken cancellationToken)
     {
         var ev = await eventRepository.GetById(request.Id);
         await eventRepository.DeleteAsync(ev.Id, cancellationToken);
@@ -17,5 +17,7 @@ public class CommandHandler(IRepository<Event> eventRepository, IRepository<Enti
             recurrence.ExceptDates = exDates.Append(DateOnly.FromDateTime(ev.StartDateTime)).ToArray();
             await recurrenceRepository.AddAsync(recurrence);
         }
+
+        return request.Id;
     }
 }

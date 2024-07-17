@@ -5,9 +5,9 @@ using Scheduler.Application.Interfaces;
 
 namespace Scheduler.Application.Commands.Events.EventParticipantRemove;
 
-public class CommandHandler(IRepository<EventParticipance> eventParticipanceRepository) : IRequestHandler<Command>
+public class CommandHandler(IRepository<EventParticipance> eventParticipanceRepository) : IRequestHandler<Command,Guid>
 {
-    public async Task Handle(Command request, CancellationToken cancellationToken)
+    public async Task<Guid> Handle(Command request, CancellationToken cancellationToken)
     {
         try
         {
@@ -15,6 +15,7 @@ public class CommandHandler(IRepository<EventParticipance> eventParticipanceRepo
                 .Single(x => x.Event.Id == request.EventId && x.Client.Id == request.ClientId);
 
             await eventParticipanceRepository.DeleteAsync(participance.Id, cancellationToken);
+            return participance.Id;
         }
         catch (Exception e)
         {
