@@ -19,14 +19,14 @@ public class GetGroupMembersQueryHandler(
     public async Task<List<GroupMemberDto>> Handle(GetGroupMembersQuery request, CancellationToken cancellationToken)
     {
         var group = await groupRepository.GetById(request.GroupId);
-
+        var styleId = group.Style?.Id;
        
        var groupMembers = groupMembersRepository.Query()
            .Where(x => x.Group.Id == request.GroupId)
            .Select(member => new 
            {
                Member = member,
-               Membership = group.Style == null ? null : membershipService.GetActualMembership(group.Style.Id, member.Client.Id)
+               Membership = membershipService.GetActualMembership(styleId, member.Client.Id)
            }).ToList();
 
        var membersWithDetails = groupMembers.Select(x =>

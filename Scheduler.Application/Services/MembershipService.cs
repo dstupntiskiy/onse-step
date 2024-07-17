@@ -9,8 +9,11 @@ public class MembershipService(IMapper mapper,
     IRepository<Membership> membershipRepository,
     IRepository<EventParticipance> participanceRepository)
 {
-    public MembershipWithDetailsDto? GetActualMembership(Guid styleId, Guid clientId)
+    public MembershipWithDetailsDto? GetActualMembership(Guid? styleId, Guid clientId)
     {
+        if (styleId == null)
+            return null;
+        
         var membership = membershipRepository.Query()
             .Where(x => x.Client.Id == clientId
                     && x.Style.Id == styleId)
