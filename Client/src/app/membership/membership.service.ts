@@ -20,7 +20,7 @@ export interface IMembershipSave{
 })
 export class MembershipService extends BaseHttpService {
 
-  protected route: string = '/membership'
+  protected route: string = 'membership'
 
   constructor(http: HttpClient, snackbarService: SnackBarService) {
     super(http, snackbarService)
