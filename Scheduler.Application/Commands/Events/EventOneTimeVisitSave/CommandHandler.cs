@@ -22,11 +22,7 @@ public class CommandHandler(
         }
 
         var ev = await eventRepository.GetById(request.EventId);
-        if (ev.Group != null && groupMembersRepository.Query().Any(x => x.Group.Id == ev.Group.Id && x.Client.Id == request.ClientId))
-        {
-            throw new ValidationException($"Клинт уже записан на это занятие в группе {ev.Group.Name}");
-        }
-
+        
         var oneTimeVisit = new OneTimeVisit()
         {
             Client = await clientRepository.GetById(request.ClientId),

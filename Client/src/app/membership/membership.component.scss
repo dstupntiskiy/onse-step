@@ -1,0 +1,11 @@
+@import '../../styles/mixins.scss';
+
+.membership{
+    @include hover;
+    padding: 6px 0;
+    cursor: pointer;
+
+    p{
+        margin: 0;
+    }
+}

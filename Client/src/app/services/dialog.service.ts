@@ -18,7 +18,9 @@ export abstract class DialogService {
         component: component,
         title: title,
         customData: data
-      }
+      },
+      maxWidth: '95vw',
+      maxHeight: '95vh'
     })
   }
 }
