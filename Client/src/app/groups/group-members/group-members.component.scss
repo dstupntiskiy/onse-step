@@ -6,6 +6,8 @@
     .field-row{
         display: flex;
         justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 16px;
         align-items: center;
         .add-member{
             display: flex;

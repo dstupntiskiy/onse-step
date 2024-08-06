@@ -29,6 +29,7 @@ import { DialogService } from '../../services/dialog.service';
 import { ParticipantsDialogComponent } from '../participants-dialog/participants-dialog.component';
 import { GroupDialogComponent } from '../../groups/group-dialog/group-dialog.component';
 import { OnetimeVisitorDialogComponent } from '../onetime-visitor-dialog/onetime-visitor-dialog.component';
+import { StyleModel } from '../../shared/models/style-model';
 
 export interface EventDialogData{
   event: EventModel
@@ -208,7 +209,7 @@ export class EventDialogComponent {
         startDateTime: setTimeFromStringToDate(start, this.start?.value as string),
         endDateTime: setTimeFromStringToDate(end, this.end?.value as string),
         name: this.name?.value as string,
-        group: { id: (this.group?.value as Group)?.id, active: true },
+        group: { id: (this.group?.value as Group)?.id, active: true, name: '', style: new StyleModel() },
         color: this.color,
         coach: { id: (this.coach?.value as CoachModel)?.id as string }
       }

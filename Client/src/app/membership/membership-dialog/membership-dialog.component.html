@@ -26,8 +26,8 @@
     <mat-form-field>
         <mat-label>Направление</mat-label>
         <mat-select [formControl]="style">
-            @for(option of styles; track style){
-                <mat-option [value]="option">{{option.name}}</mat-option>
+            @for(style of styles; track style){
+                <mat-option [value]="style">{{style.name}}</mat-option>
             }
         </mat-select>
     </mat-form-field>

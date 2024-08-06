@@ -2,7 +2,14 @@
     <div class="member">
         <p>{{ member().member.name }}</p>
         <div class="right-block">
-            <app-payment [payment]="member().payment" [paymentType]="paymentType" [memberId]="member().id"></app-payment>
+            <div class="membership">
+                @if(member().membership){
+                    ({{member().membership?.visited}}/{{member().membership?.visitsNumber}}) {{member().membership?.endDate | date:'dd.MM.YY' }}
+                }
+                @else {
+                    <button mat-raised-button color="primary" (click)="onAddMembershipClick()">+</button>
+                }
+            </div>
             <button mat-icon-button (click)="removeMember(member())">
                 <mat-icon>clear</mat-icon>
             </button>

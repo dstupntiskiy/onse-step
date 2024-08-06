@@ -22,7 +22,8 @@ public class Mapping : Profile
             .ForMember(x => x.Name, y => y.MapFrom(z => z.Name));
 
         this.CreateMap<Group, GroupProjection>()
-            .ForMember(x => x.Name, y => y.MapFrom(z => z.Name));
+            .ForMember(x => x.Name, y => y.MapFrom(z => z.Name))
+            .ForMember(x => x.Style, y=>y.MapFrom(z =>z.Style));
 
         this.CreateMap<GroupMemberLink, GroupMemberDto>()
             .ForMember(x => x.Member, y => y.MapFrom(z => z.Client))

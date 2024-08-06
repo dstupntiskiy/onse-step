@@ -6,9 +6,11 @@
                 <mat-icon>add</mat-icon>    
             </button>
         </div>
-        @if(members.length > 0){
-            <span>Участники: {{members.length}}</span>
-        }
+        <div class="members-count">
+            @if(members.length > 0){
+                <span>Участники: {{members.length}}</span>
+            }
+        </div>
     </div>
     <div class="member-list">
         @for(member of members; track member){

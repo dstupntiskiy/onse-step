@@ -154,7 +154,7 @@ namespace Scheduler.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("StyleId")
+                    b.Property<Guid>("StyleId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
@@ -427,7 +427,9 @@ namespace Scheduler.Infrastructure.Migrations
                 {
                     b.HasOne("Scheduler.Application.Entities.Style", "Style")
                         .WithMany()
-                        .HasForeignKey("StyleId");
+                        .HasForeignKey("StyleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Style");
                 });

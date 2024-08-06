@@ -41,7 +41,7 @@ export interface GroupDialogData{
 })
 export class GroupDialogComponent implements DynamicComponent {
   name = new FormControl<string>('', [Validators.required])
-  style = new FormControl<StyleModel| null>(null)
+  style = new FormControl<StyleModel| null>(null, [Validators.required])
   active = new FormControl<boolean>(true)
 
   public isNew: boolean = false;
@@ -58,11 +58,14 @@ export class GroupDialogComponent implements DynamicComponent {
       this.styleService.getAllStyles()
         .subscribe((styles: StyleModel[]) =>{
           this.styles = styles
-          this.style.setValue(this.styles.find(x => x.id === this.data().group.style?.id) as StyleModel)
+          if(this.data()?.group.style)
+            this.style.setValue(this.styles.find(x => x.id === this.data().group.style?.id) as StyleModel)
         })
 
       this.name?.setValue(this.data()?.group?.name as string);
-      this.active?.setValue(this.data().group.active)
+
+      if(this.data())
+        this.active?.setValue(this.data().group.active)
     })
   }
 
@@ -74,7 +77,7 @@ export class GroupDialogComponent implements DynamicComponent {
   }
 
   submit(){
-    if (this.name.valid){
+    if (this.name.valid && this.style.valid){
       const group: Group = {
         id: this.data()?.group?.id,
         name: this.name?.value as string,

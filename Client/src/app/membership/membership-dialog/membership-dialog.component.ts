@@ -53,20 +53,49 @@ export class MembershipDialogComponent {
 
   constructor(public dialogRef: MatDialogRef<MembershipDialogComponent>){
     effect(() => {
+      this.amount.setValue(this.data()?.amount as number)
+      
       this.styleService.getAllStyles()
         .subscribe((styles: StyleModel[]) =>{
           this.styles = styles
-          this.style.setValue(this.styles.find(x => x.id === this.data()?.style?.id) as StyleModel)
+          if(this.data().style){
+            this.style.setValue(this.styles.find(x => x.id === this.data()?.style?.id) as StyleModel)
+            this.data().amount == null ?
+              this.amount.setValue(this.style.value?.basePrice as number)
+              : this.amount.setValue(this.data()?.amount as number)
+          }
         })
 
       this.id = this.data()?.id as string
-      this.amount.setValue(this.data()?.amount as number)
-      this.startDate.setValue(this.data()?.startDate as string)
-      this.endDate.setValue(this.data()?.endDate as string)
-      this.visitsNumber.setValue(this.data()?.visitsNumber as number)
+
+      var date = new Date()
+      var firstDay = new Date(date.getFullYear(), date.getMonth(), 1)
+      var lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0)
+
+      this.data().startDate === null ? 
+        this.startDate.setValue(this.data()?.startDate as string)
+        : this.startDate.setValue(firstDay.toISOString())
+
+      this.data().endDate === null ? 
+        this.endDate.setValue(this.data()?.endDate as string)
+        : this.endDate.setValue(lastDay.toISOString())
+
+      this.data().visitsNumber == null ?
+        this.visitsNumber.setValue(8)
+        : this.visitsNumber.setValue(this.data()?.visitsNumber as number)
+
       this.comment.setValue(this.data()?.comment as string)
       this.client = this.data()?.client
     })
+  }
+
+  ngOnInit(){
+    this.style.valueChanges
+      .subscribe((value) =>{
+        if(value && this.data().amount == null){
+          this.amount.setValue(value.basePrice as number)
+        }
+      })
   }
 
   onSave(){
