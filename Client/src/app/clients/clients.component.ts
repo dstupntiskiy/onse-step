@@ -34,7 +34,7 @@ import { MatIconModule } from '@angular/material/icon';
 })
 export class ClientsComponent {
   public clients: Client[]
-  public displayedColumns: string[] = ['createDate', 'name', 'phone', 'socialMediaLink']
+  public displayedColumns: string[] = ['createDate', 'name', 'socialMediaLink', 'phone']
   dialogService = inject(DialogService)
   clientService = inject(ClientService)
   spinnerService = inject(SpinnerService)

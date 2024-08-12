@@ -9,6 +9,7 @@ import { GroupDialogComponent } from './group-dialog/group-dialog.component';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { SpinnerComponent } from '../shared/spinner/spinner.component';
 
 @Component({
   selector: 'app-groups',
@@ -67,7 +68,7 @@ export class GroupsComponent {
   }
 
   handleRowClick(row: GroupWithDetails){
-    this.dialogService.showDialog(GroupDialogComponent, row.name, { group: row })
+    this.dialogService.showDialog(GroupDialogComponent, row.name, { id: row.id })
       .afterClosed().subscribe((result: Group) =>{
         if(result){
           this.groupService.getGoupWithDetails(result.id)

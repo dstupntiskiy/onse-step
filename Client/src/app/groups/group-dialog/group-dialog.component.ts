@@ -5,7 +5,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { Group } from '../../shared/models/group-model';
 import { GroupService } from '../group.service';
-import { finalize } from 'rxjs';
+import { BehaviorSubject, finalize, Observable } from 'rxjs';
 import { SnackBarService } from '../../services/snack-bar.service';
 import { SpinnerService } from '../../shared/spinner/spinner.service';
 import { GroupMembersComponent } from '../group-members/group-members.component';
@@ -15,9 +15,10 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { StyleService } from '../../styles/style.service';
 import { StyleModel } from '../../shared/models/style-model';
 import { MatSelectModule } from '@angular/material/select';
+import { SpinnerComponent } from '../../shared/spinner/spinner.component';
 
 export interface GroupDialogData{
-  group: Group
+  id: string
 }
 
 @Component({
@@ -30,7 +31,8 @@ export interface GroupDialogData{
     ReactiveFormsModule,
     MatSlideToggleModule,
     GroupMembersComponent,
-    MatSelectModule
+    MatSelectModule,
+    SpinnerComponent
   ],
   providers:[
     GroupService,
@@ -40,9 +42,13 @@ export interface GroupDialogData{
   styleUrl: './group-dialog.component.scss'
 })
 export class GroupDialogComponent implements DynamicComponent {
+  private isLoading = new BehaviorSubject<boolean>(true)
+  showSpinner$ : Observable<boolean> = this.isLoading.asObservable()
+
   name = new FormControl<string>('', [Validators.required])
   style = new FormControl<StyleModel| null>(null, [Validators.required])
   active = new FormControl<boolean>(true)
+  group: Group
 
   public isNew: boolean = false;
   styles: StyleModel[] = []
@@ -55,17 +61,25 @@ export class GroupDialogComponent implements DynamicComponent {
   constructor(private dialogRef: MatDialogRef<GroupDialogComponent>,
   ){
     effect(()=>{
-      this.styleService.getAllStyles()
-        .subscribe((styles: StyleModel[]) =>{
-          this.styles = styles
-          if(this.data()?.group.style)
-            this.style.setValue(this.styles.find(x => x.id === this.data().group.style?.id) as StyleModel)
-        })
-
-      this.name?.setValue(this.data()?.group?.name as string);
-
-      if(this.data())
-        this.active?.setValue(this.data().group.active)
+      if(this.data()?.id){
+        this.groupService.getGroupById(this.data().id)
+          .pipe(finalize(() => {
+            this.isLoading.next(false)
+          }))
+          .subscribe((result: Group) =>{
+            if(result){
+              this.styleService.getAllStyles()
+                .subscribe((styles: StyleModel[]) =>{
+                  this.styles = styles
+                  if(result.style)
+                    this.style.setValue(this.styles.find(x => x.id === result.style?.id) as StyleModel)
+            })
+            
+            this.group = result
+            this.name?.setValue(result.name);
+            this.active?.setValue(result.active);            
+          }})
+      }
     })
   }
 
@@ -79,7 +93,7 @@ export class GroupDialogComponent implements DynamicComponent {
   submit(){
     if (this.name.valid && this.style.valid){
       const group: Group = {
-        id: this.data()?.group?.id,
+        id: this.data()?.id,
         name: this.name?.value as string,
         style: this.style?.value as StyleModel,
         active: this.active.value as boolean

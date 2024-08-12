@@ -1,6 +1,6 @@
-<div class="member-row" (click)="onMemberClick()">
+<div class="member-row" >
     <div class="member">
-        <p>{{ member().member.name }}</p>
+        <p (click)="onMemberClick()">{{ member().member.name }}</p>
         <div class="right-block">
             <div class="membership">
                 @if(member().membership){

@@ -152,21 +152,24 @@ export class EventDialogComponent {
     this.color = this.data().event.color ?? 'teal';
     this.isNew = !Guid.isGuid(this.initialEvent.id)
 
-  this.groupService.getGoups()
-    .pipe(
-      finalize(() =>{
-        if(this.data().event.group?.id !== undefined){
-          this.group?.disable();
-          this.refetchGroupMembersCount();
-          this.refetchParticipants();
-        }
+    if(this.data().event.group){
+      this.groupService.getGroupById(this.data().event.group?.id as string)
+        .subscribe((result: Group) => {
+          if(result){
+            this.groups = [result]
+            this.group.setValue(result)
+            this.group.disable()
+            this.refetchGroupMembersCount();
+            this.refetchParticipants();
+          }
+        })
+    }
+    else{
+      this.groupService.getGoups(true)
+      .subscribe((groups: Group[]) =>{
+        this.groups = groups
       })
-    )
-    .subscribe((groups: Group[]) =>{
-      this.groups = groups
-      this.group.setValue(this.groups.find(x => x.id === this.data().event.group?.id) as Group)
-  });
-  
+    }
 
   this.coachService.getCoaches()
     .subscribe((coaches: CoachModel[]) => {
@@ -297,7 +300,7 @@ export class EventDialogComponent {
   }
 
   onEditGroupClick(){
-    this.dialogService.showDialog(GroupDialogComponent, (this.group?.value?.name), { group: this.group?.value })
+    this.dialogService.showDialog(GroupDialogComponent, (this.group?.value?.name), { id: this.group?.value?.id as string })
       .afterClosed().subscribe(() => this.refetchGroupMembersCount())
   }
 

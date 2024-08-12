@@ -27,8 +27,15 @@ export class GroupService extends BaseHttpService{
   constructor(http: HttpClient, snackbarService: SnackBarService) 
     { super(http, snackbarService)}
 
-    getGoups(): Observable<Group[]>{
-      return this.get<Group[]>('GetAll');
+    getGoups(onlyActive: boolean = false): Observable<Group[]>{
+      var options: IAngularHttpRequestOptions = {
+        params: { onlyActive: String(onlyActive) }
+      }
+      return this.get<Group[]>('GetAll', options);
+    }
+
+    getGroupById(id:string): Observable<Group>{
+      return this.get<Group>('GetById/' + id)
     }
 
     getGoupsWithDetails(onlyActive: boolean): Observable<GroupWithDetails[]>{

@@ -11,6 +11,6 @@ public class GetAllGroupQueryHandler(IMapper mapper, IRepository<Group> groupRep
 
     public async Task<GroupDto[]> Handle(GetAllGroupQuery request, CancellationToken cancellationToken)
     {
-        return mapper.Map<GroupDto[]>(await groupRepository.GetAll());
+        return mapper.Map<GroupDto[]>(groupRepository.Query().Where(x => x.Active == request.OnlyActive || !request.OnlyActive));
     }
 }

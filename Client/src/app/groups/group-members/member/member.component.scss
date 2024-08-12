@@ -2,7 +2,6 @@
 
 .member-row:hover{
     @include hover;
-    cursor: pointer;
 }
 .member{
     display: flex;
@@ -11,6 +10,7 @@
 
     p{
         margin: 0;
+        cursor: pointer;
     }
 
     .right-block{

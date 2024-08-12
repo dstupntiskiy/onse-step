@@ -1,3 +1,4 @@
+    <app-spinner [isLoading$]="showSpinner$"></app-spinner>
     <div class="group-dialog-content">
         <div class="field-row">
             <mat-form-field>
@@ -19,9 +20,9 @@
         <div class="field-row">
                 <mat-slide-toggle [formControl]="active">Активность</mat-slide-toggle>
         </div>
-        @if(data()?.group){
+        @if(group){
             <h3>Состав группы</h3>
-            <app-group-members [group]="this.data().group"></app-group-members>
+            <app-group-members [group]="group"></app-group-members>
         }
         <div class="actions">
             <button mat-button (click)="onCloseClick()">Закрыть</button>
