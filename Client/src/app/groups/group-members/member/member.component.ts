@@ -7,6 +7,8 @@ import { DatePipe } from '@angular/common';
 import { DialogService } from '../../../services/dialog.service';
 import { MembershipDialogComponent, MembershipDialogData } from '../../../membership/membership-dialog/membership-dialog.component';
 import { MembershipWithDetails } from '../../../shared/models/membership-model';
+import { ClientDialogComponent } from '../../../clients/client-dialog/client-dialog.component';
+import { Client } from '../../../shared/models/client-model';
 
 @Component({
   selector: 'app-member',
@@ -41,6 +43,15 @@ export class MemberComponent {
       if(result){
         result.visited = 0
         this.member().membership = result
+      }
+    })
+ }
+
+ onMemberClick(){
+  this.dialogService.showDialog(ClientDialogComponent, this.member().member.name, {id: this.member().member.id})
+    .afterClosed().subscribe((result: Client) =>{
+      if(result){
+        this.member().member = result
       }
     })
  }

@@ -31,4 +31,8 @@ export class ClientService extends BaseHttpService{
   saveClient(client: Client): Observable<Client>{
     return this.post<Client>('', client)
   }
+
+  getClientById(id: string): Observable<Client>{
+    return this.get<Client>('GetById/' + id)
+  }
 }

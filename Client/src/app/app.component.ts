@@ -5,6 +5,7 @@ import { CalendarComponent } from './calendar/calendar.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { SpinnerComponent } from './shared/spinner/spinner.component';
 import { UserService } from './shared/services/user.service';
+import { SpinnerService } from './shared/spinner/spinner.service';
 
 
 @Component({
@@ -24,6 +25,7 @@ import { UserService } from './shared/services/user.service';
 
 export class AppComponent {
   userService = inject(UserService)
+  spinnerService = inject(SpinnerService)
 
   router = inject(Router)
 

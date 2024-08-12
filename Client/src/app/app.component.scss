@@ -1,3 +1,13 @@
 :host{
     display: flex;
 }
+
+.scroll-wrapper{
+    width: 100%;
+    height: 100vh;
+    overflow-x: scroll;
+
+    .page-content{
+        width: auto;
+    }
+}

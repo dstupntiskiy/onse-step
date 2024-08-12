@@ -2,6 +2,7 @@
 
 .member-row:hover{
     @include hover;
+    cursor: pointer;
 }
 .member{
     display: flex;

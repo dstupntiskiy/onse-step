@@ -1,7 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, effect, inject, input } from '@angular/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { SpinnerService } from './spinner.service';
-import { Observable, pipe } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -16,10 +15,12 @@ import { CommonModule } from '@angular/common';
   styleUrl: './spinner.component.scss'
 })
 export class SpinnerComponent {
+  isLoading$ = input.required<Observable<boolean>>()
+  showSpinner: Observable<boolean>
 
-  public isLoading$: Observable<boolean>;
-
-  constructor(private spinnerService: SpinnerService){
-    this.isLoading$ = this.spinnerService.loading$;
+  constructor(){
+    effect(() =>{
+      this.showSpinner = this.isLoading$()
+    })
   }
 }

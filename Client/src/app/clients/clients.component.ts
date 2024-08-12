@@ -91,7 +91,7 @@ export class ClientsComponent {
   }
 
   handleRowClick(row: Client){
-    this.dialogService.showDialog(ClientDialogComponent, row.name, { client: row })
+    this.dialogService.showDialog(ClientDialogComponent, row.name, { id: row.id })
       .afterClosed().subscribe((result: Client) =>{
         if(result){
           var index = this.clients.findIndex(x => x.id === row.id);

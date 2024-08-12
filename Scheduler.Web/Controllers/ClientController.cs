@@ -19,6 +19,12 @@ public class ClientController(IMediator mediator) : ControllerBase
         return await mediator.Send(new GetAllClientsQuery());
     }
 
+    [HttpGet("GetById/{id:guid}")]
+    public async Task<ClientDto> GetById(Guid id)
+    {
+        return await mediator.Send(new GetClientByIdQuery(id));
+    }
+
     [HttpGet("GetAllByQuery")]
     public async Task<List<ClientDto>> GetAllByQuery(string query)
     {

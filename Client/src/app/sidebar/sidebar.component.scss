@@ -1,6 +1,6 @@
 #container{
     position: relative !important;
-    height: 100vh;
+    height: 100%;
     max-width: 125px;
 }
 .drawer{
@@ -13,4 +13,8 @@
         transform: translate(-50%, -50%);
         z-index: 1;
     }
+}
+
+a{
+    padding: 0 8px;
 }
