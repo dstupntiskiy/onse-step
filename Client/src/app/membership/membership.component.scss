@@ -4,10 +4,15 @@
     @include hover;
         
     .membership{
-        padding: 6px 0;
-        
+        margin-top: 6px;
+        padding-top: 4px;
         display: flex;
         justify-content: space-between;
+
+        border-radius: 6px;
+        background-color: rgb(0, 0, 0, 0.05);
+    
+        padding-left: 4px;
 
         .left-area{
             .membership-header{
