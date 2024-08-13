@@ -1,3 +1,19 @@
-<div class="membership" (click)="onClick()">
-    <p>{{ membership().style.name}}. {{ membership().startDate| date:'dd.MM' }} - {{ membership().endDate | date:'dd.MM'}} Посещения: {{ membership().visited}}/{{membership().visitsNumber }}</p>
+<div class="hover-area">
+    <div class="membership">
+        <div class="left-area">
+            <div class="membership-header">
+                <h5 class="style">{{ membership().style.name}}</h5>
+                <span>{{ membership().visited}}/{{membership().visitsNumber }}</span>
+            </div>
+            <div class="info">
+                <span class="dates">{{ membership().startDate| date:'dd.MM' }} - {{ membership().endDate | date:'dd.MM'}}. </span>
+                <span class="amount">{{ membership().amount}} RSD</span>
+            </div>
+        </div>
+        <div class="right-block">
+            <button mat-icon-button (click)="onEditClick()">
+                <mat-icon>edit</mat-icon>
+            </button>
+        </div>
+    </div>
 </div>

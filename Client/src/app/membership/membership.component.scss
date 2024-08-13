@@ -1,11 +1,27 @@
 @import '../../styles/mixins.scss';
 
-.membership{
+.hover-area{
     @include hover;
-    padding: 6px 0;
-    cursor: pointer;
+        
+    .membership{
+        padding: 6px 0;
+        
+        display: flex;
+        justify-content: space-between;
 
-    p{
-        margin: 0;
+        .left-area{
+            .membership-header{
+                display: flex;
+                gap: 6px;
+            }
+
+            display: flex;
+            flex-direction: column;
+
+        }
+
+        p{
+            margin: 0;
+        }
     }
 }
