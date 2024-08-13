@@ -20,7 +20,8 @@ export abstract class DialogService {
         customData: data
       },
       maxWidth: '95vw',
-      maxHeight: '95vh'
+      maxHeight: '95vh',
+      autoFocus: false
     })
   }
 }
