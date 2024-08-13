@@ -152,7 +152,7 @@ export class EventDialogComponent {
     this.color = this.data().event.color ?? 'teal';
     this.isNew = !Guid.isGuid(this.initialEvent.id)
 
-    if(this.data().event.group){
+    if(this.data().event.group?.id){
       this.groupService.getGroupById(this.data().event.group?.id as string)
         .subscribe((result: Group) => {
           if(result){

@@ -40,7 +40,7 @@ export class CalendarComponent {
       day: 'День',
       list: 'Список'
     },
-    scrollTime: '08:00',
+    scrollTime: '10:00',
     locale: 'ru-RU',
     timeZone: 'local',
     slotLabelFormat:{
