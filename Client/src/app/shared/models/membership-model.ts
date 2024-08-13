@@ -9,6 +9,7 @@ export class MembershipModel{
     endDate: Date
     client: Client
     style: StyleModel
+    id: string
 
     constructor(){}
 }

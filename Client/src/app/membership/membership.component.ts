@@ -1,6 +1,8 @@
-import { Component, effect, input } from '@angular/core';
+import { Component, effect, inject, input } from '@angular/core';
 import { MembershipWithDetails } from '../shared/models/membership-model';
 import { DatePipe } from '@angular/common';
+import { DialogService } from '../services/dialog.service';
+import { MembershipDialogComponent } from './membership-dialog/membership-dialog.component';
 
 @Component({
   selector: 'app-membership',
@@ -13,8 +15,16 @@ export class MembershipComponent {
   membership = input.required<MembershipWithDetails>()
   visitsNumber: number;
 
+  dialogService = inject(DialogService)
+
   constructor(){
     effect(() =>{
+    })
+  }
+
+  onClick(){
+    this.dialogService.showDialog(MembershipDialogComponent, 'Абонимент', {
+      id: this.membership().id
     })
   }
 }

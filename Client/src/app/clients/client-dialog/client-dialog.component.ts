@@ -40,7 +40,7 @@ export interface ClientDialogData{
   styleUrl: './client-dialog.component.scss'
 })
 export class ClientDialogComponent {
-  private isLoading = new BehaviorSubject<boolean>(true)
+  private isLoading = new BehaviorSubject<boolean>(false)
   showSpinner$ : Observable<boolean> = this.isLoading.asObservable()
   public form: FormGroup;
   public get name() { return this.form.get('name')}
@@ -61,6 +61,7 @@ export class ClientDialogComponent {
     effect(() =>{
       if(this.data()?.id)
       {
+        this.isLoading.next(true)
         this.clientService.getClientById(this.data().id)
           .pipe(
             finalize(() => this.isLoading.next(false))

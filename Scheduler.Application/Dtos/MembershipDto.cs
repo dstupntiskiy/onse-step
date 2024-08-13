@@ -2,7 +2,7 @@ using Scheduler.Application.Entities.Projections;
 
 namespace Scheduler.Application.Common.Dtos;
 
-public class MembershipDto
+public class MembershipDto : EntityDto
 {
     public decimal Amount { get; set; }
     public string? Comment { get; set; }

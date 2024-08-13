@@ -30,6 +30,10 @@ export class MembershipService extends BaseHttpService {
     return this.post<MembershipModel>('', membership)
   }
 
+  getMembershipById(id:string): Observable<MembershipModel>{
+    return this.get<MembershipModel>('GetById/' + id)
+  }
+
   getMembershipsByClient(clientId: string): Observable<MembershipWithDetails[]>{
     var options: IAngularHttpRequestOptions = {
       params: { clientId: clientId }

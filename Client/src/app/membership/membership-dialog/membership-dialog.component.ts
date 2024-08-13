@@ -11,17 +11,15 @@ import { MembershipModel } from '../../shared/models/membership-model';
 import { MatSelectModule } from '@angular/material/select';
 import { StyleService } from '../../styles/style.service';
 import { StyleModel } from '../../shared/models/style-model';
+import { BehaviorSubject, combineLatestWith, finalize, forkJoin, Observable, of, pairwise, startWith } from 'rxjs';
+import { SpinnerComponent } from '../../shared/spinner/spinner.component';
 
 export interface MembershipDialogData{
+  id?: string,
   client: Client,
-  amount?: number,
-  startDate?: string,
-  endDate?: string,
-  visitsNumber?: number,
-  comment?: string,
   style: StyleModel
-  id?: string
 }
+
 @Component({
   selector: 'app-membership-dialog',
   standalone: true,
@@ -31,19 +29,23 @@ export interface MembershipDialogData{
     ReactiveFormsModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    MatSelectModule
+    MatSelectModule,
+    SpinnerComponent
   ],
   templateUrl: './membership-dialog.component.html',
   styleUrl: './membership-dialog.component.scss'
 })
 export class MembershipDialogComponent {
+  private isLoading = new BehaviorSubject<boolean>(false)
+  showSpinner$ : Observable<boolean> = this.isLoading.asObservable()
+
   amount = new FormControl<number | null>(null, [Validators.required])
   startDate = new FormControl<string>('',[Validators.required])
   endDate = new FormControl<string>('', [Validators.required])
   visitsNumber = new FormControl<number>(8, [Validators.required])
   style = new FormControl<StyleModel | null>(null, [Validators.required])
   comment = new FormControl<string>('')
-  id: string = ''
+  id: string
   client: Client
   styles: StyleModel[] = []
 
@@ -53,47 +55,53 @@ export class MembershipDialogComponent {
 
   constructor(public dialogRef: MatDialogRef<MembershipDialogComponent>){
     effect(() => {
-      this.amount.setValue(this.data()?.amount as number)
-      
-      this.styleService.getAllStyles()
-        .subscribe((styles: StyleModel[]) =>{
-          this.styles = styles
-          if(this.data().style){
-            this.style.setValue(this.styles.find(x => x.id === this.data()?.style?.id) as StyleModel)
-            this.data().amount == null ?
-              this.amount.setValue(this.style.value?.basePrice as number)
-              : this.amount.setValue(this.data()?.amount as number)
+        this.isLoading.next(true)
+        forkJoin({
+          membership: this.data()?.id != null ? this.membershipService.getMembershipById(this.data().id as string) : of(null),
+          styles: this.styleService.getAllStyles()
+        })
+        .pipe(
+          finalize(() => this.isLoading.next(false))
+        )
+        .subscribe(result => {
+          this.styles = result.styles
+
+          if(result.membership){
+            this.amount.setValue(result.membership.amount)
+            this.startDate.setValue(result.membership.startDate.toString())
+            this.endDate.setValue(result.membership.endDate.toString())
+            this.comment.setValue(result.membership.comment as string)
+            this.client = result.membership.client
+            this.visitsNumber.setValue(result.membership.visitsNumber)
+            this.style.setValue(this.styles.find(x => x.id == result.membership?.style.id) as StyleModel)
+          }
+          else{
+            this.client = this.data().client
+
+            var date = new Date()
+            var firstDay = new Date(date.getFullYear(), date.getMonth(), 1)
+            var lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0)
+
+            this.startDate.setValue(firstDay.toISOString()) 
+            this.endDate.setValue(lastDay.toISOString())
+            this.visitsNumber.setValue(8)
+            
+            if(this.data().style){
+              this.style.setValue(this.styles.find(x => x.id == this.data().style.id) as StyleModel)
+            }
           }
         })
-
-      this.id = this.data()?.id as string
-
-      var date = new Date()
-      var firstDay = new Date(date.getFullYear(), date.getMonth(), 1)
-      var lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0)
-
-      this.data().startDate === null ? 
-        this.startDate.setValue(this.data()?.startDate as string)
-        : this.startDate.setValue(firstDay.toISOString())
-
-      this.data().endDate === null ? 
-        this.endDate.setValue(this.data()?.endDate as string)
-        : this.endDate.setValue(lastDay.toISOString())
-
-      this.data().visitsNumber == null ?
-        this.visitsNumber.setValue(8)
-        : this.visitsNumber.setValue(this.data()?.visitsNumber as number)
-
-      this.comment.setValue(this.data()?.comment as string)
-      this.client = this.data()?.client
     })
   }
 
   ngOnInit(){
     this.style.valueChanges
-      .subscribe((value) =>{
-        if(value && this.data().amount == null){
-          this.amount.setValue(value.basePrice as number)
+      .pipe(
+        startWith(this.style.value),
+        pairwise())
+      .subscribe(([prev, next]: [any, any]) =>{
+        if(this.amount.value == null || prev?.basePrice == this.amount.value){
+          this.amount.setValue(next.basePrice as number)
         }
       })
   }
@@ -101,7 +109,7 @@ export class MembershipDialogComponent {
   onSave(){
     if(this.isValid()){
       var membership: IMembershipSave = {
-        id: this.id,
+        id: this.data().id as string,
         amount: this.amount.value as number,
         clientId: this.client.id,
         startDate: this.startDate.value as string,

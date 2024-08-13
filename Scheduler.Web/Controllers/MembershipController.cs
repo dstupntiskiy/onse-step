@@ -16,6 +16,12 @@ public class MembershipController(IMediator mediator) : ControllerBase
         return await mediator.Send(cmd);
     }
 
+    [HttpGet("GetById/{id:guid}")]
+    public async Task<MembershipDto> GetById(Guid id)
+    {
+        return await mediator.Send(new GetMembershipByIdQuery(id));
+    }
+
     [HttpGet("GetMebershipsByClient")]
     public async Task<List<MembershipWithDetailsDto>> GetMebershipsByClient(Guid clientId)
     {
