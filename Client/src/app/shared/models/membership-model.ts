@@ -12,6 +12,7 @@ export class MembershipModel{
     id: string
 
     constructor(){}
+
 }
 
 export class MembershipWithDetails extends MembershipModel{
@@ -19,5 +20,10 @@ export class MembershipWithDetails extends MembershipModel{
 
     constructor(){
         super()
+    }
+
+    Map(membership: MembershipModel): MembershipWithDetails{
+        Object.assign(this, {...membership})
+        return this
     }
 }

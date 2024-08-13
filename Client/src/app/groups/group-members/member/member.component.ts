@@ -6,7 +6,7 @@ import { PaymentComponent } from '../../../shared/components/payment/payment.com
 import { DatePipe } from '@angular/common';
 import { DialogService } from '../../../services/dialog.service';
 import { MembershipDialogComponent, MembershipDialogData } from '../../../membership/membership-dialog/membership-dialog.component';
-import { MembershipWithDetails } from '../../../shared/models/membership-model';
+import { MembershipModel, MembershipWithDetails } from '../../../shared/models/membership-model';
 import { ClientDialogComponent } from '../../../clients/client-dialog/client-dialog.component';
 import { Client } from '../../../shared/models/client-model';
 
@@ -52,6 +52,19 @@ export class MemberComponent {
     .afterClosed().subscribe((result: Client) =>{
       if(result){
         this.member().member = result
+      }
+    })
+ }
+
+ onMembershipClick(){
+  this.dialogService.showDialog(MembershipDialogComponent, 'Абонимент', {id: this.member().membership?.id})
+    .afterClosed().subscribe((result: MembershipModel) =>{
+      if(result){
+        var membership = new MembershipWithDetails()
+        membership.Map(result)
+        membership.visited = this.member().membership?.visited as number
+        console.log(membership)
+        this.member().membership = membership
       }
     })
  }

@@ -1,10 +1,15 @@
 <div class="member-row" >
     <div class="member">
-        <p (click)="onMemberClick()">{{ member().member.name }}</p>
+        <div class="member-name" (click)="onMemberClick()">
+            <h5>{{ member().member.name }}</h5>
+            <span>{{ member().member.socialMediaLink }}</span>
+        </div>
         <div class="right-block">
             <div class="membership">
                 @if(member().membership){
-                    ({{member().membership?.visited}}/{{member().membership?.visitsNumber}}) {{member().membership?.endDate | date:'dd.MM.YY' }}
+                    <button mat-raised-button class="membership-details" (click)="onMembershipClick()">
+                        <span>{{member().membership?.amount}} RSD ({{member().membership?.visited}}/{{member().membership?.visitsNumber}})</span>
+                    </button>
                 }
                 @else {
                     <button mat-raised-button color="primary" (click)="onAddMembershipClick()">+</button>

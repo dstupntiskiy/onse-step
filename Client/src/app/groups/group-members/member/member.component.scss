@@ -8,14 +8,21 @@
     justify-content: space-between;
     align-items: center;
 
-    p{
-        margin: 0;
+    .member-name{
         cursor: pointer;
+
+        p{
+            margin: 0;
+        }
     }
 
     .right-block{
         display: flex;
         gap: 8px;
         align-items: center;
+
+        .membership{
+            cursor: pointer;
+        }
     }
 }
