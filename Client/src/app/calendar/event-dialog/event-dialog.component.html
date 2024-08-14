@@ -95,8 +95,8 @@
     </div>
     @if(!isNew && !!group){
         <div class="participants" >
-            <a (click)="onParticipantsClick()">Участники группы: {{participantsCount}}/{{ groupParticipantsCount }}</a>
-            <a (click)="onOnetimeVisitorsClick()">Разовые посещения: {{ onetimeVisitorsCount }}</a>
+            <button mat-stroked-button (click)="onParticipantsClick()">Группа: {{participantsCount}}/{{ groupParticipantsCount }}</button>
+            <button mat-stroked-button (click)="onOnetimeVisitorsClick()">Разовые: {{ onetimeVisitorsCount }}</button>
         </div>
     }
     <div class="actions" mat-dialog-actions>
