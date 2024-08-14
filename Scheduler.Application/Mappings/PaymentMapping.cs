@@ -2,11 +2,11 @@ using AutoMapper;
 using Scheduler.Application.Common.Dtos;
 using Scheduler.Application.Entities;
 
-namespace Scheduler.Application.Commands.Payments;
+namespace Scheduler.Application.Mappings;
 
-public class Mappings : Profile
+public class PaymentMapping : Profile
 {
-    public Mappings()
+    public PaymentMapping()
     {
         CreateMap<Payment, PaymentDto>()
             .ForMember(x => x.Amount, y => y.MapFrom(z => z.Amount))

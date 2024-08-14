@@ -4,12 +4,13 @@ import { StyleModel } from "./style-model"
 export class MembershipModel{
     amount: number
     comment?: string
-    visitsNumber: number
+    visitsNumber?: number
     startDate: Date
     endDate: Date
     client: Client
-    style: StyleModel
+    style?: StyleModel
     id: string
+    unlimited: boolean
 
     constructor(){}
 

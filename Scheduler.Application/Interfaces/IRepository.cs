@@ -2,7 +2,7 @@ namespace Scheduler.Application.Interfaces;
 
 public interface IRepository<TEntity>
 {
-    Task<TEntity> GetById(Guid id);
+    Task<TEntity>? GetById(Guid id);
     
     Task<List<TEntity>> GetAll();
 

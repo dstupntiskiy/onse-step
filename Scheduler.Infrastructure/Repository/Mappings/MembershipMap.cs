@@ -1,3 +1,4 @@
+using NHibernate.Mapping;
 using Scheduler.Application.Entities;
 
 namespace Scheduler.Infrastructure.Repository.Mappings;
@@ -11,6 +12,7 @@ public class MembershipMap : AuditableEntityMap<Membership>
         Map(x => x.StartDate).Column("`StartDate`");
         Map(x => x.EndDate).Column("`EndDate`");
         Map(x => x.VisitsNumber).Column("`VisitsNumber`");
+        Map(x => x.Unlimited).Column("`Unlimited`");
         References(x => x.Client).Column("`ClientId`");
         References(x => x.Style).Column("`StyleId`");
     }

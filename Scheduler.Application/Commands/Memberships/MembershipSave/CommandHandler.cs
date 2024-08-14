@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using AutoMapper;
 using MediatR;
 using Scheduler.Application.Common.Dtos;
@@ -13,8 +14,16 @@ public class CommandHandler(IMapper mapper,
 {
     public async Task<MembershipDto> Handle(Command request, CancellationToken cancellationToken)
     {
+        if (request is { Unlimited: false, VisitsNumber: null } or {StyleId: null, Unlimited: false})
+        {
+            throw new ValidationException("Количество посещений и направления обязательны для заполнения");
+        }
+        
         var client = await clientRepository.GetById(request.ClientId);
-        var style = await styleRepository.GetById(request.StyleId);
+        
+        var styleId = request.StyleId ?? Guid.Empty;
+        var style = await styleRepository.GetById(styleId);
+        
         var membership = await membershipRepository.GetById(request.Id);
 
         membership = membership ?? new Membership();
@@ -26,6 +35,7 @@ public class CommandHandler(IMapper mapper,
         membership.VisitsNumber = request.VisitsNumber;
         membership.Client = client;
         membership.Style = style;
+        membership.Unlimited = request.Unlimited;
 
         return mapper.Map<MembershipDto>(await membershipRepository.AddAsync(membership));
     }

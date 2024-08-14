@@ -10,10 +10,11 @@ export interface IMembershipSave{
   amount: number,
   startDate: string,
   endDate: string,
-  visitsNumber: number,
+  visitsNumber?: number,
   clientId: string,
-  styleId: string,
-  comment?: string
+  styleId?: string,
+  comment?: string,
+  unlimited: boolean
 }
 @Injectable({
   providedIn: 'root'

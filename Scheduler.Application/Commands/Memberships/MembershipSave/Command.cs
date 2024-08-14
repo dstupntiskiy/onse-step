@@ -8,7 +8,8 @@ public record Command(
     decimal Amount,
     DateTime StartDate,
     DateTime EndDate,
-    int VisitsNumber,
+    int? VisitsNumber,
     Guid ClientId,
-    Guid StyleId,
-    string? Comment) : IRequest<MembershipDto>;
+    Guid? StyleId,
+    string? Comment,
+    bool Unlimited = false) : IRequest<MembershipDto>;

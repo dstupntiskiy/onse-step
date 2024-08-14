@@ -3,11 +3,11 @@ using Scheduler.Application.Common.Dtos;
 using Scheduler.Application.Entities;
 using Scheduler.Application.Entities.Projections;
 
-namespace Scheduler.Application.Queries.Groups;
+namespace Scheduler.Application.Mappings;
 
-public class Mapping : Profile
+public class GroupMapping : Profile
 {
-    public Mapping()
+    public GroupMapping()
     {
         this.CreateMap<Group, GroupDto>()
             .ForMember(x => x.Name, y => y.MapFrom(z => z.Name))

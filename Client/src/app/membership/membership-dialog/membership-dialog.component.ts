@@ -7,12 +7,12 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { IMembershipSave, MembershipService } from '../membership.service';
 import { MatDialogRef } from '@angular/material/dialog';
-import { MembershipModel } from '../../shared/models/membership-model';
 import { MatSelectModule } from '@angular/material/select';
 import { StyleService } from '../../styles/style.service';
 import { StyleModel } from '../../shared/models/style-model';
 import { BehaviorSubject, combineLatestWith, finalize, forkJoin, Observable, of, pairwise, startWith } from 'rxjs';
 import { SpinnerComponent } from '../../shared/spinner/spinner.component';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 export interface MembershipDialogData{
   id?: string,
@@ -30,7 +30,8 @@ export interface MembershipDialogData{
     MatDatepickerModule,
     MatNativeDateModule,
     MatSelectModule,
-    SpinnerComponent
+    SpinnerComponent,
+    MatCheckboxModule
   ],
   templateUrl: './membership-dialog.component.html',
   styleUrl: './membership-dialog.component.scss'
@@ -45,6 +46,8 @@ export class MembershipDialogComponent {
   visitsNumber = new FormControl<number>(8, [Validators.required])
   style = new FormControl<StyleModel | null>(null, [Validators.required])
   comment = new FormControl<string>('')
+  unlimited = new FormControl<boolean>(false)
+
   id: string
   client: Client
   styles: StyleModel[] = []
@@ -72,8 +75,9 @@ export class MembershipDialogComponent {
             this.endDate.setValue(result.membership.endDate.toString())
             this.comment.setValue(result.membership.comment as string)
             this.client = result.membership.client
-            this.visitsNumber.setValue(result.membership.visitsNumber)
-            this.style.setValue(this.styles.find(x => x.id == result.membership?.style.id) as StyleModel)
+            this.unlimited.setValue(result.membership.unlimited)
+            this.visitsNumber.setValue(result.membership.visitsNumber as number)
+            this.style.setValue(this.styles.find(x => x.id == result.membership?.style?.id) as StyleModel)
           }
           else{
             this.client = this.data().client
@@ -115,8 +119,14 @@ export class MembershipDialogComponent {
         startDate: this.startDate.value as string,
         endDate: this.endDate.value as string,
         comment: this.comment.value as string,
-        styleId: this.style.value?.id as string,
-        visitsNumber: this.visitsNumber.value as number
+        unlimited: this.unlimited.value as boolean,
+        styleId: this.unlimited.value ? undefined : this.style.value?.id as string,
+        visitsNumber: this.unlimited.value ? undefined : this.visitsNumber.value as number
+      }
+
+      if(!membership.unlimited){
+        membership.styleId = this.style.value?.id as string
+        membership.visitsNumber = this.visitsNumber.value as number
       }
       
       this.membershipService.saveMembership(membership)

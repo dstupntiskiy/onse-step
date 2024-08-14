@@ -1,16 +1,33 @@
 <app-spinner [isLoading$]="showSpinner$"></app-spinner>
 <div class="membership-dialog-content">
-    <div class="membership-counts">
+    <div class="fields-row">
+        <mat-checkbox [formControl]="unlimited">
+            Безлимит
+        </mat-checkbox>
+    </div>
+    <div class="fields-row">
         <mat-form-field>
             <mat-label>Сумма</mat-label>
             <input matInput [formControl]="amount">
         </mat-form-field>
-        <mat-form-field>
-            <mat-label>Посещения</mat-label>
-            <input matInput [formControl]="visitsNumber">
-        </mat-form-field>
+        @if(!unlimited.value){
+            <mat-form-field>
+                <mat-label>Посещения</mat-label>
+                <input matInput [formControl]="visitsNumber">
+            </mat-form-field>
+        }
     </div>
-    <div class="membership-dates">
+    @if(!unlimited.value){
+        <mat-form-field>
+            <mat-label>Направление</mat-label>
+            <mat-select [formControl]="style">
+                @for(style of styles; track style){
+                    <mat-option [value]="style">{{style.name}}</mat-option>
+                }
+            </mat-select>
+        </mat-form-field>
+    }
+    <div class="fields-row">
         <mat-form-field>
             <mat-label>Начало</mat-label>
             <input matInput [matDatepicker]="pickerStart" [formControl]="startDate">
@@ -24,14 +41,6 @@
             <mat-datepicker #pickerEnd></mat-datepicker>
         </mat-form-field>
     </div>
-    <mat-form-field>
-        <mat-label>Направление</mat-label>
-        <mat-select [formControl]="style">
-            @for(style of styles; track style){
-                <mat-option [value]="style">{{style.name}}</mat-option>
-            }
-        </mat-select>
-    </mat-form-field>
     <mat-form-field>
         <mat-label>Комментарий</mat-label>
         <input matInput [formControl]="comment">

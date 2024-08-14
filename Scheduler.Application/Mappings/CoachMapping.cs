@@ -3,11 +3,11 @@ using Scheduler.Application.Common.Dtos;
 using Scheduler.Application.Entities;
 using Scheduler.Application.Entities.Projections;
 
-namespace Scheduler.Application.Queries.Coaches;
+namespace Scheduler.Application.Mappings;
 
-public class Mapping : Profile
+public class CoachMapping : Profile
 {
-    public Mapping()
+    public CoachMapping()
     {
         CreateMap<Coach, CoachDto>()
             .ForMember(x => x.Name, y => y.MapFrom(z => z.Name))
@@ -16,5 +16,6 @@ public class Mapping : Profile
 
         CreateMap<Coach, CoachProjection>()
             .ForMember(x => x.Name, y => y.MapFrom(z => z.Name));
+
     }
 }

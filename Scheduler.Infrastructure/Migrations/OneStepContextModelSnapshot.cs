@@ -237,10 +237,13 @@ namespace Scheduler.Infrastructure.Migrations
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid>("StyleId")
+                    b.Property<Guid?>("StyleId")
                         .HasColumnType("uuid");
 
-                    b.Property<int>("VisitsNumber")
+                    b.Property<bool>("Unlimited")
+                        .HasColumnType("boolean");
+
+                    b.Property<int?>("VisitsNumber")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
@@ -474,9 +477,7 @@ namespace Scheduler.Infrastructure.Migrations
 
                     b.HasOne("Scheduler.Application.Entities.Style", "Style")
                         .WithMany()
-                        .HasForeignKey("StyleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("StyleId");
 
                     b.Navigation("Client");
 

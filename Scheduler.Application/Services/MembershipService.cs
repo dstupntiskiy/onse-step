@@ -31,7 +31,8 @@ public class MembershipService(IMapper mapper,
                                                                 x.Event.Group is { Style: not null }
                                                                 && membership.StartDate < x.Event.StartDateTime
                                                                 && membership.EndDate > x.Event.StartDateTime
-                                                                && membership.Style.Id == x.Event.Group.Style.Id);
+                                                                && (membership.Style.Id == x.Event.Group.Style.Id
+                                                                    || membership.Unlimited));
 
         return membershipWithDetails;
     }
