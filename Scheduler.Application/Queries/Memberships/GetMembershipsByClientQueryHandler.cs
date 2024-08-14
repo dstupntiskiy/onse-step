@@ -22,7 +22,8 @@ public class GetMembershipsByClientQueryHandler(IMapper mapper,
             membershipWithDetails.Visited = participance.Count(y =>
                 x.StartDate <= y.Event.StartDateTime 
                 && x.EndDate > y.Event.StartDateTime
-                && x.Style.Id == y.Event.Group?.Style?.Id);
+                && (x.Unlimited
+                    || (x.Style != null && x.Style.Id == y.Event.Group?.Style?.Id)));
             return membershipWithDetails;
         }).ToList();
         return membershipsWithDetails;

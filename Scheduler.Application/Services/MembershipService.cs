@@ -13,7 +13,7 @@ public class MembershipService(IMapper mapper,
     {
         var membership = membershipRepository.Query()
             .Where(x => x.Client.Id == clientId
-                    && (x.Unlimited || x.Style.Id == styleId))
+                    && (x.Unlimited || (x.Style != null && x.Style.Id == styleId)))
             .OrderByDescending(x => x.StartDate)
             .FirstOrDefault();
         if (membership == null)
