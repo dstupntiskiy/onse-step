@@ -8,7 +8,7 @@
             <div class="membership">
                 @if(member().membership){
                     <button mat-raised-button class="membership-details" (click)="onMembershipClick()">
-                        <span>{{member().membership?.amount}} RSD ({{member().membership?.visited}}/{{member().membership?.visitsNumber}})</span>
+                        <span>{{member().membership?.amount}} RSD ({{member().membership?.visited}}/{{visitsNumber}})</span>
                     </button>
                 }
                 @else {

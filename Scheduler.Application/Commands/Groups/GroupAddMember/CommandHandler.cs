@@ -5,6 +5,7 @@ using Scheduler.Application.Common.Dtos;
 using Scheduler.Application.Entities;
 using Scheduler.Application.Entities.Projections;
 using Scheduler.Application.Interfaces;
+using Scheduler.Application.Services;
 
 namespace Scheduler.Application.Commands.Groups.GroupAddMember;
 
@@ -12,7 +13,8 @@ public class CommandHandler(
     IMapper mapper, 
     IRepository<GroupMemberLink> groupMemberRepository,
     IRepository<Group> groupRepository,
-    IRepository<Client> clientRepository) : IRequestHandler<Command, GroupMemberDto>
+    IRepository<Client> clientRepository,
+    MembershipService membershipService) : IRequestHandler<Command, GroupMemberDto>
 {
     public async Task<GroupMemberDto> Handle(Command request, CancellationToken cancellationToken)
     {
@@ -30,6 +32,8 @@ public class CommandHandler(
             Group = group,
             Client = client
         };
-        return mapper.Map<GroupMemberDto>(await groupMemberRepository.AddAsync(groupMember));
+        var member = mapper.Map<GroupMemberDto>(await groupMemberRepository.AddAsync(groupMember));
+        member.Membership = membershipService.GetActualMembership(null, request.ClientId);
+        return member;
     }
 }

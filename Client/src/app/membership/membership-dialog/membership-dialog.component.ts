@@ -108,6 +108,13 @@ export class MembershipDialogComponent {
           this.amount.setValue(next.basePrice as number)
         }
       })
+
+    this.unlimited.valueChanges
+      .subscribe(value =>{
+        if(value == true && this.amount.value == null){
+          this.amount.setValue(18000)
+        }
+      })
   }
 
   onSave(){

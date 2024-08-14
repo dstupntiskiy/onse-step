@@ -5,18 +5,6 @@
             Безлимит
         </mat-checkbox>
     </div>
-    <div class="fields-row">
-        <mat-form-field>
-            <mat-label>Сумма</mat-label>
-            <input matInput [formControl]="amount">
-        </mat-form-field>
-        @if(!unlimited.value){
-            <mat-form-field>
-                <mat-label>Посещения</mat-label>
-                <input matInput [formControl]="visitsNumber">
-            </mat-form-field>
-        }
-    </div>
     @if(!unlimited.value){
         <mat-form-field>
             <mat-label>Направление</mat-label>
@@ -27,6 +15,18 @@
             </mat-select>
         </mat-form-field>
     }
+    <div class="fields-row">
+        <mat-form-field>
+            <mat-label>Сумма RSD</mat-label>
+            <input matInput [formControl]="amount">
+        </mat-form-field>
+        @if(!unlimited.value){
+            <mat-form-field>
+                <mat-label>Посещения</mat-label>
+                <input matInput [formControl]="visitsNumber">
+            </mat-form-field>
+        }
+    </div>
     <div class="fields-row">
         <mat-form-field>
             <mat-label>Начало</mat-label>

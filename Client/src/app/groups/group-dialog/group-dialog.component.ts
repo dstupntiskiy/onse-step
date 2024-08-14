@@ -5,7 +5,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { Group } from '../../shared/models/group-model';
 import { GroupService } from '../group.service';
-import { BehaviorSubject, finalize, Observable } from 'rxjs';
+import { BehaviorSubject, finalize, forkJoin, Observable, of } from 'rxjs';
 import { SnackBarService } from '../../services/snack-bar.service';
 import { SpinnerService } from '../../shared/spinner/spinner.service';
 import { GroupMembersComponent } from '../group-members/group-members.component';
@@ -42,7 +42,7 @@ export interface GroupDialogData{
   styleUrl: './group-dialog.component.scss'
 })
 export class GroupDialogComponent implements DynamicComponent {
-  private isLoading = new BehaviorSubject<boolean>(true)
+  private isLoading = new BehaviorSubject<boolean>(false)
   showSpinner$ : Observable<boolean> = this.isLoading.asObservable()
 
   name = new FormControl<string>('', [Validators.required])
@@ -61,25 +61,26 @@ export class GroupDialogComponent implements DynamicComponent {
   constructor(private dialogRef: MatDialogRef<GroupDialogComponent>,
   ){
     effect(()=>{
-      if(this.data()?.id){
-        this.groupService.getGroupById(this.data().id)
-          .pipe(finalize(() => {
-            this.isLoading.next(false)
-          }))
-          .subscribe((result: Group) =>{
-            if(result){
-              this.styleService.getAllStyles()
-                .subscribe((styles: StyleModel[]) =>{
-                  this.styles = styles
-                  if(result.style)
-                    this.style.setValue(this.styles.find(x => x.id === result.style?.id) as StyleModel)
-            })
-            
-            this.group = result
-            this.name?.setValue(result.name);
-            this.active?.setValue(result.active);            
-          }})
-      }
+        this.isLoading.next(true)
+
+        forkJoin({
+          group: this.data()?.id != null ? this.groupService.getGroupById(this.data().id) : of(null),
+          styles: this.styleService.getAllStyles()
+        })
+        .pipe(
+          finalize(() => this.isLoading.next(false))
+        )
+        .subscribe(result =>{
+          this.styles = result.styles
+          if(result.group){
+            this.group = result.group
+            this.name?.setValue(result.group.name);
+            this.active?.setValue(result.group.active);
+          }
+          if(result.group?.style){
+            this.style.setValue(this.styles.find(x => x.id === result.group?.style?.id) as StyleModel)
+          }
+        })
     })
   }
 

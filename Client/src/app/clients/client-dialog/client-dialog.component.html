@@ -13,17 +13,19 @@
             <mat-label>Соц Сеть</mat-label>
             <input matInput formControlName="socialMediaLink">
         </mat-form-field>
-        <div class="memberships">
-            <div class="memberships-header">
-                <h3>Абонементы</h3>
-                <button mat-raised-button color="primary" (click)="onAddMembershipClick()">+</button>
+        @if(data()?.id){
+            <div class="memberships">
+                <div class="memberships-header">
+                    <h3>Абонементы</h3>
+                    <button mat-raised-button color="primary" (click)="onAddMembershipClick()">+</button>
+                </div>
+                <div class="memberships-list">
+                    @for(membership of memberships; track membership){
+                        <app-membership [membership]="membership" ></app-membership>
+                    }
+                </div>
             </div>
-            <div class="memberships-list">
-                @for(membership of memberships; track membership){
-                    <app-membership [membership]="membership" ></app-membership>
-                }
-            </div>
-        </div>
+        }
         <div class="actions">
             <button mat-button (click)="onCloseClick()">Закрыть</button>
             <button mat-raised-button color="accent" (click)="submit()">Сохранить</button>

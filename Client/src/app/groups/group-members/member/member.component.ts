@@ -1,4 +1,4 @@
-import { Component, inject, input, output } from '@angular/core';
+import { Component, effect, inject, input, output } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule} from '@angular/material/icon'
 import { GroupMember } from '../../../shared/models/group-members';
@@ -25,8 +25,17 @@ import { Client } from '../../../shared/models/client-model';
 export class MemberComponent {
  member = input<GroupMember>(new GroupMember)
  removeMemberOutput = output<GroupMember>();
+ visitsNumber: string;
 
  dialogService = inject(DialogService)
+
+ constructor(){
+  effect(()=>{
+    this.visitsNumber = this.member().membership?.unlimited
+        ? '∞'
+        : this.member().membership?.visitsNumber?.toString() as string
+  })
+ }
 
  removeMember(member: GroupMember){
   this.removeMemberOutput.emit(member);
@@ -63,7 +72,6 @@ export class MemberComponent {
         var membership = new MembershipWithDetails()
         membership.Map(result)
         membership.visited = this.member().membership?.visited as number
-        console.log(membership)
         this.member().membership = membership
       }
     })

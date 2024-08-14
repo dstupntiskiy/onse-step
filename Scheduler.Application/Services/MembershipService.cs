@@ -11,12 +11,9 @@ public class MembershipService(IMapper mapper,
 {
     public MembershipWithDetailsDto? GetActualMembership(Guid? styleId, Guid clientId)
     {
-        if (styleId == null)
-            return null;
-        
         var membership = membershipRepository.Query()
             .Where(x => x.Client.Id == clientId
-                    && x.Style.Id == styleId)
+                    && (x.Unlimited || x.Style.Id == styleId))
             .OrderByDescending(x => x.StartDate)
             .FirstOrDefault();
         if (membership == null)
@@ -31,7 +28,7 @@ public class MembershipService(IMapper mapper,
                                                                 x.Event.Group is { Style: not null }
                                                                 && membership.StartDate < x.Event.StartDateTime
                                                                 && membership.EndDate > x.Event.StartDateTime
-                                                                && (membership.Style.Id == x.Event.Group.Style.Id
+                                                                && (membership.Style?.Id == x.Event.Group.Style.Id
                                                                     || membership.Unlimited));
 
         return membershipWithDetails;
