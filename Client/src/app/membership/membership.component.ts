@@ -1,4 +1,4 @@
-import { Component, effect, inject, input, model } from '@angular/core';
+import { Component, ComponentRef, DestroyRef, effect, inject, input, model, output } from '@angular/core';
 import { MembershipModel, MembershipWithDetails } from '../shared/models/membership-model';
 import { DatePipe } from '@angular/common';
 import { DialogService } from '../services/dialog.service';
@@ -19,7 +19,7 @@ import { MatIconModule } from '@angular/material/icon';
 export class MembershipComponent {
   membership = model.required<MembershipWithDetails>()
   visitsNumber: string;
-
+  delete = output<string>()
   dialogService = inject(DialogService)
 
   constructor(){
@@ -34,12 +34,15 @@ export class MembershipComponent {
     this.dialogService.showDialog(MembershipDialogComponent, 'Абонимент', {
       id: this.membership().id
     })
-    .afterClosed().subscribe((result: MembershipModel) =>{
-      if(result){
+    .afterClosed().subscribe((result) =>{
+      if(result instanceof MembershipModel){
         var membership = new MembershipWithDetails()
         membership.Map(result)
         membership.visited = this.membership().visited as number
         this.membership.set(membership)
+      }
+      else if(typeof(result) == "string"){
+        this.delete.emit(result)
       }
     })
   }

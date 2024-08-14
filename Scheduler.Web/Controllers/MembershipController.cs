@@ -1,5 +1,6 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Scheduler.Application.Commands.Memberships.MembershipDelete;
 using Scheduler.Application.Commands.Memberships.MembershipSave;
 using Scheduler.Application.Common.Dtos;
 using Scheduler.Application.Queries.Memberships;
@@ -26,5 +27,11 @@ public class MembershipController(IMediator mediator) : ControllerBase
     public async Task<List<MembershipWithDetailsDto>> GetMebershipsByClient(Guid clientId)
     {
         return await mediator.Send(new GetMembershipsByClientQuery(clientId));
+    }
+
+    [HttpDelete("DeleteMembership/{id:guid}")]
+    public async Task<Guid> DeleteMembership(Guid id)
+    {
+        return await mediator.Send(new MembershipDeleteCommand(id));
     }
 }

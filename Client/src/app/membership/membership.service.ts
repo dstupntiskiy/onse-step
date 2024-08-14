@@ -41,4 +41,8 @@ export class MembershipService extends BaseHttpService {
     }
     return this.get<MembershipWithDetails[]>('GetMebershipsByClient', options)
   }
+
+  deleteMembership(id: string): Observable<string>{
+    return this.delete<string>('DeleteMembership/' + id)
+  }
 }

@@ -13,6 +13,8 @@ import { StyleModel } from '../../shared/models/style-model';
 import { BehaviorSubject, combineLatestWith, finalize, forkJoin, Observable, of, pairwise, startWith } from 'rxjs';
 import { SpinnerComponent } from '../../shared/spinner/spinner.component';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { DialogService } from '../../services/dialog.service';
+import { ConfirmationDialogComponent } from '../../shared/dialog/confirmation-dialog/confirmation-dialog.component';
 
 export interface MembershipDialogData{
   id?: string,
@@ -48,13 +50,13 @@ export class MembershipDialogComponent {
   comment = new FormControl<string>('')
   unlimited = new FormControl<boolean>(false)
 
-  id: string
   client: Client
   styles: StyleModel[] = []
 
   data = input.required<MembershipDialogData>()
   membershipService = inject(MembershipService)
   styleService = inject(StyleService)
+  dialogService = inject(DialogService)
 
   constructor(public dialogRef: MatDialogRef<MembershipDialogComponent>){
     effect(() => {
@@ -143,6 +145,19 @@ export class MembershipDialogComponent {
 
   onClose(){
     this.dialogRef.close();
+  }
+
+  onDelete(){
+    this.dialogService.showDialog(ConfirmationDialogComponent, '', {
+      message: 'Удалить абонемент?'
+    }).afterClosed().subscribe(result =>{
+      if(result == true){
+        this.membershipService.deleteMembership(this.data().id as string)
+          .subscribe((deletedId: string) =>{
+            this.dialogRef.close(deletedId)
+          })
+      }
+    })
   }
 
   private isValid(): boolean{

@@ -46,7 +46,14 @@
         <input matInput [formControl]="comment">
     </mat-form-field>
     <div class="actions">
-        <button mat-button (click)="onClose()">Закрыть</button>
-        <button mat-raised-button color="accent" (click)="onSave()">Сохранить</button>
+        <div class="left-actions">
+            @if(this.data()?.id){
+                <button mat-raised-button color="warn" (click)="onDelete()">Удалить</button>
+            }
+        </div>
+        <div class="right-actions">
+            <button mat-button (click)="onClose()">Закрыть</button>
+            <button mat-raised-button color="accent" (click)="onSave()">Сохранить</button>
+        </div>
     </div>
 </div>

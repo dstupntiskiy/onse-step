@@ -21,7 +21,7 @@
                 </div>
                 <div class="memberships-list">
                     @for(membership of memberships; track membership){
-                        <app-membership [membership]="membership" ></app-membership>
+                        <app-membership [membership]="membership" (delete)="onMembershipDelete($event)"></app-membership>
                     }
                 </div>
             </div>

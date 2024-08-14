@@ -1,4 +1,4 @@
-import { Component, effect, inject, input } from '@angular/core';
+import { Component, effect, inject, input, OutputRefSubscription, Signal, viewChildren } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Client } from '../../shared/models/client-model';
@@ -52,6 +52,9 @@ export class ClientDialogComponent {
   dialogService = inject(DialogService)
   memberships: MembershipWithDetails[] = []
   membershipService = inject(MembershipService)
+
+  private subscriptions: OutputRefSubscription[] = []
+  memberRefs: Signal<readonly MembershipComponent[]> = viewChildren(MembershipComponent)
 
   constructor(private formBuilder: FormBuilder,
     private dialogRef: MatDialogRef<ClientDialogComponent>,
@@ -124,5 +127,9 @@ export class ClientDialogComponent {
           this.dialogRef.close(result)
         })
       }
+    }
+
+    onMembershipDelete(id: string){
+      this.memberships = this.memberships.filter(x => x.id != id)
     }
 }
