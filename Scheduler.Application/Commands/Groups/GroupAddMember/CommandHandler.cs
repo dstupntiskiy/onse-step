@@ -33,7 +33,7 @@ public class CommandHandler(
             Client = client
         };
         var member = mapper.Map<GroupMemberDto>(await groupMemberRepository.AddAsync(groupMember));
-        member.Membership = membershipService.GetActualMembership(null, request.ClientId);
+        member.Membership = await membershipService.GetActualMembership(null, request.ClientId);
         return member;
     }
 }

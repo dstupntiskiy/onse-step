@@ -27,8 +27,8 @@ export class MembershipService extends BaseHttpService {
     super(http, snackbarService)
    }
 
-  saveMembership(membership: IMembershipSave): Observable<MembershipModel>{
-    return this.post<MembershipModel>('', membership)
+  saveMembership(membership: IMembershipSave): Observable<MembershipWithDetails>{
+    return this.post<MembershipWithDetails>('', membership)
   }
 
   getMembershipById(id:string): Observable<MembershipModel>{
@@ -40,6 +40,16 @@ export class MembershipService extends BaseHttpService {
       params: { clientId: clientId }
     }
     return this.get<MembershipWithDetails[]>('GetMebershipsByClient', options)
+  }
+
+  getActualMembership(clientId: string, styleId?: string): Observable<MembershipWithDetails>{
+    var options: IAngularHttpRequestOptions = {
+      params: {
+        clientId: clientId,
+        styleId: styleId ?? ''
+      }
+    }
+    return this.get<MembershipWithDetails>('GetActualMembership', options)
   }
 
   deleteMembership(id: string): Observable<string>{

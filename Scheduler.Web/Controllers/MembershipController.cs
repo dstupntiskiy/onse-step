@@ -12,7 +12,7 @@ namespace Scheduler.Controllers;
 public class MembershipController(IMediator mediator) : ControllerBase
 {
     [HttpPost]
-    public async Task<MembershipDto> Save(Command cmd)
+    public async Task<MembershipWithDetailsDto> Save(Command cmd)
     {
         return await mediator.Send(cmd);
     }
@@ -27,6 +27,12 @@ public class MembershipController(IMediator mediator) : ControllerBase
     public async Task<List<MembershipWithDetailsDto>> GetMebershipsByClient(Guid clientId)
     {
         return await mediator.Send(new GetMembershipsByClientQuery(clientId));
+    }
+
+    [HttpGet("GetActualMembership")]
+    public async Task<MembershipWithDetailsDto?> GetActualMembership(Guid clientId, Guid? styleId)
+    {
+        return await mediator.Send(new GetActualMembershipQuery(clientId, styleId));
     }
 
     [HttpDelete("DeleteMembership/{id:guid}")]

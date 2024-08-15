@@ -18,24 +18,15 @@ public class GetGroupMembersQueryHandler(
 {
     public async Task<List<GroupMemberDto>> Handle(GetGroupMembersQuery request, CancellationToken cancellationToken)
     {
-        var group = await groupRepository.GetById(request.GroupId);
-        var styleId = group.Style?.Id;
-       
-       var groupMembers = groupMembersRepository.Query()
+       var groupMembers = mapper.Map<List<GroupMemberDto>>(groupMembersRepository.Query()
            .Where(x => x.Group.Id == request.GroupId)
-           .Select(member => new 
-           {
-               Member = member,
-               Membership = membershipService.GetActualMembership(styleId, member.Client.Id)
-           }).ToList();
+           .ToList());
 
-       var membersWithDetails = groupMembers.Select(x =>
+       foreach (var member in groupMembers)
        {
-           var member = mapper.Map<GroupMemberDto>(x.Member);
-           member.Membership = x.Membership;
-           return member;
-       }).ToList();
+           member.Membership = await membershipService.GetActualMembership(member.Group.Style.Id, member.Member.Id);
+       }
 
-        return membersWithDetails;
+       return groupMembers;
     }
 }

@@ -1,20 +1,11 @@
 <div class="member-row" >
     <div class="member">
-        <div class="member-name" (click)="onMemberClick()">
-            <h5>{{ member().member.name }}</h5>
-            <span>{{ member().member.socialMediaLink }}</span>
-        </div>
+        <app-client-name [client]="member().member" (clientUpdate)="onClientChange()"></app-client-name>
         <div class="right-block">
-            <div class="membership">
-                @if(member().membership){
-                    <button mat-raised-button class="membership-details" (click)="onMembershipClick()">
-                        <span>{{member().membership?.amount}} RSD ({{member().membership?.visited}}/{{visitsNumber}})</span>
-                    </button>
-                }
-                @else {
-                    <button mat-raised-button color="primary" (click)="onAddMembershipClick()">+</button>
-                }
-            </div>
+            <app-membership-details 
+                [membership]="member().membership"
+                [client]="member().member"
+                [style]="member().group.style"></app-membership-details>
             <button mat-icon-button (click)="removeMember(member())">
                 <mat-icon>clear</mat-icon>
             </button>

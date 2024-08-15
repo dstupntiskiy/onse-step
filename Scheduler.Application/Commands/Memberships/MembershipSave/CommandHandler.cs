@@ -4,15 +4,17 @@ using MediatR;
 using Scheduler.Application.Common.Dtos;
 using Scheduler.Application.Entities;
 using Scheduler.Application.Interfaces;
+using Scheduler.Application.Services;
 
 namespace Scheduler.Application.Commands.Memberships.MembershipSave;
 
 public class CommandHandler(IMapper mapper,
     IRepository<Membership> membershipRepository,
     IRepository<Client> clientRepository,
-    IRepository<Style> styleRepository) : IRequestHandler<Command, MembershipDto>
+    IRepository<Style> styleRepository,
+    MembershipService membershipService) : IRequestHandler<Command, MembershipWithDetailsDto>
 {
-    public async Task<MembershipDto> Handle(Command request, CancellationToken cancellationToken)
+    public async Task<MembershipWithDetailsDto> Handle(Command request, CancellationToken cancellationToken)
     {
         if (request is { Unlimited: false, VisitsNumber: null } or {StyleId: null, Unlimited: false})
         {
@@ -37,6 +39,9 @@ public class CommandHandler(IMapper mapper,
         membership.Style = style;
         membership.Unlimited = request.Unlimited;
 
-        return mapper.Map<MembershipDto>(await membershipRepository.AddAsync(membership));
+        var savedMembership = mapper.Map<MembershipWithDetailsDto>(await membershipRepository.AddAsync(membership));
+        savedMembership.Visited = await membershipService.GetVisitedCount(request.ClientId, savedMembership.Id);
+
+        return savedMembership;
     }
 }

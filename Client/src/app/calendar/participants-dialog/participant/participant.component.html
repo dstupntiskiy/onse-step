@@ -1,10 +1,14 @@
 <div class="participant-content">
     <div class="participant">
-        <p>{{ attendy().client.name }}</p>
-        <p>
-            <mat-slide-toggle labelPosition="before" [formControl]="isAttendant">
-                <span class="label">Посещение</span>
-            </mat-slide-toggle>
-        </p>
+        <app-client-name 
+            [client]="attendy().client"
+            (clientUpdate)="onClientChange()"></app-client-name>
+        <app-membership-details 
+            [membership]="attendy().membership" 
+            [client]="attendy().client"
+            [style]="style()"
+            ></app-membership-details>
+        <mat-slide-toggle [formControl]="isAttendant">
+        </mat-slide-toggle>
     </div>
 </div>

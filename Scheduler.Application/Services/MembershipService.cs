@@ -9,7 +9,7 @@ public class MembershipService(IMapper mapper,
     IRepository<Membership> membershipRepository,
     IRepository<EventParticipance> participanceRepository)
 {
-    public MembershipWithDetailsDto? GetActualMembership(Guid? styleId, Guid clientId)
+    public async Task<MembershipWithDetailsDto?> GetActualMembership(Guid? styleId, Guid clientId)
     {
         var membership = membershipRepository.Query()
             .Where(x => x.Client.Id == clientId
@@ -21,16 +21,23 @@ public class MembershipService(IMapper mapper,
             return null;
         }
 
-        var participance = participanceRepository.Query().Where(x => x.Client.Id == clientId).ToList();
-
         var membershipWithDetails = mapper.Map<MembershipWithDetailsDto>(membership);
-        membershipWithDetails.Visited = participance.Count(x => 
-                                                                x.Event.Group is { Style: not null }
-                                                                && membership.StartDate < x.Event.StartDateTime
-                                                                && membership.EndDate > x.Event.StartDateTime
-                                                                && (membership.Style?.Id == x.Event.Group.Style.Id
-                                                                    || membership.Unlimited));
+        membershipWithDetails.Visited = await GetVisitedCount(clientId, membershipWithDetails.Id);
 
         return membershipWithDetails;
+    }
+
+    public async Task<int> GetVisitedCount(Guid clientId, Guid membershipId)
+    {
+        var membership = await membershipRepository.GetById(membershipId);
+        var participance = participanceRepository.Query().Where(x => x.Client.Id == clientId).ToList();
+        var count = participance.Count(x => x.Client.Id == clientId
+                                            && x.Event.Group != null
+                                            && membership.StartDate < x.Event.StartDateTime
+                                            && membership.EndDate > x.Event.StartDateTime
+                                            && (membership.Unlimited || (membership.Style != null &&
+                                                                         membership.Style.Id ==
+                                                                         x.Event.Group.Style.Id)));
+        return count;
     }
 }

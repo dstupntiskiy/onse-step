@@ -1,4 +1,4 @@
-import { Component, input, model } from '@angular/core';
+import { Component, inject, input, model } from '@angular/core';
 import { MatSlideToggleModule} from '@angular/material/slide-toggle';
 import { catchError, of, switchMap } from 'rxjs';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
@@ -6,6 +6,10 @@ import { Attendence } from '../../../shared/models/attendence-model';
 import { EventService } from '../../event/event.service';
 import { SnackBarService } from '../../../services/snack-bar.service';
 import { HttpErrorResponse } from '@angular/common/http';
+import { ClientNameComponent } from '../../../shared/components/client-name/client-name.component';
+import { MembershipDetailsComponent } from '../../../shared/components/membership-details/membership-details.component';
+import { StyleModel } from '../../../shared/models/style-model';
+import { MembershipService } from '../../../membership/membership.service';
 
 @Component({
   selector: 'app-participant',
@@ -13,7 +17,8 @@ import { HttpErrorResponse } from '@angular/common/http';
   imports: [
     MatSlideToggleModule,
     ReactiveFormsModule,
-
+    ClientNameComponent,
+    MembershipDetailsComponent
   ],
   templateUrl: './participant.component.html',
   styleUrl: './participant.component.scss'
@@ -21,9 +26,10 @@ import { HttpErrorResponse } from '@angular/common/http';
 export class ParticipantComponent {
   attendy = model.required<Attendence>()
   eventId = input<string>('')
-
+  style = input<StyleModel>()
   isAttendant = new FormControl<boolean>(false)
 
+  membershipService = inject(MembershipService)
 
   constructor(private eventService: EventService,
     private snackBarService: SnackBarService,
@@ -39,13 +45,10 @@ export class ParticipantComponent {
           {
             return this.eventService.addAttendy(this.eventId(), this.attendy().client.id)
               .pipe(
-                catchError((error: HttpErrorResponse) =>{
-                  if(error.status != 200){
-                    this.snackBarService.error("Не удалось удалить участника")
-                    this.isAttendant.setValue(true, {emitEvent: false})
-                    return of(false)
-                  }
-                  return of(true)
+                catchError(() =>{
+                  this.snackBarService.error("Не удалось отметить участника")
+                  this.isAttendant.setValue(false, {emitEvent: false})
+                  return of(false)
                 })
               )
           }
@@ -53,16 +56,23 @@ export class ParticipantComponent {
             return this.eventService.removeAttendy(this.eventId(), this.attendy().client.id)
               .pipe(
                 catchError((error: HttpErrorResponse) => {
-                  if(error.status != 200){
-                    this.snackBarService.error("Не удалось удалить участника")
-                    this.isAttendant.setValue(true, {emitEvent: false})
-                    return of(true)
-                  }
-                  return of(false)
+                  if(error.status != 200)
+                  this.snackBarService.error("Не удалось удалить участника")
+                  this.isAttendant.setValue(true, {emitEvent: false})
+                  return of(true)
                 })
               )
           }
         })
     ).subscribe()
   }
+
+  onClientChange(){
+    this.membershipService.getActualMembership(this.attendy().client.id, this.style()?.id)
+      .subscribe(result =>{
+        this.attendy().membership = result
+      })
+  }
+  
 }
+

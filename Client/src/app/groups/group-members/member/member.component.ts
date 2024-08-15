@@ -9,6 +9,9 @@ import { MembershipDialogComponent, MembershipDialogData } from '../../../member
 import { MembershipModel, MembershipWithDetails } from '../../../shared/models/membership-model';
 import { ClientDialogComponent } from '../../../clients/client-dialog/client-dialog.component';
 import { Client } from '../../../shared/models/client-model';
+import { ClientNameComponent } from '../../../shared/components/client-name/client-name.component';
+import { MembershipService } from '../../../membership/membership.service';
+import { MembershipDetailsComponent } from '../../../shared/components/membership-details/membership-details.component';
 
 @Component({
   selector: 'app-member',
@@ -17,7 +20,9 @@ import { Client } from '../../../shared/models/client-model';
     MatButtonModule, 
     MatIconModule,
     PaymentComponent,
-    DatePipe
+    DatePipe,
+    ClientNameComponent,
+    MembershipDetailsComponent
   ],
   templateUrl: './member.component.html',
   styleUrl: './member.component.scss'
@@ -28,6 +33,7 @@ export class MemberComponent {
  visitsNumber: string;
 
  dialogService = inject(DialogService)
+ membershipService = inject(MembershipService)
 
  constructor(){
   effect(()=>{
@@ -50,8 +56,7 @@ export class MemberComponent {
   this.dialogService.showDialog(MembershipDialogComponent, this.member().member.name + ' Абонемент', data)
     .afterClosed().subscribe((result: MembershipWithDetails) =>{
       if(result){
-        result.visited = 0
-        this.member().membership = result
+        this.updateActualMembership()
       }
     })
  }
@@ -65,15 +70,14 @@ export class MemberComponent {
     })
  }
 
- onMembershipClick(){
-  this.dialogService.showDialog(MembershipDialogComponent, 'Абонимент', {id: this.member().membership?.id})
-    .afterClosed().subscribe((result: MembershipModel) =>{
-      if(result){
-        var membership = new MembershipWithDetails()
-        membership.Map(result)
-        membership.visited = this.member().membership?.visited as number
-        this.member().membership = membership
-      }
-    })
+ onClientChange(){
+  this.updateActualMembership()
+ }
+
+ private updateActualMembership(){
+  this.membershipService.getActualMembership(this.member().member.id, this.member().group.style.id)
+        .subscribe(result =>{
+          this.member().membership = result
+        })
  }
 }

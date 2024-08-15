@@ -4,13 +4,15 @@ using Scheduler.Application.Common.Dtos;
 using Scheduler.Application.Entities;
 using Scheduler.Application.Entities.Projections;
 using Scheduler.Application.Interfaces;
+using Scheduler.Application.Services;
 
 namespace Scheduler.Application.Queries.Events;
 
 public class GetEventAttendentsQueryHandler(IMapper mapper,
     IRepository<Event> eventRepository,
     IRepository<GroupMemberLink> groupMembersRepository,
-    IRepository<EventParticipance> eventParticipanceRepository) : IRequestHandler<GetEventAttendentsQuery, List<EventAttendenceDto>>
+    IRepository<EventParticipance> eventParticipanceRepository,
+    MembershipService membershipService) : IRequestHandler<GetEventAttendentsQuery, List<EventAttendenceDto>>
 {
     public async Task<List<EventAttendenceDto>> Handle(GetEventAttendentsQuery request, CancellationToken cancellationToken)
     {
@@ -24,9 +26,10 @@ public class GetEventAttendentsQueryHandler(IMapper mapper,
             {
                 var attendy = new EventAttendenceDto()
                 {
-                    Client = mapper.Map<ClientProjection>(groupMember.Client),
+                    Client = mapper.Map<ClientDto>(groupMember.Client),
                     IsAttendant = eventParticipants.Count(x => x.Client.Id == groupMember.Client.Id) > 0,
-                    GroupMemberId = groupMember.Group.Id
+                    GroupMemberId = groupMember.Group.Id,
+                    Membership = await membershipService.GetActualMembership(ev.Group.Style.Id, groupMember.Client.Id)
                 };
                 attendies.Add(attendy);
             }

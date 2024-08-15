@@ -1,0 +1,10 @@
+<div class="membership">
+    @if(membership()){
+        <button mat-raised-button class="membership-details" (click)="onEditClick()">
+            <span>{{membership()?.amount}} RSD ({{membership()?.visited}}/{{visitsNumber}})</span>
+        </button>
+    }
+    @else {
+        <button mat-raised-button color="primary" (click)="onAddClick()">+</button>
+    }
+</div>

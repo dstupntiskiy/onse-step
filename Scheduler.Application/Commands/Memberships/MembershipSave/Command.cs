@@ -12,4 +12,4 @@ public record Command(
     Guid ClientId,
     Guid? StyleId,
     string? Comment,
-    bool Unlimited = false) : IRequest<MembershipDto>;
+    bool Unlimited = false) : IRequest<MembershipWithDetailsDto>;
