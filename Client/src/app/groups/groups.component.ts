@@ -86,9 +86,9 @@ export class GroupsComponent {
   }
 
   private refetchGroups(){
-    this.groupService.getGoupsWithDetails(this.onlyActive.value as boolean).subscribe( (groups) =>
+    this.groupService.getGoupsWithDetails(this.onlyActive.value as boolean).subscribe( (groups) => {
       this.dataSource = groups
-    );
+    });
   }
 
 }

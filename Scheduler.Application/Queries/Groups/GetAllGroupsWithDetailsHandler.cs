@@ -3,13 +3,15 @@ using MediatR;
 using Scheduler.Application.Common.Dtos;
 using Scheduler.Application.Entities;
 using Scheduler.Application.Interfaces;
+using Scheduler.Application.Services;
 
 namespace Scheduler.Application.Queries.Groups;
 
 public class GetAllGroupsWithDetailsHandler(IMapper mapper,
     IRepository<Group> groupRepository,
     IRepository<GroupMemberLink> groupMembersRepository,
-    IRepository<GroupPayment> groupPaymentRepository
+    IRepository<GroupPayment> groupPaymentRepository,
+    MembershipService membershipService
     ) : IRequestHandler<GetAllGroupsWithDetails, List<GroupDetailedDto>>
 {
     public async Task<List<GroupDetailedDto>> Handle(GetAllGroupsWithDetails request,
@@ -29,24 +31,14 @@ public class GetAllGroupsWithDetailsHandler(IMapper mapper,
                 g = gr.Gr,
                 member = m
             }).ToList();
-        var grr = groupsWithMembers
-            .GroupJoin(groupPaymentRepository.Query(),
-                gm => gm.member?.Id,
-                p => p.GroupMemberLink.Id,
-                (gm, p) => new
-                {
-                    gr= gm.g,
-                    member = gm.member,
-                    payment = p.DefaultIfEmpty()
-                })
-            .GroupBy(x => x.gr)
-            .ToList();
 
-        var result = grr.Select(gr =>
+        var result = groupsWithMembers.GroupBy(x => x.g).Select(x =>
         {
-            var group = mapper.Map<GroupDetailedDto>(gr.Key);
-            group.MembersCount = gr.Count(g => g.member != null);
-            group.PayedCount = gr.Sum(g => g.payment.Count(p => p != null));
+            var group = mapper.Map<GroupDetailedDto>(x.Key);
+            group.MembersCount = x.Count();
+            group.MembershipsCount = Task.WhenAll(x.Select(async y =>
+                await membershipService.GetActualMembership(y.member.Client.Id, x.Key.Style.Id, x.Key.StartDate,
+                    x.Key.EndDate)).ToList()).Result.Count(x => x is not null);
             return group;
         }).ToList();
         

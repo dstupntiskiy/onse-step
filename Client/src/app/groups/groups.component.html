@@ -20,8 +20,8 @@
             <td mat-cell *matCellDef="let element">{{element.style?.name}}</td>
         </ng-container>
         <ng-container matColumnDef="counts">
-            <th mat-header-cell *matHeaderCellDef>Оплата/Участники</th>
-            <td mat-cell *matCellDef="let element" class="align-text-right" [class.red]="element.payedCount < element.membersCount">{{element.payedCount}}/{{element.membersCount}}</td>
+            <th mat-header-cell *matHeaderCellDef>Абонементы/Участники</th>
+            <td mat-cell *matCellDef="let element" class="align-text-right" [class.red]="element.membershipsCount < element.membersCount">{{element.membershipsCount}}/{{element.membersCount}}</td>
         </ng-container>
 
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

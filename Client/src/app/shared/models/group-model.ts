@@ -15,5 +15,5 @@ export class Group{
 
 export class GroupWithDetails extends Group{
     membersCount: number;
-    payedCount: number
+    membershipsCount: number
 }
