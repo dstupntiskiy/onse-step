@@ -10,11 +10,13 @@ export interface GroupData{
   title: string
 }
 
-export interface GroupSaveModel{
+export interface IGroupSave{
   id: string
   name?: string
   styleId?: string
   active: boolean
+  startDate: string,
+  endDate?: string
 }
 
 @Injectable({
@@ -52,14 +54,9 @@ export class GroupService extends BaseHttpService{
       return this.get<GroupWithDetails>('GetGroupWithDetails', options);
     }
 
-    saveGroup(group: Group): Observable<Group>{
-      var groupSave: GroupSaveModel = {
-        id: group.id,
-        active: group.active,
-        name: group.name,
-        styleId: group.style?.id
-      }
-      return this.post<Group>('', groupSave)
+    saveGroup(group: IGroupSave): Observable<Group>{
+      
+      return this.post<Group>('', group)
     }
 
     getGroupMembersCount(groupId: string): Observable<number>{

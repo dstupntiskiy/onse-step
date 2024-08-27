@@ -207,12 +207,15 @@ export class EventDialogComponent {
       var end = new Date(this.data().event.startDateTime);
 
       var result: EventResult = {action: 'save'}
+      var gr = new Group()
+      gr.id = this.group.value?.id as string
+
       const data: EventModel = {
         id: this.initialEvent.id ?? Guid.EMPTY.toString(),
         startDateTime: setTimeFromStringToDate(start, this.start?.value as string),
         endDateTime: setTimeFromStringToDate(end, this.end?.value as string),
         name: this.name?.value as string,
-        group: { id: (this.group?.value as Group)?.id, active: true, name: '', style: new StyleModel() },
+        group: gr,
         color: this.color,
         coach: { id: (this.coach?.value as CoachModel)?.id as string }
       }
@@ -288,8 +291,9 @@ export class EventDialogComponent {
 
   onParticipantsClick(){
     this.dialogService.showDialog(ParticipantsDialogComponent, 'Участники', {
-      eventId: this.initialEvent.id, 
-      group: this.initialEvent.group}
+      eventId: this.initialEvent.id,
+      eventDate: this.initialEvent.startDateTime,
+      group: this.group.value}
     )
       .afterClosed().subscribe(() => this.refetchParticipants())
   }

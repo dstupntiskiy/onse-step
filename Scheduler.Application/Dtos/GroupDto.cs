@@ -7,6 +7,7 @@ public class GroupDto : EntityDto
 {
     public string Name { get; init; }
     public Style Style { get; init; }
-    
     public bool Active { get; init; }
+    public DateTime StartDate { get; set; }
+    public DateTime? EndDate { get; set; }
 }

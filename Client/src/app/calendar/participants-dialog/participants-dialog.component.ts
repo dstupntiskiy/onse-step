@@ -1,8 +1,8 @@
-import { ChangeDetectorRef, Component, Inject, effect, inject, input, model } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { Component, effect, inject, input, model } from '@angular/core';
+import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { Group } from '../../shared/models/group-model';
 import { SpinnerService } from '../../shared/spinner/spinner.service';
-import { finalize, startWith } from 'rxjs';
+import { finalize } from 'rxjs';
 import { EventService } from '../event/event.service';
 import { Attendence } from '../../shared/models/attendence-model';
 import { MatButtonModule } from '@angular/material/button';
@@ -11,6 +11,7 @@ import { DynamicComponent } from '../../shared/dialog/base-dialog/base-dialog.co
 
 export interface ParticipantsDialogData{
   eventId: string,
+  eventDate: Date,
   group?: Group
 }
 

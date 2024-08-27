@@ -3,29 +3,25 @@ using MediatR;
 using Scheduler.Application.Common.Dtos;
 using Scheduler.Application.Entities;
 using Scheduler.Application.Interfaces;
+using Scheduler.Application.Services;
 
 namespace Scheduler.Application.Queries.Memberships;
 
 public class GetMembershipsByClientQueryHandler(IMapper mapper,
     IRepository<Membership> membershipRepository,
-    IRepository<EventParticipance> eventParticipanceRepository) : IRequestHandler<GetMembershipsByClientQuery, List<MembershipWithDetailsDto>>
+    MembershipService membershipService) : IRequestHandler<GetMembershipsByClientQuery, List<MembershipWithDetailsDto>>
 {
     public async Task<List<MembershipWithDetailsDto>> Handle(GetMembershipsByClientQuery request,
         CancellationToken cancellationToken)
     {
         var memberships = membershipRepository.Query().Where(x => x.Client.Id == request.ClientId).ToList();
-        var participance = eventParticipanceRepository.Query().Where(x => x.Client.Id == request.ClientId).ToList();
 
-        var membershipsWithDetails = memberships.Select(x =>
+        var membershipsWithDetails = Task.WhenAll(memberships.Select(async x =>
         {
             var membershipWithDetails = mapper.Map<MembershipWithDetailsDto>(x);
-            membershipWithDetails.Visited = participance.Count(y =>
-                x.StartDate <= y.Event.StartDateTime 
-                && x.EndDate > y.Event.StartDateTime
-                && (x.Unlimited
-                    || (x.Style != null && x.Style.Id == y.Event.Group?.Style?.Id)));
+            membershipWithDetails.Visited = await membershipService.GetVisitedCount(request.ClientId, x.Id) ;
             return membershipWithDetails;
-        }).ToList();
+        })).Result.ToList();
         return membershipsWithDetails;
     }
 }

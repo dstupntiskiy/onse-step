@@ -15,14 +15,16 @@ namespace Scheduler.Application.Commands.Groups.GroupSave;
         public async Task<GroupDto> Handle(Command request, CancellationToken cancellationToken)
         {
 
-            var group = await groupRepository.GetById(request.Id);
+            var group = await groupRepository.GetById(request.Id)!;
             group = group ?? new Group();
 
-            var style = await styleRepository.GetById(request.StyleId);
+            var style = await styleRepository.GetById(request.StyleId)!;
 
             group.Name = request.Name;
             group.Style = style;
             group.Active = request.Active;
+            group.StartDate = request.StartDate;
+            group.EndDate = request.EndDate?.Date.AddDays(1).AddSeconds(-1);
 
             if (groupRepository.Query().Any(x => x.Name.Equals(group.Name) && x.Id != request.Id))
             {

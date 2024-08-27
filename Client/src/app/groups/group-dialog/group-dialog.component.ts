@@ -4,7 +4,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { Group } from '../../shared/models/group-model';
-import { GroupService } from '../group.service';
+import { GroupService, IGroupSave } from '../group.service';
 import { BehaviorSubject, finalize, forkJoin, Observable, of } from 'rxjs';
 import { SnackBarService } from '../../services/snack-bar.service';
 import { SpinnerService } from '../../shared/spinner/spinner.service';
@@ -16,6 +16,9 @@ import { StyleService } from '../../styles/style.service';
 import { StyleModel } from '../../shared/models/style-model';
 import { MatSelectModule } from '@angular/material/select';
 import { SpinnerComponent } from '../../shared/spinner/spinner.component';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatIconModule } from '@angular/material/icon';
 
 export interface GroupDialogData{
   id: string
@@ -32,7 +35,10 @@ export interface GroupDialogData{
     MatSlideToggleModule,
     GroupMembersComponent,
     MatSelectModule,
-    SpinnerComponent
+    SpinnerComponent,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatIconModule
   ],
   providers:[
     GroupService,
@@ -48,6 +54,9 @@ export class GroupDialogComponent implements DynamicComponent {
   name = new FormControl<string>('', [Validators.required])
   style = new FormControl<StyleModel| null>(null, [Validators.required])
   active = new FormControl<boolean>(true)
+  startDate = new FormControl<string | null>(null, [Validators.required]);
+  endDate = new FormControl<string | null>(null)
+
   group: Group
 
   public isNew: boolean = false;
@@ -76,9 +85,22 @@ export class GroupDialogComponent implements DynamicComponent {
             this.group = result.group
             this.name?.setValue(result.group.name);
             this.active?.setValue(result.group.active);
+            this.startDate.setValue(result.group.startDate.toString())
+            this.endDate.setValue(result.group.endDate?.toString() as string)
           }
-          if(result.group?.style){
-            this.style.setValue(this.styles.find(x => x.id === result.group?.style?.id) as StyleModel)
+
+          var date = new Date()
+          var firstDay = new Date(date.getFullYear(), date.getMonth(), 1)
+          var lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0)
+          
+          if(!this.group){
+            this.startDate.setValue(firstDay.toISOString())
+            this.endDate.setValue(lastDay.toISOString())
+          }
+
+          const style = result.group?.style
+          if(style){
+            this.style.setValue(this.styles.find(x => x.id === style.id) as StyleModel)
           }
         })
     })
@@ -92,14 +114,17 @@ export class GroupDialogComponent implements DynamicComponent {
   }
 
   submit(){
-    if (this.name.valid && this.style.valid){
-      const group: Group = {
-        id: this.data()?.id,
-        name: this.name?.value as string,
-        style: this.style?.value as StyleModel,
-        active: this.active.value as boolean
-      }
+    if(this.validateForm()){
       this.spinnerService.loadingOn();
+
+      var group: IGroupSave = {
+        id: this.data()?.id,
+        name: this.name.value as string,
+        styleId: this.style?.value?.id,
+        active: this.active.value as boolean,
+        startDate: this.startDate.value as string,
+        endDate: this.endDate.value ? this.endDate?.value as string : undefined
+      }
       this.groupService.saveGroup(group)
       .pipe(
         finalize(() => this.spinnerService.loadingOff()),
@@ -110,5 +135,20 @@ export class GroupDialogComponent implements DynamicComponent {
         });
       
     }
+  }
+
+  private validateForm(): boolean{
+    if (this.name.invalid || this.style.invalid || this.startDate.invalid){
+      return false
+    }
+
+    var start = new Date(this.startDate.value as string)
+    var end = new Date(this.endDate.value as string)
+    if (end < start){
+      this.endDate.setErrors({invalidEndDate: true})
+      return false
+    }
+
+    return true
   }
 }

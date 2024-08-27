@@ -18,6 +18,27 @@
             </mat-form-field>
         </div>
         <div class="field-row">
+            <mat-form-field>
+                <mat-label>Начало</mat-label>
+                <input matInput [matDatepicker]="pickerStart" [formControl]="startDate">
+                <mat-datepicker-toggle matIconSuffix [for]="pickerStart"></mat-datepicker-toggle>
+                <mat-datepicker #pickerStart></mat-datepicker>
+            </mat-form-field>
+        </div>
+        <div class="field-row">
+            <mat-form-field>
+                <mat-label>Конец</mat-label>
+                <input matInput [matDatepicker]="pickerEnd" [formControl]="endDate">
+                @if (endDate.value) {
+                    <button matSuffix mat-icon-button aria-label="Clear" (click)="endDate.setValue(null)">
+                      <mat-icon>close</mat-icon>
+                    </button>
+                  }
+                <mat-datepicker-toggle matIconSuffix [for]="pickerEnd"></mat-datepicker-toggle>
+                <mat-datepicker #pickerEnd></mat-datepicker>
+            </mat-form-field>
+        </div>
+        <div class="field-row">
                 <mat-slide-toggle [formControl]="active">Активность</mat-slide-toggle>
         </div>
         @if(group){

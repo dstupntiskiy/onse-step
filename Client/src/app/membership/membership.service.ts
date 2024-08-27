@@ -42,11 +42,12 @@ export class MembershipService extends BaseHttpService {
     return this.get<MembershipWithDetails[]>('GetMebershipsByClient', options)
   }
 
-  getActualMembership(clientId: string, styleId?: string): Observable<MembershipWithDetails>{
+  getActualMembership(clientId: string, styleId?: string, date?: Date): Observable<MembershipWithDetails>{
     var options: IAngularHttpRequestOptions = {
       params: {
         clientId: clientId,
-        styleId: styleId ?? ''
+        styleId: styleId ?? '',
+        date: date ? date.toISOString() : ''
       }
     }
     return this.get<MembershipWithDetails>('GetActualMembership', options)

@@ -12,7 +12,9 @@ public class GroupMapping : Profile
         this.CreateMap<Group, GroupDto>()
             .ForMember(x => x.Name, y => y.MapFrom(z => z.Name))
             .ForMember(x => x.Style, y => y.MapFrom(z => z.Style))
-            .ForMember(x => x.Active, y => y.MapFrom(z => z.Active));
+            .ForMember(x => x.Active, y => y.MapFrom(z => z.Active))
+            .ForMember(x => x.StartDate, y=> y.MapFrom(z => z.StartDate))
+            .ForMember(x => x.EndDate, y=> y.MapFrom(z => z.EndDate));
 
         this.CreateMap<Group, GroupDetailedDto>()
             .ForMember(x => x.Name, y => y.MapFrom(z => z.Name))

@@ -1,5 +1,5 @@
 import { Component, effect, inject, input, model } from '@angular/core';
-import { MembershipWithDetails } from '../../models/membership-model';
+import { MembershipModel, MembershipWithDetails } from '../../models/membership-model';
 import { DialogService } from '../../../services/dialog.service';
 import { StyleModel } from '../../models/style-model';
 import { MembershipDialogComponent } from '../../../membership/membership-dialog/membership-dialog.component';
@@ -20,6 +20,7 @@ export class MembershipDetailsComponent {
   membership = model.required<MembershipWithDetails | undefined>()
   style = input<StyleModel>()
   client = input.required<Client>()
+  date = input<Date>()
   visitsNumber: string
 
   dialogService = inject(DialogService)
@@ -51,15 +52,16 @@ export class MembershipDetailsComponent {
       style: this.style(),
       id: this.membership()?.id
     })
-    .afterClosed().subscribe(result => {
-      if(result instanceof MembershipWithDetails){
-        this.membership.set(result)
+    .afterClosed().subscribe((result : MembershipWithDetails | string) => {
+      if(typeof(result) == 'string'){
+        this.membershipService.getActualMembership(this.client().id, this.style()?.id, this.date())
+        .subscribe(result =>{
+          this.membership.set(result)
+        })
+        return
       }
-      else if(result == this.membership()?.id){
-        this.membershipService.getActualMembership(this.client().id, this.style()?.id)
-          .subscribe(result =>{
-            this.membership.set(result)
-          })
+      else if(result){
+        this.membership.set(result)
       }
     } )
   }

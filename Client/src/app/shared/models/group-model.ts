@@ -5,8 +5,12 @@ export class Group{
     name: string
     style: StyleModel
     active: boolean
+    startDate: Date
+    endDate?: Date
 
-    constructor(){}
+    constructor(){
+        this.active = true
+    }
 }
 
 export class GroupWithDetails extends Group{

@@ -11,6 +11,6 @@ public class GetActualMembershipQueryHandler(MembershipService membershipService
     public async Task<MembershipWithDetailsDto?> Handle(GetActualMembershipQuery request,
         CancellationToken cancellationToken)
     {
-        return await membershipService.GetActualMembership(request.StyleId, request.ClientId);
+        return await membershipService.GetActualMembership(request.ClientId, request.StyleId, request.Date);
     }
 }

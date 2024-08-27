@@ -30,9 +30,9 @@ public class MembershipController(IMediator mediator) : ControllerBase
     }
 
     [HttpGet("GetActualMembership")]
-    public async Task<MembershipWithDetailsDto?> GetActualMembership(Guid clientId, Guid? styleId)
+    public async Task<MembershipWithDetailsDto?> GetActualMembership(Guid clientId, Guid? styleId, DateTime? date)
     {
-        return await mediator.Send(new GetActualMembershipQuery(clientId, styleId));
+        return await mediator.Send(new GetActualMembershipQuery(clientId, styleId, date));
     }
 
     [HttpDelete("DeleteMembership/{id:guid}")]

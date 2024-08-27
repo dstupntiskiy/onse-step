@@ -11,6 +11,7 @@ export class MembershipModel{
     style?: StyleModel
     id: string
     unlimited: boolean
+    expired: boolean
 
     constructor(){}
 

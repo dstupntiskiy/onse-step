@@ -4,7 +4,8 @@
             @for(attendy of attendants(); track attendy){
                 <app-participant [attendy]="attendy" 
                     [eventId]="data().eventId"
-                    [style]="data().group?.style"></app-participant>
+                    [style]="data().group?.style"
+                    [eventDate]="data().eventDate"></app-participant>
             }
         </div>
         <div class="actions">

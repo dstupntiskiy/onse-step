@@ -29,7 +29,7 @@ public class GetEventAttendentsQueryHandler(IMapper mapper,
                     Client = mapper.Map<ClientDto>(groupMember.Client),
                     IsAttendant = eventParticipants.Count(x => x.Client.Id == groupMember.Client.Id) > 0,
                     GroupMemberId = groupMember.Group.Id,
-                    Membership = await membershipService.GetActualMembership(ev.Group.Style.Id, groupMember.Client.Id)
+                    Membership = await membershipService.GetActualMembership(groupMember.Client.Id, ev.Group.Style.Id, ev.StartDateTime)
                 };
                 attendies.Add(attendy);
             }

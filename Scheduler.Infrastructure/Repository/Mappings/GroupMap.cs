@@ -11,5 +11,7 @@ public class GroupMap : AuditableEntityMap<Group>
         Map(x => x.Name).Column("`Name`");
         References(x => x.Style).Column("`StyleId`");
         Map(x => x.Active).Column("`Active`");
+        Map(x => x.StartDate).Column("`StartDate`");
+        Map(x => x.EndDate).Column("`EndDate`");
     }
 }

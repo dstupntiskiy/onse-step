@@ -26,6 +26,7 @@ import { MembershipService } from '../../../membership/membership.service';
 export class ParticipantComponent {
   attendy = model.required<Attendence>()
   eventId = input<string>('')
+  eventDate = input<Date>()
   style = input<StyleModel>()
   isAttendant = new FormControl<boolean>(false)
 
@@ -48,6 +49,7 @@ export class ParticipantComponent {
                 catchError(() =>{
                   this.snackBarService.error("Не удалось отметить участника")
                   this.isAttendant.setValue(false, {emitEvent: false})
+                  this.updateMembership()
                   return of(false)
                 })
               )
@@ -59,6 +61,7 @@ export class ParticipantComponent {
                   if(error.status != 200)
                   this.snackBarService.error("Не удалось удалить участника")
                   this.isAttendant.setValue(true, {emitEvent: false})
+                  this.updateMembership()
                   return of(true)
                 })
               )
@@ -68,7 +71,11 @@ export class ParticipantComponent {
   }
 
   onClientChange(){
-    this.membershipService.getActualMembership(this.attendy().client.id, this.style()?.id)
+    this.updateMembership()
+  }
+
+  private updateMembership(){
+    this.membershipService.getActualMembership(this.attendy().client.id, this.style()?.id, this.eventDate())
       .subscribe(result =>{
         this.attendy().membership = result
       })
