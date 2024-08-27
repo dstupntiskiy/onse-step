@@ -4,7 +4,6 @@ import { HttpClient } from '@angular/common/http';
 import { SnackBarService } from '../../services/snack-bar.service';
 import { Observable } from 'rxjs';
 import { EventModel } from '../event-dialog/event-dialog.component';
-import { Participant } from '../../shared/models/participant-model';
 import { Attendence } from '../../shared/models/attendence-model';
 import { OnetimeVisitorModel } from '../../shared/models/onetime-visitor-model';
 

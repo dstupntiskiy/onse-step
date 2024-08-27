@@ -1,12 +1,15 @@
 @import '../../../../styles/mixins.scss';
 
 .visitor-row{
-    @include hover;
-    margin: 0 6px;
     .visitor{
         display: flex;
         justify-content: space-between;
         align-items: center;
+
+        border-radius: 6px;
+        background-color: rgb(0, 0, 0, 0.05);
+
+        padding-left: 4px;
 
         p{
             margin: 0;

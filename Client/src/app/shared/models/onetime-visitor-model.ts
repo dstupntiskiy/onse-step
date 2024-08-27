@@ -1,9 +1,9 @@
-import { Participant } from "./participant-model";
+import { Client } from "./client-model";
 import { PaymentModel } from "./payment-model";
 
 export class OnetimeVisitorModel{
     id: string;
-    client: Participant;
+    client: Client;
     payment: PaymentModel;
 
     constructor(){}

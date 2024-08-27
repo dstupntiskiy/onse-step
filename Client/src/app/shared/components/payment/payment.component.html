@@ -1,7 +1,8 @@
 <div class="payment" matTooltip="{{payment()?.comment}}">
     @if(payment()){
+        <button mat-raised-button class="payment-details" (click)="onEditClick()">
             <span >{{payment()?.amount}} RSD</span>
-            <mat-icon (click)="onEditClick()" class="edit-icon" inline="true">edit</mat-icon>
+        </button>
     }
     @else{
         <button class="add-payment-button" (click)="onAddPaymentClick()" mat-raised-button color="primary">+ Оплата</button>

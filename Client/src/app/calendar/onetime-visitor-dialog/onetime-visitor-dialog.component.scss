@@ -1,8 +1,7 @@
 .onetime-visitors-dialog{
     display: flex;
     flex-direction: column;
-    gap: 6px;
-    min-height: 200px;
+    gap: 12px;
 
     .onetime-visitors-dialog-content{
         display: flex;
@@ -15,7 +14,6 @@
         .add-client{
             display: flex;
             gap: 8px;
-            //justify-content: center;
             align-items: center;
         }
 

@@ -4,6 +4,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { PaymentType } from '../../../shared/components/payment/payment.service';
 import { PaymentComponent } from '../../../shared/components/payment/payment.component';
+import { ClientNameComponent } from '../../../shared/components/client-name/client-name.component';
 
 @Component({
   selector: 'app-onetime-visitor',
@@ -11,7 +12,8 @@ import { PaymentComponent } from '../../../shared/components/payment/payment.com
   imports: [
     MatButtonModule,
     MatIconModule,
-    PaymentComponent
+    PaymentComponent,
+    ClientNameComponent
   ],
   templateUrl: './onetime-visitor.component.html',
   styleUrl: './onetime-visitor.component.scss'

@@ -24,7 +24,7 @@ public class GetOneTimeVisitsQueryHandler(IMapper mapper,
                 {
                     Id = visitor.visitor.Id,
                     EventId = visitor.visitor.Event.Id,
-                    Client = mapper.Map<ClientProjection>(visitor.visitor.Client),
+                    Client = mapper.Map<ClientDto>(visitor.visitor.Client),
                     Payment = mapper.Map<PaymentDto>(payment)
                 }).ToList()
             .OrderBy(x => x.Client.Name).ToList();
