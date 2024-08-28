@@ -13,8 +13,8 @@ namespace Scheduler.Controllers;
 [Route("api/[controller]")]
 public class EventController(IMediator mediator) : ControllerBase
 {
-    [HttpGet]
-    public async Task<EventDto> Get(Guid id)
+    [HttpGet("GetEventById/{id:guid}")]
+    public async Task<EventDto> GetEventById(Guid id)
     {
         return await mediator.Send(new GetEventQuery(id));
     }

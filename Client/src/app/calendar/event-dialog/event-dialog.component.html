@@ -89,11 +89,11 @@
                 }
             </mat-select>
         </mat-form-field>
-        @if(!isNew &&!!group.value){
+        @if(initialEvent &&!!group.value){
             <mat-icon (click)="onEditGroupClick()" class="edit-group-button">edit</mat-icon>
         }
     </div>
-    @if(!isNew && !!group){
+    @if(initialEvent && !!group){
         <div class="participants" >
             <button mat-stroked-button (click)="onParticipantsClick()">Группа: {{participantsCount}}/{{ groupParticipantsCount }}</button>
             <button mat-stroked-button (click)="onOnetimeVisitorsClick()">Разовые: {{ onetimeVisitorsCount }}</button>
@@ -101,7 +101,7 @@
     }
     <div class="actions" mat-dialog-actions>
         <div class="actions-left">
-            <button *ngIf="!isNew" mat-raised-button color="warn" (click)="onDelete()">Удалить</button>
+            <button *ngIf="initialEvent" mat-raised-button color="warn" (click)="onDelete()">Удалить</button>
         </div>
         <div class="actions-right">
             <button mat-button (click)="onCloseClick()">Закрыть</button>

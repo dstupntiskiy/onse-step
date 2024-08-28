@@ -1,11 +1,11 @@
-import { Component, Inject, effect, inject, input, output } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
+import { Component, effect, inject, input } from '@angular/core';
+import { MatDialogModule, MatDialogRef } from '@angular/material/dialog'
 import { MatButtonModule } from '@angular/material/button'
 import { MatInputModule } from '@angular/material/input'
 import { MatSelectModule } from '@angular/material/select'
 import { MatCheckboxModule } from '@angular/material/checkbox'
 import { MatDatepickerModule} from '@angular/material/datepicker'
-import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { addHours, getFormattedTime, getHalfHourIntervals, setTimeFromStringToDate } from '../../shared/helpers/time-helper';
 import { Group } from '../../shared/models/group-model';
 import { GroupService } from '../../groups/group.service';
@@ -16,7 +16,7 @@ import {provideNativeDateAdapter} from '@angular/material/core';
 import { CustomDateAdapter } from '../../shared/adapters/custom.date.adapter';
 import { DeleteDialogComponent, DeleteResult } from '../delete-dialog/delete-dialog.component';
 import { SpinnerService } from '../../shared/spinner/spinner.service';
-import { finalize } from 'rxjs';
+import { finalize, forkJoin, of } from 'rxjs';
 import { EventService } from '../event/event.service';
 import { Guid } from 'typescript-guid';
 import {OverlayModule} from '@angular/cdk/overlay';
@@ -29,22 +29,13 @@ import { DialogService } from '../../services/dialog.service';
 import { ParticipantsDialogComponent } from '../participants-dialog/participants-dialog.component';
 import { GroupDialogComponent } from '../../groups/group-dialog/group-dialog.component';
 import { OnetimeVisitorDialogComponent } from '../onetime-visitor-dialog/onetime-visitor-dialog.component';
-import { StyleModel } from '../../shared/models/style-model';
+import { EventModel } from '../event/event.model';
 
 export interface EventDialogData{
-  event: EventModel
+  id: string
+  startDateTime: string
 }
 
-export interface EventModel{
-  id: string,
-  startDateTime: Date;
-  endDateTime: Date;
-  name: string;
-  color?: string;
-  group?: Group;
-  recurrence?: Recurrence
-  coach?: CoachModel
-}
 
 export interface Recurrence{
   exceptdates?: string[];
@@ -109,7 +100,6 @@ export class EventDialogComponent {
   coaches: CoachModel[]
   day: string;
   disableRecur: boolean;
-  isNew: boolean = false;
   pickerStart: Date;
   pickerEnd: Date;
   color: string;
@@ -119,7 +109,7 @@ export class EventDialogComponent {
   participantsCount: number = 0;
   onetimeVisitorsCount: number = 0;
 
-  private initialEvent: EventModel;
+  initialEvent: EventModel;
 
   name = new FormControl<string>('', [Validators.required])
   start =  new FormControl<string>('', [Validators.required])
@@ -131,9 +121,11 @@ export class EventDialogComponent {
   recurEnd = new FormControl<Date | null>(null)
   coach = new FormControl<CoachModel | null>(null)
 
-  coachService = inject(CoachService)
+  coachService = inject(CoachService) 
   dialogService = inject(DialogService)
   data = input.required<EventDialogData>()
+
+  date: Date;
 
   constructor(
     public dialogRef: MatDialogRef<EventDialogComponent>,
@@ -143,77 +135,79 @@ export class EventDialogComponent {
     private recurrenceService: RecurrenceService,
   ){
     effect(() => {
-      this.init()
+      var request = this.data()?.id ? this.eventService.getEventById(this.data()?.id) : of(new EventModel)
+      request
+        .pipe(
+          finalize(() => this.init())
+        )
+        .subscribe(result => {
+          if(result){
+            this.initialEvent = result
+        }})
     })
   }
 
   init(){
-    this.initialEvent = this.data().event;
-    this.color = this.data().event.color ?? 'teal';
-    this.isNew = !Guid.isGuid(this.initialEvent.id)
+    this.color = this.initialEvent.color ?? 'teal';
 
-    if(this.data().event.group?.id){
-      this.groupService.getGroupById(this.data().event.group?.id as string)
-        .subscribe((result: Group) => {
-          if(result){
-            this.groups = [result]
-            this.group.setValue(result)
-            this.group.disable()
-            this.refetchGroupMembersCount();
-            this.refetchParticipants();
-          }
-        })
-    }
-    else{
-      this.groupService.getGoups(true)
-      .subscribe((groups: Group[]) =>{
-        this.groups = groups
-      })
-    }
+    forkJoin({
+      group: this.initialEvent?.group?.id ? this.groupService.getGroupById(this.initialEvent.group?.id as string) : of(null),
+      groups: this.groupService.getGoups(true)
+    }).subscribe(result =>{
+      this.groups = result.groups
+      
+      if(result.group){
+        this.groups = [result.group]
+        this.group.setValue(result.group)
+        this.group.disable()
+        this.refetchGroupMembersCount();
+        this.refetchParticipants();
+      }
+    })
+    
 
   this.coachService.getCoaches()
     .subscribe((coaches: CoachModel[]) => {
       this.coaches = coaches
-      this.coach?.setValue(this.coaches.find(x => x.id === this.data().event.coach?.id) as CoachModel)
+      this.coach?.setValue(this.coaches.find(x => x.id === this.initialEvent?.coach?.id) as CoachModel)
     })
 
-  if(!this.isNew)
+  if(this.initialEvent?.id)
     this.refetchOnetimeVisitorsCount()
 
-  this.data().event.name ? this.name?.setValue(this.data().event.name) : ''
-  this.start?.setValue(getFormattedTime(this.data().event.startDateTime))
-  this.data().event.endDateTime
-    ? this.end?.setValue(getFormattedTime(this.data().event.endDateTime))
-    :  this.end?.setValue(getFormattedTime(addHours(this.data().event.startDateTime, 1)))
+  this.date = this.initialEvent.startDateTime ?? new Date(this.data().startDateTime)
 
-  this.day = this.data().event.startDateTime.toLocaleDateString('ru-RU');
-  this.isRecur?.setValue(!!(this.data().event.recurrence?.startDate));
-  if (this.isRecur?.value || !this.isNew){
+  this.name.setValue(this.initialEvent?.name)
+  this.start?.setValue(getFormattedTime(this.initialEvent?.startDateTime ?? this.data().startDateTime))
+  this.initialEvent?.endDateTime
+    ? this.end?.setValue(getFormattedTime(this.initialEvent?.endDateTime))
+    :  this.end?.setValue(getFormattedTime(addHours(this.date, 1)))
+
+  this.day = (new Date(this.initialEvent?.startDateTime)).toLocaleDateString('ru-RU');
+  this.isRecur?.setValue(!!(this.initialEvent?.recurrence?.startDate));
+  if (this.isRecur?.value || this.initialEvent?.id){
     this.isRecur?.disable();
 
     this.recurStart?.disable();
     this.recurEnd?.disable();
     this.weekdays?.disable();
-    this.recurStart?.setValue(this.data().event.recurrence?.startDate as Date)
-    this.recurEnd?.setValue(this.data().event.recurrence?.endDate as Date)
-    this.weekdays?.setValue(this.data().event.recurrence?.daysOfWeek?.map(x => WEEKDAYS.find(y => y.number == x)) as Weekday[])
+    this.recurStart?.setValue(this.initialEvent?.recurrence?.startDate as Date)
+    this.recurEnd?.setValue(this.initialEvent?.recurrence?.endDate as Date)
+    this.weekdays?.setValue(this.initialEvent?.recurrence?.daysOfWeek?.map(x => WEEKDAYS.find(y => y.number == x)) as Weekday[])
     }
   }
 
   submit(): void{
     if (this.validateDates() && this.validateWeekdaysNotEmpty())
     {
-      var start = new Date(this.data().event.startDateTime);
-      var end = new Date(this.data().event.startDateTime);
-
       var result: EventResult = {action: 'save'}
       var gr = new Group()
       gr.id = this.group.value?.id as string
 
       const data: EventModel = {
-        id: this.initialEvent.id ?? Guid.EMPTY.toString(),
-        startDateTime: setTimeFromStringToDate(start, this.start?.value as string),
-        endDateTime: setTimeFromStringToDate(end, this.end?.value as string),
+        id: this.initialEvent?.id ,
+        startDateTime: setTimeFromStringToDate(this.date, this.start?.value as string),
+        endDateTime: setTimeFromStringToDate(this.date, this.end?.value as string),
         name: this.name?.value as string,
         group: gr,
         color: this.color,
@@ -228,6 +222,7 @@ export class EventDialogComponent {
           id: this.initialEvent.recurrence?.id ?? Guid.EMPTY.toString()
         }
       }
+      
       this.spinnerService.loadingOn();
       this.eventService.saveEvent(data)
         .pipe(
@@ -253,7 +248,7 @@ export class EventDialogComponent {
       var deleteDialog = this.dialogService.showDialog(DeleteDialogComponent, 'Удаление', 
         { 
           message: 'Удалить все повторения или экземпляр?', 
-          eventName: this.data().event.name
+          eventName: this.initialEvent?.name
         })
       deleteDialog.afterClosed().subscribe((result: DeleteResult) =>{
           if (result?.delete == 'all'){
@@ -276,7 +271,7 @@ export class EventDialogComponent {
     else{
       var confDialogRef = this.dialogService.showDialog(ConfirmationDialogComponent, 'Удаление',
         {
-          message: 'Вы уверены что хотите удалить событие: ' + this.data().event.name
+          message: 'Вы уверены что хотите удалить событие: ' + this.initialEvent?.name
         })
       confDialogRef.afterClosed().subscribe((result) => {
         if (result == true){
@@ -344,7 +339,7 @@ export class EventDialogComponent {
   }
 
   private refetchParticipants(){
-    this.eventService.getParticipantsCount(this.data().event.id).subscribe(
+    this.eventService.getParticipantsCount(this.initialEvent?.id).subscribe(
       (result: number) =>{
         this.participantsCount = result;
       }

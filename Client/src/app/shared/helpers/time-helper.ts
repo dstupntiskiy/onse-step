@@ -1,4 +1,5 @@
 export function getFormattedTime(date: Date):string{
+    date = new Date(date)
     const hours = date.getHours();
     const minutes = date.getMinutes();
 
@@ -23,6 +24,7 @@ export function setTimeFromStringToDate(date: Date, timeString: string): Date {
     const hour = parseInt(hourStr, 10);
     const minute = parseInt(minuteStr, 10);
 
+    date = new Date(date)
     date.setHours(hour, minute);
     return date;
 }

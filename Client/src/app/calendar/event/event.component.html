@@ -1,6 +1,6 @@
 <div [style.border-right-color]="borderColor()">  
     <p>{{title}}</p>
-    <p>{{start()}} - {{end()}}</p>
+    <p>{{start() | date:'hh:mm'}} - {{end() | date:'hh:mm'}}</p>
     <p>{{groupName()}}</p>
     <p>{{coachName()}}</p>
 </div>

@@ -7,13 +7,14 @@ import dayGridPlugin from '@fullcalendar/daygrid'
 import rrulePlugin from '@fullcalendar/rrule'
 import { EventComponent } from './event/event.component';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { EventDialogComponent, EventModel, EventResult } from './event-dialog/event-dialog.component';
+import { EventDialogComponent, EventResult } from './event-dialog/event-dialog.component';
 import { SnackBarService } from '../services/snack-bar.service';
 import { EventService } from './event/event.service';
 import { SpinnerService } from '../shared/spinner/spinner.service';
 import { finalize, map } from 'rxjs';
 import { ResizeService } from '../shared/services/resize.service';
 import { DialogService } from '../services/dialog.service';
+import { EventModel } from './event/event.model';
 
 @Component({
   selector: 'app-calendar',
@@ -80,10 +81,7 @@ export class CalendarComponent {
   handleDateClick(info: DateClickArg) {
     this.dialogService.showDialog(EventDialogComponent, 'Новое событие', 
     { 
-      event: {
-        startDateTime: info.date, 
-        isRecurrent: false},
-        id: ''
+      startDateTime: info.date, 
     })
     .afterClosed().subscribe((result: EventResult) => {
       if (result && result.events){
@@ -112,9 +110,8 @@ export class CalendarComponent {
 
   handleEventClick(info: EventClickArg){
     this.dialogService.showDialog(EventDialogComponent, 'Событие', {
-      event: {
         id: info.event.id,
-        startDateTime: info.event.start,
+        /*startDateTime: info.event.start,
         endDateTime: info.event.end,
         name: info.event.title,
         group: { id: info.event.extendedProps['groupId'] },
@@ -126,8 +123,7 @@ export class CalendarComponent {
           id: info.event.extendedProps['recurrenceId'],
           daysOfWeek: info.event.extendedProps['daysOfWeek'],
           exceptDates: info.event.extendedProps['exceptDates']
-        },
-      }
+        },*/
      })
     .afterClosed().subscribe((result: EventResult) => {
       var event = this.calendarApi.getEventById(info.event.id);

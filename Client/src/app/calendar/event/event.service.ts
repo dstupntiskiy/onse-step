@@ -3,9 +3,9 @@ import { BaseHttpService, IAngularHttpRequestOptions } from '../../services/base
 import { HttpClient } from '@angular/common/http';
 import { SnackBarService } from '../../services/snack-bar.service';
 import { Observable } from 'rxjs';
-import { EventModel } from '../event-dialog/event-dialog.component';
 import { Attendence } from '../../shared/models/attendence-model';
 import { OnetimeVisitorModel } from '../../shared/models/onetime-visitor-model';
+import { EventModel } from './event.model';
 
 export interface EventRequestModel{
   id: string;
@@ -41,6 +41,10 @@ export class EventService extends BaseHttpService{
 
    getEvents(): Observable<EventModel[]>{
     return this.get<EventModel[]>('GetAll');
+   }
+
+   getEventById(id: string): Observable<EventModel>{
+    return this.get<EventModel>('GetEventById/' + id)
    }
 
    getEventsByPeriod(startDate: string, endDate: string): Observable<EventModel[]>{
