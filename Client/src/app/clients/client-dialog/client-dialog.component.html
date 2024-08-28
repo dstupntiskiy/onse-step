@@ -27,8 +27,15 @@
             </div>
         }
         <div class="actions">
-            <button mat-button (click)="onCloseClick()">Закрыть</button>
-            <button mat-raised-button color="accent" (click)="submit()">Сохранить</button>
+            <div class="left-actions">
+                @if(data()?.id){
+                    <button mat-raised-button color="warn" (click)="onDeleteClick()">Удалить</button>
+                }
+            </div>
+            <div class="right-actions">
+                <button mat-button (click)="onCloseClick()">Закрыть</button>
+                <button mat-raised-button color="accent" (click)="submit()">Сохранить</button>
+            </div>
         </div>
     </div>
 </form>

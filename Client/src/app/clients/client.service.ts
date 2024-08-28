@@ -35,4 +35,8 @@ export class ClientService extends BaseHttpService{
   getClientById(id: string): Observable<Client>{
     return this.get<Client>('GetById/' + id)
   }
+
+  deleteClient(id: string): Observable<string>{
+    return this.delete<string>('Delete/' + id)
+  }
 }

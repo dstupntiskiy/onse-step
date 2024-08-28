@@ -15,6 +15,7 @@ import { MembershipWithDetails } from '../../shared/models/membership-model';
 import { MembershipService } from '../../membership/membership.service';
 import { MembershipComponent } from '../../membership/membership.component';
 import { SpinnerComponent } from '../../shared/spinner/spinner.component';
+import { ConfirmationDialogComponent } from '../../shared/dialog/confirmation-dialog/confirmation-dialog.component';
 
 export interface ClientDialogData{
   id: string
@@ -99,6 +100,20 @@ export class ClientDialogComponent {
       this.dialogRef.close();
     }
 
+    onDeleteClick(){
+      this.dialogService.showDialog(ConfirmationDialogComponent, '', { message: 'Удалить клиента?'})
+        .afterClosed().subscribe(reuslt =>{
+          if(reuslt){
+            this.clientService.deleteClient(this.client.id)
+              .subscribe((result : string) =>{
+                if(result){
+                  this.dialogRef.close(result)
+                }
+              })
+          }
+        })
+    }
+
     onAddMembershipClick(){
       this.dialogService.showDialog(MembershipDialogComponent, 'Абонемент', {
         client: this.client
@@ -132,4 +147,5 @@ export class ClientDialogComponent {
     onMembershipDelete(id: string){
       this.memberships = this.memberships.filter(x => x.id != id)
     }
+
 }

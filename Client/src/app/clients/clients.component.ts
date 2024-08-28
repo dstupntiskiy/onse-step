@@ -1,7 +1,7 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, ViewChild } from '@angular/core';
 import { Client } from '../shared/models/client-model';
 import { ClientService } from './client.service';
-import { MatTableModule } from '@angular/material/table';
+import { MatTable, MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { DatePipe } from '@angular/common';
@@ -41,6 +41,8 @@ export class ClientsComponent {
 
   nameFilter = new FormControl<string>('')
   private debounceTime = 300
+
+  @ViewChild(MatTable) clientsTable: MatTable<any>
 
   constructor(){}
 
@@ -92,8 +94,13 @@ export class ClientsComponent {
 
   handleRowClick(row: Client){
     this.dialogService.showDialog(ClientDialogComponent, row.name, { id: row.id })
-      .afterClosed().subscribe((result: Client) =>{
-        if(result){
+      .afterClosed().subscribe((result: Client | string) =>{
+        if(typeof(result) == 'string'){
+          var index = this.clients.findIndex(x => x.id == result)
+          this.clients.splice(index, 1)
+          this.clientsTable.renderRows()
+        }
+        else if(result){
           var index = this.clients.findIndex(x => x.id === row.id);
           this.clients[index] = result;
           this.clients = Object.assign([], this.clients);

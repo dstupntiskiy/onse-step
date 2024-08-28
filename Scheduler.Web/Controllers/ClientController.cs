@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Scheduler.Application.Commands.Clients.ClientDelete;
 using Scheduler.Application.Commands.Clients.ClientSave;
 using Scheduler.Application.Common.Dtos;
 using Scheduler.Application.Entities.Projections;
@@ -34,6 +35,13 @@ public class ClientController(IMediator mediator) : ControllerBase
     [HttpPost]
     public async Task<ClientDto> Add(Command cmd)
     {
+        return await mediator.Send(cmd);
+    }
+
+    [HttpDelete("Delete/{id:guid}")]
+    public async Task<Guid> Delete(Guid id)
+    {
+        var cmd = new ClientDeleteCommand(id);
         return await mediator.Send(cmd);
     }
 }
