@@ -1,4 +1,4 @@
-import { Component, effect, inject, input } from '@angular/core';
+import { Component, effect, inject, input, output } from '@angular/core';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog'
 import { MatButtonModule } from '@angular/material/button'
 import { MatInputModule } from '@angular/material/input'
@@ -23,13 +23,14 @@ import {OverlayModule} from '@angular/cdk/overlay';
 import { PaletteComponent } from '../../shared/components/palette/palette.component';
 import { RecurrenceService } from '../recurrence/recurrence.service';
 import { MatIconModule } from '@angular/material/icon';
+import { MatButtonToggleModule } from '@angular/material/button-toggle'
 import { CoachModel } from '../../shared/models/coach-model';
 import { CoachService } from '../../coaches/coach.service';
 import { DialogService } from '../../services/dialog.service';
 import { ParticipantsDialogComponent } from '../participants-dialog/participants-dialog.component';
 import { GroupDialogComponent } from '../../groups/group-dialog/group-dialog.component';
 import { OnetimeVisitorDialogComponent } from '../onetime-visitor-dialog/onetime-visitor-dialog.component';
-import { EventModel } from '../event/event.model';
+import { EventModel, EventType } from '../event/event.model';
 
 export interface EventDialogData{
   id: string
@@ -43,11 +44,6 @@ export interface Recurrence{
   endDate: Date;
   daysOfWeek: number[];
   id: string; 
-}
-
-export interface EventResult{
-  action?: 'save'| 'delete' | 'deleteOne'
-  events?: EventModel[] | string[]
 }
 
 export interface Weekday{
@@ -83,7 +79,8 @@ const WEEKDAYS: Weekday[] = [
     OverlayModule,
     PaletteComponent,
     MatIconModule,
-    DatePipe ],
+    DatePipe,
+    MatButtonToggleModule ],
   templateUrl: './event-dialog.component.html',
   styleUrl: './event-dialog.component.scss',
   providers:[
@@ -104,6 +101,7 @@ export class EventDialogComponent {
   pickerEnd: Date;
   color: string;
   isColorSelectorOpen: boolean = false;
+  
 
   groupParticipantsCount: number = 0;
   participantsCount: number = 0;
@@ -121,11 +119,17 @@ export class EventDialogComponent {
   recurEnd = new FormControl<Date | null>(null)
   coach = new FormControl<CoachModel | null>(null)
 
+  eventType = new FormControl<EventType>(EventType.Event)
+  eventTypes = EventType
+
   coachService = inject(CoachService) 
   dialogService = inject(DialogService)
   data = input.required<EventDialogData>()
 
   date: Date;
+
+  eventSaved = output<EventModel[]>()
+  eventDeleted = output<string[]>()
 
   constructor(
     public dialogRef: MatDialogRef<EventDialogComponent>,
@@ -149,6 +153,10 @@ export class EventDialogComponent {
 
   init(){
     this.color = this.initialEvent.color ?? 'teal';
+    this.eventType.setValue(this.initialEvent.eventType ?? EventType.Event)
+    if(this.initialEvent.id){
+      this.eventType.disable()
+    }    
 
     forkJoin({
       group: this.initialEvent?.group?.id ? this.groupService.getGroupById(this.initialEvent.group?.id as string) : of(null),
@@ -199,10 +207,8 @@ export class EventDialogComponent {
   submit(): void{
     if (this.validateDates() && this.validateWeekdaysNotEmpty())
     {
-      var result: EventResult = {action: 'save'}
       var gr = new Group()
       gr.id = this.group.value?.id as string
-
       const data: EventModel = {
         id: this.initialEvent?.id ,
         startDateTime: setTimeFromStringToDate(this.date, this.start?.value as string),
@@ -211,7 +217,7 @@ export class EventDialogComponent {
         group: gr,
         color: this.color,
         coach: { id: (this.coach?.value as CoachModel)?.id as string },
-        eventType: 0
+        eventType: this.eventType.value as EventType
       }
       if (this.isRecur?.value){
         data.recurrence = {
@@ -229,8 +235,16 @@ export class EventDialogComponent {
           finalize(() => this.spinnerService.loadingOff())
         )
         .subscribe((events: EventModel[]) => {
-          result.events = events
-          this.dialogRef.close(result)
+          if(events){
+            this.eventSaved.emit(events)
+            if(events.length == 1){
+              this.initialEvent = events[0]
+              this.init()
+            }
+            else {
+              this.dialogRef.close()
+            }
+          }
         })
     }
   }
@@ -254,15 +268,15 @@ export class EventDialogComponent {
           if (result?.delete == 'all'){
             var recurrToDelete = this.initialEvent.recurrence?.id ?? '';
             this.recurrenceService.deleteRecurrence(recurrToDelete).subscribe((eventIdsToDelete: string[]) => {
-              var action : EventResult = {action : 'delete', events: eventIdsToDelete}
-              this.dialogRef.close(action)
+              this.eventDeleted.emit(eventIdsToDelete)
+              this.dialogRef.close()
             })
           }
           if (result?.delete == 'one'){
             var event = this.initialEvent
             this.eventService.deleteEvent(event).subscribe(() => {
-              var action : EventResult = {action : 'deleteOne', events: [event.id]}
-              this.dialogRef.close(action)
+              this.eventDeleted.emit([event.id])
+              this.dialogRef.close()
             })
             
           }
@@ -276,8 +290,8 @@ export class EventDialogComponent {
       confDialogRef.afterClosed().subscribe((result) => {
         if (result == true){
           this.eventService.deleteEvent(this.initialEvent).subscribe(() =>{
-            var action : EventResult = {action : 'deleteOne', events: [this.initialEvent]}
-            this.dialogRef.close(action)
+            this.eventDeleted.emit([this.initialEvent.id])
+            this.dialogRef.close()
           })
         }
       })

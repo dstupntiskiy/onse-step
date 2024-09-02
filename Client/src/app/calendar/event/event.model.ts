@@ -3,9 +3,9 @@ import { Group } from "../../shared/models/group-model"
 import { Recurrence } from "../event-dialog/event-dialog.component"
 
 export enum EventType{
-  event = 0,
-  rent = 1,
-  specialEvent = 2
+  Event = 0,
+  Rent = 1,
+  SpecialEvent = 2
 }
 
 export class EventModel{

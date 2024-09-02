@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, Signal, ViewChild, ViewContainerRef, signal } from '@angular/core';
+import { Component, ComponentRef, Inject, OnInit, Signal, ViewChild, ViewContainerRef, signal } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 export interface DynamicComponent{
@@ -14,6 +14,7 @@ export interface DynamicComponent{
 })
 export class BaseDialogComponent implements OnInit {
   @ViewChild('dynamicComponent', { read: ViewContainerRef, static: true }) dynamicComponent!: ViewContainerRef;
+  componentRef: ComponentRef<any>
 
   constructor(
     private dialogRef: MatDialogRef<BaseDialogComponent>,
@@ -21,7 +22,7 @@ export class BaseDialogComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    const component = this.dynamicComponent.createComponent(this.data.component);
-    (component.instance as DynamicComponent).data = signal(this.data.customData)
+    this.componentRef = this.dynamicComponent.createComponent(this.data.component);
+    (this.componentRef.instance as DynamicComponent).data = signal(this.data.customData)
   }
 }

@@ -5,7 +5,7 @@ import { SnackBarService } from '../../services/snack-bar.service';
 import { Observable } from 'rxjs';
 import { Attendence } from '../../shared/models/attendence-model';
 import { OnetimeVisitorModel } from '../../shared/models/onetime-visitor-model';
-import { EventModel } from './event.model';
+import { EventModel, EventType } from './event.model';
 
 export interface EventRequestModel{
   id: string;
@@ -21,6 +21,7 @@ export interface EventRequestModel{
   exceptDates?: string[];
   daysOfWeek?: number[]; 
   recurrenceId?: string;
+  eventType: number
 }
 
 export interface AddParticipantModel{
@@ -146,7 +147,8 @@ export class EventService extends BaseHttpService{
       coachId: event.coach?.id,
       recurrencyStartDate: event.recurrence?.startDate,
       recurrencyEndDate: event.recurrence?.endDate,
-      recurrenceId: event.recurrence?.id
+      recurrenceId: event.recurrence?.id,
+      eventType: event.eventType
     }
     return eventRequestModel; 
   }   

@@ -12,7 +12,6 @@ import { AddClientComponent } from '../../shared/components/add-client/add-clien
 import { MatIconModule } from '@angular/material/icon';
 import { OnetimeVisitorModel } from '../../shared/models/onetime-visitor-model';
 import { BehaviorSubject, Observable, finalize } from 'rxjs';
-import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 import { SpinnerService } from '../../shared/spinner/spinner.service';
 import { DynamicComponent } from '../../shared/dialog/base-dialog/base-dialog.component';
 

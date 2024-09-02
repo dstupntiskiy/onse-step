@@ -92,6 +92,7 @@ public class CommandHandler(
         ev.Color = color;
         ev.Recurrence = recurrence;
         ev.Coach = coach;
+        ev.EventType = eventType;
 
         var createdEvent = await eventRepository.AddAsync(ev);
 

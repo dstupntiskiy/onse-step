@@ -37,8 +37,16 @@ public class GetAllGroupsWithDetailsHandler(IMapper mapper,
             var group = mapper.Map<GroupDetailedDto>(x.Key);
             group.MembersCount = x.Count();
             group.MembershipsCount = Task.WhenAll(x.Select(async y =>
-                await membershipService.GetActualMembership(y.member.Client.Id, x.Key.Style.Id, x.Key.StartDate,
-                    x.Key.EndDate)).ToList()).Result.Count(x => x is not null);
+                {
+                    if (y.member != null)
+                    {
+                        return await membershipService.GetActualMembership(y.member.Client.Id, x.Key.Style.Id, x.Key.StartDate,
+                            x.Key.EndDate);
+                    }
+
+                    return null;
+                }
+            ).ToList()).Result.Count(z => z is not null);
             return group;
         }).ToList();
         

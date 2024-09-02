@@ -22,36 +22,58 @@
         </div>
     </div>
     <div class="fields-row">
-        <mat-checkbox [formControl]="isRecur" (change)="changeIsRecur($event.checked)">
-            Еженедельное событие
-        </mat-checkbox>
-        <ng-container *ngIf="isRecur?.value">
-            <mat-form-field class="event-start">
-                <mat-label>Дни недели</mat-label>
-                <mat-select  [formControl]="weekdays" multiple>
-                    @for (option of weekDaysList; track option){
-                        <mat-option [value]="option">{{option.name}}</mat-option>
-                    }
-                </mat-select>
-            </mat-form-field>
-        </ng-container>
+        <mat-button-toggle-group
+            class="event-types"
+            [formControl]="eventType"
+            [hideSingleSelectionIndicator]="true">
+                <mat-button-toggle class="event-type" [value]="eventTypes.Event">
+                    <mat-icon>event</mat-icon>
+                    <span>Занятие</span>
+                </mat-button-toggle>
+                <mat-button-toggle class="event-type"  [value]="eventTypes.Rent">
+                    <mat-icon>home</mat-icon>
+                    <span>Аренда</span>
+                </mat-button-toggle>
+                <mat-button-toggle class="event-type"  [value]="eventTypes.SpecialEvent">
+                    <mat-icon>people</mat-icon>
+                    <span>Мастер Класс</span>
+                </mat-button-toggle>
+        </mat-button-toggle-group>
     </div>
-    <ng-container *ngIf="isRecur?.value">
+    @if(eventType.value == eventTypes.Event)
+    {
         <div class="fields-row">
-            <mat-form-field class="recur-start">
-                <mat-label>Дата старта</mat-label>
-                <input matInput [matDatepicker]="pickerStart" [formControl]="recurStart">
-                <mat-datepicker-toggle matIconSuffix [for]="pickerStart"></mat-datepicker-toggle>
-                <mat-datepicker #pickerStart></mat-datepicker>
-            </mat-form-field>
-            <mat-form-field class="recur-end">
-                <mat-label>Дата окончания</mat-label>
-                <input matInput [matDatepicker]="pickerEnd" [formControl]="recurEnd">
-                <mat-datepicker-toggle matIconSuffix [for]="pickerEnd"></mat-datepicker-toggle>
-                <mat-datepicker #pickerEnd></mat-datepicker>
-            </mat-form-field>
+            <mat-checkbox [formControl]="isRecur" (change)="changeIsRecur($event.checked)">
+                Еженедельное событие
+            </mat-checkbox>
+            <ng-container *ngIf="isRecur?.value">
+                <mat-form-field class="event-start">
+                    <mat-label>Дни недели</mat-label>
+                    <mat-select  [formControl]="weekdays" multiple>
+                        @for (option of weekDaysList; track option){
+                            <mat-option [value]="option">{{option.name}}</mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
+            </ng-container>
         </div>
-    </ng-container>
+        <ng-container *ngIf="isRecur?.value">
+            <div class="fields-row">
+                <mat-form-field class="recur-start">
+                    <mat-label>Дата старта</mat-label>
+                    <input matInput [matDatepicker]="pickerStart" [formControl]="recurStart">
+                    <mat-datepicker-toggle matIconSuffix [for]="pickerStart"></mat-datepicker-toggle>
+                    <mat-datepicker #pickerStart></mat-datepicker>
+                </mat-form-field>
+                <mat-form-field class="recur-end">
+                    <mat-label>Дата окончания</mat-label>
+                    <input matInput [matDatepicker]="pickerEnd" [formControl]="recurEnd">
+                    <mat-datepicker-toggle matIconSuffix [for]="pickerEnd"></mat-datepicker-toggle>
+                    <mat-datepicker #pickerEnd></mat-datepicker>
+                </mat-form-field>
+            </div>
+        </ng-container>
+    }
     <div class="fields-row period">
         <mat-form-field class="event-start">
             <mat-label>Время начала</mat-label>
@@ -70,38 +92,50 @@
             </mat-select>
         </mat-form-field>
     </div>
-    <div class="fields-row">
-        <mat-form-field class="input coach">
-            <mat-label>Тренер</mat-label>
-            <mat-select  [formControl]="coach" >
-                @for (option of coaches; track option){
-                    <mat-option [value]="option">{{option.name}}</mat-option>
-                }
-            </mat-select>
-        </mat-form-field>
-    </div>
-    <div class="fields-row group">
-        <mat-form-field class="event-group">
-            <mat-label>Группа</mat-label>
-            <mat-select [formControl]="group" >
-                @for (option of groups; track option){
-                    <mat-option [value]="option">{{option.name}}</mat-option>
-                }
-            </mat-select>
-        </mat-form-field>
-        @if(initialEvent &&!!group.value){
-            <mat-icon (click)="onEditGroupClick()" class="edit-group-button">edit</mat-icon>
-        }
-    </div>
-    @if(data()?.id){
+    @if(eventType.value != eventTypes.Rent)
+    {
+        <div class="fields-row">
+            <mat-form-field class="input coach">
+                <mat-label>Тренер</mat-label>
+                <mat-select  [formControl]="coach" >
+                    @for (option of coaches; track option){
+                        <mat-option [value]="option">{{option.name}}</mat-option>
+                    }
+                </mat-select>
+            </mat-form-field>
+        </div>
+    }
+    @if(eventType.value == eventTypes.Event)
+    {
+        <div class="fields-row group">
+            <mat-form-field class="event-group">
+                <mat-label>Группа</mat-label>
+                <mat-select [formControl]="group" >
+                    @for (option of groups; track option){
+                        <mat-option [value]="option">{{option.name}}</mat-option>
+                    }
+                </mat-select>
+            </mat-form-field>
+            @if(initialEvent &&!!group.value){
+                <mat-icon (click)="onEditGroupClick()" class="edit-group-button">edit</mat-icon>
+            }
+        </div>
+    }
+    @if(initialEvent?.id){
         <div class="participants" >
-            <button mat-stroked-button (click)="onParticipantsClick()">Группа: {{participantsCount}}/{{ groupParticipantsCount }}</button>
-            <button mat-stroked-button (click)="onOnetimeVisitorsClick()">Разовые: {{ onetimeVisitorsCount }}</button>
+            @if(eventType.value == eventTypes.Event)
+            {
+                <button mat-stroked-button (click)="onParticipantsClick()">Группа: {{participantsCount}}/{{ groupParticipantsCount }}</button>
+            }
+            @if(eventType.value != eventTypes.Rent)
+            {
+                <button mat-stroked-button (click)="onOnetimeVisitorsClick()">{{ eventType.value == eventTypes.Event ? 'Разовые' : 'Участники' }}: {{ onetimeVisitorsCount }}</button>
+            }
         </div>
     }
     <div class="actions" mat-dialog-actions>
         <div class="actions-left">
-            @if(data()?.id){
+            @if(initialEvent?.id){
                 <button mat-raised-button color="warn" (click)="onDelete()">Удалить</button>
             }
         </div>

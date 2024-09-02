@@ -1,4 +1,4 @@
-import { Component, ViewChild, inject } from '@angular/core';
+import { Component, OutputRefSubscription, ViewChild, inject } from '@angular/core';
 import { FullCalendarComponent, FullCalendarModule } from '@fullcalendar/angular';
 import { CalendarApi, CalendarOptions, DateInput, DateRangeInput, EventClickArg, EventInput } from '@fullcalendar/core';
 import interationPlugin, { DateClickArg } from '@fullcalendar/interaction'
@@ -7,11 +7,11 @@ import dayGridPlugin from '@fullcalendar/daygrid'
 import rrulePlugin from '@fullcalendar/rrule'
 import { EventComponent } from './event/event.component';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { EventDialogComponent, EventResult } from './event-dialog/event-dialog.component';
+import { EventDialogComponent } from './event-dialog/event-dialog.component';
 import { SnackBarService } from '../services/snack-bar.service';
 import { EventService } from './event/event.service';
 import { SpinnerService } from '../shared/spinner/spinner.service';
-import { finalize, map } from 'rxjs';
+import { finalize, map, Subscription } from 'rxjs';
 import { ResizeService } from '../shared/services/resize.service';
 import { DialogService } from '../services/dialog.service';
 import { EventModel } from './event/event.model';
@@ -79,20 +79,7 @@ export class CalendarComponent {
   ){}
 
   handleDateClick(info: DateClickArg) {
-    this.dialogService.showDialog(EventDialogComponent, 'Новое событие', 
-    { 
-      startDateTime: info.date, 
-    })
-    .afterClosed().subscribe((result: EventResult) => {
-      if (result && result.events){
-          result.events?.forEach(ev => {
-            var event = this.getEvent(ev as EventModel)
-            this.calendarApi.addEvent(event);
-          })
-        
-        this.snackBarService.success('Событие создано')
-      }
-    })
+    this.openEventDialog(undefined, info.date)
   };
 
   handleDateSet(dateInfo: any){
@@ -109,21 +96,9 @@ export class CalendarComponent {
   }
 
   handleEventClick(info: EventClickArg){
-    this.dialogService.showDialog(EventDialogComponent, 'Событие', {
+    this.openEventDialog(info.event.id)
+    /*const dialogRef = this.dialogService.showDialog(EventDialogComponent, 'Событие', {
         id: info.event.id,
-        /*startDateTime: info.event.start,
-        endDateTime: info.event.end,
-        name: info.event.title,
-        group: { id: info.event.extendedProps['groupId'] },
-        coach: { id: info.event.extendedProps['coachId'] },
-        color: info.event.extendedProps['color'],
-        recurrence: {
-          startDate: info.event.extendedProps['recurrencyStartDate'],
-          endDate: info.event.extendedProps['recurrencyEndDate'],
-          id: info.event.extendedProps['recurrenceId'],
-          daysOfWeek: info.event.extendedProps['daysOfWeek'],
-          exceptDates: info.event.extendedProps['exceptDates']
-        },*/
      })
     .afterClosed().subscribe((result: EventResult) => {
       var event = this.calendarApi.getEventById(info.event.id);
@@ -152,7 +127,7 @@ export class CalendarComponent {
           this.snackBarService.success('Событие  удалено')
         }
       }
-    });
+    });*/
   }
 
   ngAfterViewInit(){
@@ -163,6 +138,44 @@ export class CalendarComponent {
         this.calendarApi.changeView('dayGrid')
         : this.calendarApi.changeView('timeGridWeek')
     })
+  }
+
+  private openEventDialog(id?: string, startDateTime?: Date){
+    const dialogRef = this.dialogService.showDialog(EventDialogComponent, 'Новое событие', 
+      { 
+        startDateTime: startDateTime,
+        id: id 
+      })
+  
+      const subscriptions: OutputRefSubscription[] = []
+      dialogRef.afterOpened().subscribe(() => {
+        const eventComponent = dialogRef.componentInstance.componentRef.instance
+        subscriptions.push(eventComponent.eventSaved.subscribe((events: EventModel[]) =>{
+          events.forEach(event => this.saveEvent(event))
+          this.snackBarService.success('Событие сохранено')
+          this.calendarApi.refetchEvents()
+      }))
+  
+      subscriptions.push(eventComponent.eventDeleted.subscribe((ids: string[]) => {
+        ids.forEach(id => this.deleteEvent(id))
+        this.snackBarService.success('Событие удалено')
+        this.calendarApi.refetchEvents()
+      }))
+      })
+      
+  
+      dialogRef.afterClosed().subscribe(() => subscriptions.forEach((sub) => sub.unsubscribe()))
+  }
+
+  private saveEvent(event: EventModel){
+    var ev = this.calendarApi.getEventById(event.id)
+    ev?.remove()
+    this.calendarApi.addEvent(this.getEvent(event))
+  }
+
+  private deleteEvent(id: string){
+    var ev = this.calendarApi.getEventById(id)
+    ev?.remove()
   }
 
   private getEvent(eventData: EventModel) : EventInput{
