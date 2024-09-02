@@ -15,7 +15,8 @@ public class EventMapping : Profile
             .ForMember(x => x.Color, y => y.MapFrom(z => z.Color))
             .ForMember(x => x.Group, y => y.MapFrom(z => z.Group))
             .ForMember(x=> x.Recurrence, y=>y.MapFrom(z=>z.Recurrence))
-            .ForMember(x => x.Coach, y=> y.MapFrom(z => z.Coach));
+            .ForMember(x => x.Coach, y=> y.MapFrom(z => z.Coach))
+            .ForMember(x => x.EventType, y => y.MapFrom(z => z.EventType));
         
         CreateMap<OneTimeVisit, OneTimeVisitDto>()
             .ForMember(x => x.Client, y => y.MapFrom(z => z.Client))

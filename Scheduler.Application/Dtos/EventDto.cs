@@ -1,5 +1,6 @@
 using Scheduler.Application.Entities;
 using Scheduler.Application.Entities.Projections;
+using Scheduler.Application.Enums;
 
 namespace Scheduler.Application.Common.Dtos;
 
@@ -12,4 +13,5 @@ public class EventDto : EntityDto
     public GroupProjection? Group { get; set; }
     public Recurrence? Recurrence { get; set; }
     public CoachProjection? Coach { get; set; }
+    public EventType EventType { get; set; }
 }

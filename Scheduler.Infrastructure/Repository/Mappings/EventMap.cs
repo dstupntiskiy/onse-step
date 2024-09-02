@@ -1,4 +1,5 @@
 using Scheduler.Application.Entities;
+using Scheduler.Application.Enums;
 
 namespace Scheduler.Infrastructure.Repository.Mappings;
 
@@ -17,5 +18,6 @@ public class EventMap: AuditableEntityMap<Event>
             .NotFound.Ignore();
         References((x => x.Coach)).Column("`CoachId`")
             .NotFound.Ignore();
+        Map(x => x.EventType).CustomType<EventType>().Column("`EventType`");
     }    
 }

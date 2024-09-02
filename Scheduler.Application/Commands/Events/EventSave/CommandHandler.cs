@@ -5,6 +5,7 @@ using Scheduler.Application.Interfaces;
 using Scheduler.Application.Entities;
 using System.ComponentModel.DataAnnotations;
 using Scheduler.Application.Entities.Projections;
+using Scheduler.Application.Enums;
 
 namespace Scheduler.Application.Commands.Events.EventSave;
 
@@ -26,7 +27,7 @@ public class CommandHandler(
             if (!request.IsRecurrent)
             {
                 var ev = await this.CreateEvent(request.Id, request.Name, request.StartDateTime, request.EndDateTime, request.Color,
-                    recurrence, group: group, coach: coach);
+                    recurrence, group: group, coach: coach, request.EventType);
                 events.Add(ev);
             }
             else
@@ -54,7 +55,7 @@ public class CommandHandler(
                         var startTime = ev.StartDateTime.Date + request.StartDateTime.TimeOfDay;
                         var endTime = startTime + duration;
                         var createdEvent = await CreateEvent(ev.Id, request.Name, startTime,
-                            endTime, request.Color, recurrence, group, coach);
+                            endTime, request.Color, recurrence, group, coach, request.EventType);
                         events.Add(createdEvent);
                     }
                 }
@@ -71,7 +72,8 @@ public class CommandHandler(
         string? color,
         Recurrence? recurrence,
         Group? group,
-        Coach? coach)
+        Coach? coach,
+        EventType eventType)
     {
         if (endDateTime < startDateTime)
             throw new ValidationException($"Конец события {endDateTime} меньше, чем начало {startDateTime}");
@@ -141,7 +143,7 @@ public class CommandHandler(
         {
             var endDateTime = start + duration;
             var ev = await this.CreateEvent(request.Id, request.Name, start, endDateTime, request.Color,
-                recurrence, group, coach);
+                recurrence, group, coach, request.EventType);
             events.Add(ev);
         }
 

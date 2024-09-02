@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, inject, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, Inject, inject, ViewChild } from '@angular/core';
 import { Client } from '../shared/models/client-model';
 import { ClientService } from './client.service';
 import { MatTable, MatTableModule } from '@angular/material/table';
@@ -13,6 +13,7 @@ import { MatInputModule } from '@angular/material/input';
 import { SpinnerService } from '../shared/spinner/spinner.service';
 import { debounceTime, finalize } from 'rxjs';
 import { MatIconModule } from '@angular/material/icon';
+import { BaseDialogComponent } from '../shared/dialog/base-dialog/base-dialog.component';
 
 @Component({
   selector: 'app-clients',
@@ -93,7 +94,8 @@ export class ClientsComponent {
   }
 
   handleRowClick(row: Client){
-    this.dialogService.showDialog(ClientDialogComponent, row.name, { id: row.id })
+    const dialogRef = this.dialogService.showDialog(ClientDialogComponent, row.name, { id: row.id })
+    dialogRef
       .afterClosed().subscribe((result: Client | string) =>{
         if(typeof(result) == 'string'){
           var index = this.clients.findIndex(x => x.id == result)
@@ -107,6 +109,4 @@ export class ClientsComponent {
         }
       })
   }
-
-
 }
