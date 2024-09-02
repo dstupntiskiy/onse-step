@@ -9,7 +9,7 @@ import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
 import { addHours, getFormattedTime, getHalfHourIntervals, setTimeFromStringToDate } from '../../shared/helpers/time-helper';
 import { Group } from '../../shared/models/group-model';
 import { GroupService } from '../../groups/group.service';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { ConfirmationDialogComponent } from '../../shared/dialog/confirmation-dialog/confirmation-dialog.component';
 import { MatNativeDateModule, MAT_DATE_LOCALE, DateAdapter } from '@angular/material/core';
 import {provideNativeDateAdapter} from '@angular/material/core';
@@ -82,7 +82,8 @@ const WEEKDAYS: Weekday[] = [
     MatNativeDateModule,
     OverlayModule,
     PaletteComponent,
-    MatIconModule ],
+    MatIconModule,
+    DatePipe ],
   templateUrl: './event-dialog.component.html',
   styleUrl: './event-dialog.component.scss',
   providers:[
@@ -98,7 +99,6 @@ export class EventDialogComponent {
   weekDaysList: Weekday[] = WEEKDAYS;
   groups: Group[];
   coaches: CoachModel[]
-  day: string;
   disableRecur: boolean;
   pickerStart: Date;
   pickerEnd: Date;
@@ -183,7 +183,6 @@ export class EventDialogComponent {
     ? this.end?.setValue(getFormattedTime(this.initialEvent?.endDateTime))
     :  this.end?.setValue(getFormattedTime(addHours(this.date, 1)))
 
-  this.day = (new Date(this.initialEvent?.startDateTime)).toLocaleDateString('ru-RU');
   this.isRecur?.setValue(!!(this.initialEvent?.recurrence?.startDate));
   if (this.isRecur?.value || this.initialEvent?.id){
     this.isRecur?.disable();

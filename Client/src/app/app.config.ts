@@ -1,4 +1,4 @@
-import { ApplicationConfig, importProvidersFrom } from '@angular/core';
+import { ApplicationConfig, importProvidersFrom, LOCALE_ID } from '@angular/core';
 import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
@@ -10,11 +10,15 @@ import { JwtModule } from '@auth0/angular-jwt';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 import { DateAdapter, MAT_DATE_LOCALE, provideNativeDateAdapter } from '@angular/material/core';
 import { CustomDateAdapter } from './shared/adapters/custom.date.adapter';
+import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+import { registerLocaleData } from '@angular/common';
+import localeRu from '@angular/common/locales/ru'
 
 export function tokenGetter() {
   return localStorage.getItem("jwtToken");
 }
 
+registerLocaleData(localeRu, 'ru-Ru');
 export const appConfig: ApplicationConfig = {
   providers: [
     provideHttpClient(withInterceptorsFromDi()),
@@ -28,6 +32,10 @@ export const appConfig: ApplicationConfig = {
       useValue: {
         subscriptSizing: 'dynamic'
       }
+    },
+    {
+      provide: LOCALE_ID,
+      useValue: 'ru-RU'
     },
     provideNativeDateAdapter(),
     { provide: MAT_DATE_LOCALE, useValue: 'ru-RU' },
