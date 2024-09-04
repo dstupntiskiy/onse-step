@@ -24,12 +24,10 @@ export interface OnetimeVisitorDialogData{
   standalone: true,
   imports: [CommonModule,
     OnetimeVisitorComponent,
-    MatButtonModule,
     MatInputModule,
     ReactiveFormsModule,
     MatAutocompleteModule,
     AddClientComponent,
-    MatIconModule
   ],
   providers: [EventService
   ],
@@ -45,7 +43,6 @@ export class OnetimeVisitorDialogComponent implements DynamicComponent {
   onetimeVisitors: OnetimeVisitorModel[] = []
   clearControlSubject = new BehaviorSubject<boolean>(false)
   
-  selectedClient?: Client;
   private subscriptions: OutputRefSubscription[] = []
   visitorRefs: Signal<readonly OnetimeVisitorComponent[]> = viewChildren(OnetimeVisitorComponent)
 
@@ -83,15 +80,10 @@ export class OnetimeVisitorDialogComponent implements DynamicComponent {
   }
 
   public onClientSelect(client: Client){
-    this.selectedClient = client
-  }
-
-  public addVisitor(){
-    this.eventService.saveOnetimeVisitor(this.data()?.eventId as string, this.selectedClient?.id as string)
+    this.eventService.saveOnetimeVisitor(this.data()?.eventId as string, client.id as string)
+      .pipe(finalize(() => this.clearControlSubject.next(true)))
       .subscribe((result: OnetimeVisitorModel) =>{
         this.onetimeVisitors.unshift(result)
-        this.clearControlSubject.next(true)
-        this.selectedClient = undefined
       })
   }
 

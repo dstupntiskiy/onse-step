@@ -47,7 +47,6 @@ export class GroupMembersComponent {
   @Input() group: Group
   public members: GroupMember[] = []; 
   clearControlSubject = new BehaviorSubject<boolean>(false)
-  selectedClient?: Client;
 
   private subscriptions: OutputRefSubscription[] = []
   
@@ -92,24 +91,16 @@ export class GroupMembersComponent {
   }
 
   public onClientSelect(client: Client){
-    this.selectedClient = client
-  }
-
-  public addMember(){
     this.spinnerService.loadingOn();
-    if (this.selectedClient){
-      this.groupService.addClientToGroup(this.group.id, this.selectedClient.id)
+      this.groupService.addClientToGroup(this.group.id, client.id)
         .pipe(
           finalize(() => {
             this.spinnerService.loadingOff()
             this.clearControlSubject.next(true)
-            this.selectedClient = undefined;
-          })
-        )
+          this.spinnerService.loadingOff()
+        }))
         .subscribe((result: GroupMember) =>{
           this.members.unshift(result);
         })
-      }
-      this.spinnerService.loadingOff()
-    }
+  }
 }

@@ -2,9 +2,6 @@
     <div class="field-row">
         <div class="add-member">
             <app-add-client (selectedClient$$)="onClientSelect($event)" [clearControl]="clearControlSubject"></app-add-client>
-            <button class="add-button" mat-icon-button (click)="addMember()" [disabled]="!selectedClient">
-                <mat-icon>add</mat-icon>    
-            </button>
         </div>
         <div class="members-count">
             @if(members.length > 0){

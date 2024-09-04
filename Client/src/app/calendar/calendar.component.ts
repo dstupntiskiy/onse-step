@@ -97,37 +97,6 @@ export class CalendarComponent {
 
   handleEventClick(info: EventClickArg){
     this.openEventDialog(info.event.id)
-    /*const dialogRef = this.dialogService.showDialog(EventDialogComponent, 'Событие', {
-        id: info.event.id,
-     })
-    .afterClosed().subscribe((result: EventResult) => {
-      var event = this.calendarApi.getEventById(info.event.id);
-      if(event){
-        if (result?.action == 'save' && result.events){
-          result.events.forEach((ev) => {
-            var e = ev as EventModel;
-            event = this.calendarApi.getEventById(e.id);
-            event?.remove()
-            this.calendarApi.addEvent(this.getEvent(e));
-          });
-          this.calendarApi.refetchEvents();
-          this.snackBarService.success('Событие обновлено')
-        }
-        if (result?.action == 'delete'){
-          result.events?.forEach((result) => {
-            var eventId = result as string
-            var eventToDelete = this.calendarApi.getEventById(eventId);
-            eventToDelete?.remove();
-          })
-          this.calendarApi.refetchEvents();
-        }
-        if (result?.action == 'deleteOne' && result.events){
-          event.remove()
-          this.calendarApi.refetchEvents();
-          this.snackBarService.success('Событие  удалено')
-        }
-      }
-    });*/
   }
 
   ngAfterViewInit(){
@@ -191,7 +160,8 @@ export class CalendarComponent {
       recurrencyEndDate: eventData.recurrence?.endDate,
       daysOfWeek: eventData.recurrence?.daysOfWeek, 
       recurrenceId: eventData.recurrence?.id,
-      color: eventData.color
+      color: eventData.color,
+      eventType: eventData.eventType
     }
     event.id = eventData.id
     event.color = 'white'
