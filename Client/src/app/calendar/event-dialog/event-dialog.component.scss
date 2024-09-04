@@ -61,9 +61,15 @@
     }
 
     .participants{
+        width: 100%;
         display: flex;
         gap: 16px;
         justify-content: center;
+    }
+
+    .rent-client{
+        position: relative;
+        min-height: 60px;
     }
 
     .color-wrapper{

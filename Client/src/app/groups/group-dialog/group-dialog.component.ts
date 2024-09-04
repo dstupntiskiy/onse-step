@@ -1,4 +1,4 @@
-import { Component, effect, inject, input } from '@angular/core';
+import { Component, effect, inject, input, signal } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -48,8 +48,7 @@ export interface GroupDialogData{
   styleUrl: './group-dialog.component.scss'
 })
 export class GroupDialogComponent implements DynamicComponent {
-  private isLoading = new BehaviorSubject<boolean>(false)
-  showSpinner$ : Observable<boolean> = this.isLoading.asObservable()
+  isLoading : boolean = false
 
   name = new FormControl<string>('', [Validators.required])
   style = new FormControl<StyleModel| null>(null, [Validators.required])
@@ -70,14 +69,14 @@ export class GroupDialogComponent implements DynamicComponent {
   constructor(private dialogRef: MatDialogRef<GroupDialogComponent>,
   ){
     effect(()=>{
-        this.isLoading.next(true)
+        this.isLoading = true
 
         forkJoin({
           group: this.data()?.id != null ? this.groupService.getGroupById(this.data().id) : of(null),
           styles: this.styleService.getAllStyles()
         })
         .pipe(
-          finalize(() => this.isLoading.next(false))
+          finalize(() => this.isLoading = false)
         )
         .subscribe(result =>{
           this.styles = result.styles

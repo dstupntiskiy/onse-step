@@ -2,11 +2,10 @@ import { Component, effect, inject, input, output } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule} from '@angular/material/icon'
 import { GroupMember } from '../../../shared/models/group-members';
-import { PaymentComponent } from '../../../shared/components/payment/payment.component';
 import { DatePipe } from '@angular/common';
 import { DialogService } from '../../../services/dialog.service';
 import { MembershipDialogComponent, MembershipDialogData } from '../../../membership/membership-dialog/membership-dialog.component';
-import { MembershipModel, MembershipWithDetails } from '../../../shared/models/membership-model';
+import { MembershipWithDetails } from '../../../shared/models/membership-model';
 import { ClientDialogComponent } from '../../../clients/client-dialog/client-dialog.component';
 import { Client } from '../../../shared/models/client-model';
 import { ClientNameComponent } from '../../../shared/components/client-name/client-name.component';
@@ -19,7 +18,6 @@ import { MembershipDetailsComponent } from '../../../shared/components/membershi
   imports: [
     MatButtonModule, 
     MatIconModule,
-    PaymentComponent,
     DatePipe,
     ClientNameComponent,
     MembershipDetailsComponent

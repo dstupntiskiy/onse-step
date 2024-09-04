@@ -1,5 +1,5 @@
 <mat-form-field>
-    <input matInput [formControl]="clientControl" [matAutocomplete]="auto" placeholder="Добавить участника">
+    <input matInput [formControl]="clientControl" [matAutocomplete]="auto" placeholder="Добавить клиента">
     <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="onOptionSelected()">
         @for (option of filteredOptions$ | async; track option) {
         <mat-option [value]="option">{{option.name}} 

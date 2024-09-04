@@ -38,13 +38,11 @@ public class GetAllGroupsWithDetailsHandler(IMapper mapper,
             group.MembersCount = x.Count();
             group.MembershipsCount = Task.WhenAll(x.Select(async y =>
                 {
-                    if (y.member != null)
-                    {
-                        return await membershipService.GetActualMembership(y.member.Client.Id, x.Key.Style.Id, x.Key.StartDate,
-                            x.Key.EndDate);
-                    }
+                    if (y.member == null)
+                        return null;
+                    return await membershipService.GetActualMembership(y.member.Client.Id, x.Key.Style.Id, x.Key.StartDate,
+                        x.Key.EndDate);
 
-                    return null;
                 }
             ).ToList()).Result.Count(z => z is not null);
             return group;

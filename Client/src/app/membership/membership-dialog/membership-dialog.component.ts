@@ -1,4 +1,4 @@
-import { Component, effect, inject, input } from '@angular/core';
+import { Component, effect, inject, input, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
@@ -39,8 +39,7 @@ export interface MembershipDialogData{
   styleUrl: './membership-dialog.component.scss'
 })
 export class MembershipDialogComponent {
-  private isLoading = new BehaviorSubject<boolean>(false)
-  showSpinner$ : Observable<boolean> = this.isLoading.asObservable()
+  isLoading : boolean = true
 
   amount = new FormControl<number | null>(null, [Validators.required])
   startDate = new FormControl<string>('',[Validators.required])
@@ -60,13 +59,12 @@ export class MembershipDialogComponent {
 
   constructor(public dialogRef: MatDialogRef<MembershipDialogComponent>){
     effect(() => {
-        this.isLoading.next(true)
         forkJoin({
           membership: this.data()?.id != null ? this.membershipService.getMembershipById(this.data().id as string) : of(null),
           styles: this.styleService.getAllStyles()
         })
         .pipe(
-          finalize(() => this.isLoading.next(false))
+          finalize(() => this.isLoading = false)
         )
         .subscribe(result => {
           this.styles = result.styles

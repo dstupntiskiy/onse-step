@@ -1,3 +1,4 @@
+<app-spinner [isLoading$$]="isLoading"></app-spinner>
 <div class="dialog">
     <div class="event-dialog-header">
         <div>
@@ -131,7 +132,13 @@
             {
                 <button mat-stroked-button (click)="onOnetimeVisitorsClick()">{{ eventType.value == eventTypes.Event ? 'Разовые' : 'Участники' }}: {{ onetimeVisitorsCount }}</button>
             }
+            
         </div>
+    }
+    @if(eventType.value == eventTypes.Rent && initialEvent.id){
+        <div class="fields-row rent-client">
+            <app-rent-client [eventId]="initialEvent.id"></app-rent-client>
+    </div>
     }
     <div class="actions" mat-dialog-actions>
         <div class="actions-left">

@@ -16,7 +16,7 @@ import {provideNativeDateAdapter} from '@angular/material/core';
 import { CustomDateAdapter } from '../../shared/adapters/custom.date.adapter';
 import { DeleteDialogComponent, DeleteResult } from '../delete-dialog/delete-dialog.component';
 import { SpinnerService } from '../../shared/spinner/spinner.service';
-import { finalize, forkJoin, of } from 'rxjs';
+import { finalize, forkJoin, map, Observable, of, take, tap } from 'rxjs';
 import { EventService } from '../event/event.service';
 import { Guid } from 'typescript-guid';
 import {OverlayModule} from '@angular/cdk/overlay';
@@ -31,6 +31,9 @@ import { ParticipantsDialogComponent } from '../participants-dialog/participants
 import { GroupDialogComponent } from '../../groups/group-dialog/group-dialog.component';
 import { OnetimeVisitorDialogComponent } from '../onetime-visitor-dialog/onetime-visitor-dialog.component';
 import { EventModel, EventType } from '../event/event.model';
+import { RentClientComponent } from './rent-client/rent-client.component';
+import { OnetimeVisitorModel } from '../../shared/models/onetime-visitor-model';
+import { SpinnerComponent } from '../../shared/spinner/spinner.component';
 
 export interface EventDialogData{
   id: string
@@ -80,7 +83,9 @@ const WEEKDAYS: Weekday[] = [
     PaletteComponent,
     MatIconModule,
     DatePipe,
-    MatButtonToggleModule ],
+    MatButtonToggleModule,
+    SpinnerComponent,
+    RentClientComponent ],
   templateUrl: './event-dialog.component.html',
   styleUrl: './event-dialog.component.scss',
   providers:[
@@ -124,6 +129,9 @@ export class EventDialogComponent {
 
   coachService = inject(CoachService) 
   dialogService = inject(DialogService)
+  eventService = inject(EventService)
+
+  oneTimeVisitor$  : Observable<OnetimeVisitorModel>;
   data = input.required<EventDialogData>()
 
   date: Date;
@@ -131,19 +139,23 @@ export class EventDialogComponent {
   eventSaved = output<EventModel[]>()
   eventDeleted = output<string[]>()
 
+  isLoading : boolean = true
+
   constructor(
     public dialogRef: MatDialogRef<EventDialogComponent>,
     private groupService: GroupService,
     private spinnerService: SpinnerService,
-    private eventService: EventService,
     private recurrenceService: RecurrenceService,
   ){
+
     effect(() => {
       var request = this.data()?.id ? this.eventService.getEventById(this.data()?.id) : of(new EventModel)
       request
         .pipe(
-          finalize(() => this.init())
-        )
+          finalize(() => {
+            this.init()
+          this.isLoading = false
+        }))
         .subscribe(result => {
           if(result){
             this.initialEvent = result
@@ -152,10 +164,11 @@ export class EventDialogComponent {
   }
 
   init(){
+
     this.color = this.initialEvent.color ?? 'teal';
     this.eventType.setValue(this.initialEvent.eventType ?? EventType.Event)
     if(this.initialEvent.id){
-      this.eventType.disable()
+      //this.eventType.disable()
     }    
 
     forkJoin({

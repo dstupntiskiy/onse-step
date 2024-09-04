@@ -1,8 +1,8 @@
-@if(showSpinner | async)
+@if(isLoading$$())
 {
     <div class="overlay">
         <div class="spinner">
-            <mat-spinner></mat-spinner>
+            <mat-spinner [diameter]="diameter()"></mat-spinner>
         </div>
     </div>
 }

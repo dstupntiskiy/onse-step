@@ -1,4 +1,4 @@
-import { Component, effect, inject, input, OutputRefSubscription, Signal, viewChildren } from '@angular/core';
+import { Component, effect, inject, input, OutputRefSubscription, signal, Signal, viewChildren } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Client } from '../../shared/models/client-model';
@@ -41,8 +41,8 @@ export interface ClientDialogData{
   styleUrl: './client-dialog.component.scss'
 })
 export class ClientDialogComponent {
-  private isLoading = new BehaviorSubject<boolean>(false)
-  showSpinner$ : Observable<boolean> = this.isLoading.asObservable()
+  isLoading : boolean = true
+
   public form: FormGroup;
   public get name() { return this.form.get('name')}
   public get phone() { return this.form.get('phone')}
@@ -65,10 +65,10 @@ export class ClientDialogComponent {
     effect(() =>{
       if(this.data()?.id)
       {
-        this.isLoading.next(true)
+        this.isLoading = true
         this.clientService.getClientById(this.data().id)
           .pipe(
-            finalize(() => this.isLoading.next(false))
+            finalize(() => this.isLoading = false)
           )
           .subscribe((result: Client) => {
             if(result)
