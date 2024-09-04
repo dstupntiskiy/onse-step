@@ -112,7 +112,7 @@ export class EventDialogComponent {
   participantsCount: number = 0;
   onetimeVisitorsCount: number = 0;
 
-  initialEvent: EventModel;
+  initialEvent: EventModel | null;
 
   name = new FormControl<string>('', [Validators.required])
   start =  new FormControl<string>('', [Validators.required])
@@ -165,9 +165,9 @@ export class EventDialogComponent {
 
   init(){
 
-    this.color = this.initialEvent.color ?? 'teal';
-    this.eventType.setValue(this.initialEvent.eventType ?? EventType.Event)
-    if(this.initialEvent.id){
+    this.color = this.initialEvent?.color ?? 'teal';
+    this.eventType.setValue(this.initialEvent?.eventType ?? EventType.Event)
+    if(this.initialEvent?.id){
       //this.eventType.disable()
     }    
 
@@ -196,10 +196,10 @@ export class EventDialogComponent {
   if(this.initialEvent?.id)
     this.refetchOnetimeVisitorsCount()
 
-  this.date = this.initialEvent.startDateTime ?? new Date(this.data().startDateTime)
+  this.date = this.initialEvent?.startDateTime ?? new Date(this.data().startDateTime)
 
-  this.name.setValue(this.initialEvent?.name)
-  this.start?.setValue(getFormattedTime(this.initialEvent?.startDateTime ?? this.data().startDateTime))
+  this.name.setValue(this.initialEvent?.name as string)
+  this.start?.setValue(getFormattedTime(this.initialEvent?.startDateTime as Date ?? this.data().startDateTime))
   this.initialEvent?.endDateTime
     ? this.end?.setValue(getFormattedTime(this.initialEvent?.endDateTime))
     :  this.end?.setValue(getFormattedTime(addHours(this.date, 1)))
@@ -223,7 +223,7 @@ export class EventDialogComponent {
       var gr = new Group()
       gr.id = this.group.value?.id as string
       const data: EventModel = {
-        id: this.initialEvent?.id ,
+        id: this.initialEvent?.id as string,
         startDateTime: setTimeFromStringToDate(this.date, this.start?.value as string),
         endDateTime: setTimeFromStringToDate(this.date, this.end?.value as string),
         name: this.name?.value as string,
@@ -235,10 +235,10 @@ export class EventDialogComponent {
       if (this.isRecur?.value){
         data.recurrence = {
           daysOfWeek: (this.weekdays?.value as Weekday[]).map((x : Weekday) => x.number),
-          exceptdates: this.initialEvent.recurrence?.exceptdates,
+          exceptdates: this.initialEvent?.recurrence?.exceptdates,
           startDate: this.recurStart?.value as Date,
           endDate: this.recurEnd?.value as Date,
-          id: this.initialEvent.recurrence?.id ?? Guid.EMPTY.toString()
+          id: this.initialEvent?.recurrence?.id ?? Guid.EMPTY.toString()
         }
       }
       
@@ -279,14 +279,14 @@ export class EventDialogComponent {
         })
       deleteDialog.afterClosed().subscribe((result: DeleteResult) =>{
           if (result?.delete == 'all'){
-            var recurrToDelete = this.initialEvent.recurrence?.id ?? '';
+            var recurrToDelete = this.initialEvent?.recurrence?.id ?? '';
             this.recurrenceService.deleteRecurrence(recurrToDelete).subscribe((eventIdsToDelete: string[]) => {
               this.eventDeleted.emit(eventIdsToDelete)
               this.dialogRef.close()
             })
           }
           if (result?.delete == 'one'){
-            var event = this.initialEvent
+            var event = this.initialEvent as EventModel
             this.eventService.deleteEvent(event).subscribe(() => {
               this.eventDeleted.emit([event.id])
               this.dialogRef.close()
@@ -302,8 +302,8 @@ export class EventDialogComponent {
         })
       confDialogRef.afterClosed().subscribe((result) => {
         if (result == true){
-          this.eventService.deleteEvent(this.initialEvent).subscribe(() =>{
-            this.eventDeleted.emit([this.initialEvent.id])
+          this.eventService.deleteEvent(this.initialEvent as EventModel).subscribe(() =>{
+            this.eventDeleted.emit([this.initialEvent?.id as string])
             this.dialogRef.close()
           })
         }
@@ -313,8 +313,8 @@ export class EventDialogComponent {
 
   onParticipantsClick(){
     this.dialogService.showDialog(ParticipantsDialogComponent, 'Участники', {
-      eventId: this.initialEvent.id,
-      eventDate: this.initialEvent.startDateTime,
+      eventId: this.initialEvent?.id,
+      eventDate: this.initialEvent?.startDateTime,
       group: this.group.value}
     )
       .afterClosed().subscribe(() => this.refetchParticipants())
@@ -331,7 +331,7 @@ export class EventDialogComponent {
   }
 
   onOnetimeVisitorsClick(){
-    this.dialogService.showDialog(OnetimeVisitorDialogComponent, 'Разовые посещения', { eventId: this.initialEvent.id })
+    this.dialogService.showDialog(OnetimeVisitorDialogComponent, 'Разовые посещения', { eventId: this.initialEvent?.id })
       .afterClosed().subscribe(() => this.refetchOnetimeVisitorsCount())
   }
 
@@ -366,7 +366,7 @@ export class EventDialogComponent {
   }
 
   private refetchParticipants(){
-    this.eventService.getParticipantsCount(this.initialEvent?.id).subscribe(
+    this.eventService.getParticipantsCount(this.initialEvent?.id as string).subscribe(
       (result: number) =>{
         this.participantsCount = result;
       }
@@ -381,7 +381,7 @@ export class EventDialogComponent {
   }
 
   private refetchOnetimeVisitorsCount(){
-    this.eventService.getOnetimeVisitorsCount(this.initialEvent.id)
+    this.eventService.getOnetimeVisitorsCount(this.initialEvent?.id as string)
       .subscribe((result: number) =>{
         this.onetimeVisitorsCount = result;
       })

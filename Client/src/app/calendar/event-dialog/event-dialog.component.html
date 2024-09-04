@@ -135,9 +135,9 @@
             
         </div>
     }
-    @if(eventType.value == eventTypes.Rent && initialEvent.id){
+    @if(eventType.value == eventTypes.Rent && initialEvent?.id){
         <div class="fields-row rent-client">
-            <app-rent-client [eventId]="initialEvent.id"></app-rent-client>
+            <app-rent-client [eventId]="initialEvent?.id ?? ''"></app-rent-client>
     </div>
     }
     <div class="actions" mat-dialog-actions>

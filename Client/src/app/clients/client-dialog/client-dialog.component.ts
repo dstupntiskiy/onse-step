@@ -47,7 +47,7 @@ export class ClientDialogComponent {
   public get name() { return this.form.get('name')}
   public get phone() { return this.form.get('phone')}
   public get socialMediaLink() { return this.form.get('socialMediaLink')}
-  data = input.required<ClientDialogData>()
+  data = input.required<ClientDialogData | null>()
   client: Client;
 
   dialogService = inject(DialogService)
@@ -66,7 +66,7 @@ export class ClientDialogComponent {
       if(this.data()?.id)
       {
         this.isLoading = true
-        this.clientService.getClientById(this.data().id)
+        this.clientService.getClientById(this.data()?.id as string)
           .pipe(
             finalize(() => this.isLoading = false)
           )
@@ -80,7 +80,7 @@ export class ClientDialogComponent {
             }
           })
       
-        this.membershipService.getMembershipsByClient(this.data()?.id)
+        this.membershipService.getMembershipsByClient(this.data()?.id as string)
           .subscribe((result: MembershipWithDetails[]) =>{
             this.memberships = result
           })
@@ -128,7 +128,7 @@ export class ClientDialogComponent {
     submit(){
       if (this.form.valid){
         const client: Client = {
-          id: this.data()?.id,
+          id: this.data()?.id as string,
           name: this.name?.value,
           phone: this.phone?.value,
           socialMediaLink: this.socialMediaLink?.value
