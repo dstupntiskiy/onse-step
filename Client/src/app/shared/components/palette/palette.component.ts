@@ -46,7 +46,13 @@ export class PaletteComponent {
   '#4d4dff',
   '#0000ff',
   '#0000b3',
-  '#000066']
+  '#000066',
+  '#c3f6d2',
+  '#a2fdb3',
+  '#82db9a',
+  '#8fdb82',
+  '#5bab53',
+  '#187f3d']
 
   onColorClick(color: string){
     this.onColorSelect.emit(color);
