@@ -110,7 +110,7 @@ export class CalendarComponent {
   }
 
   private openEventDialog(id?: string, startDateTime?: Date){
-    const dialogRef = this.dialogService.showDialog(EventDialogComponent, 'Новое событие', 
+    const dialogRef = this.dialogService.showDialog(EventDialogComponent,
       { 
         startDateTime: startDateTime,
         id: id 

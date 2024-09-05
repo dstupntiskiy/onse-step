@@ -16,7 +16,7 @@ export class ClientNameComponent {
   dialogService = inject(DialogService)
 
   onClick(){
-    this.dialogService.showDialog(ClientDialogComponent, this.client().name, {
+    this.dialogService.showDialog(ClientDialogComponent, {
       id: this.client().id
     })
     .afterClosed().subscribe(result =>{

@@ -1,4 +1,4 @@
-import { Component, effect, inject, input, OutputRefSubscription, signal, Signal, viewChildren } from '@angular/core';
+import { Component, effect, inject, input, output, OutputRefSubscription, signal, Signal, viewChildren } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Client } from '../../shared/models/client-model';
@@ -41,7 +41,8 @@ export interface ClientDialogData{
   styleUrl: './client-dialog.component.scss'
 })
 export class ClientDialogComponent {
-  isLoading : boolean = true
+  isLoading : boolean = false
+  title = signal<string>('Клиент')
 
   public form: FormGroup;
   public get name() { return this.form.get('name')}
@@ -54,8 +55,8 @@ export class ClientDialogComponent {
   memberships: MembershipWithDetails[] = []
   membershipService = inject(MembershipService)
 
-  private subscriptions: OutputRefSubscription[] = []
-  memberRefs: Signal<readonly MembershipComponent[]> = viewChildren(MembershipComponent)
+  clientSave = output<Client>()
+  clientDelete = output<string>()
 
   constructor(private formBuilder: FormBuilder,
     private dialogRef: MatDialogRef<ClientDialogComponent>,
@@ -73,17 +74,17 @@ export class ClientDialogComponent {
           .subscribe((result: Client) => {
             if(result)
             {
+              this.title.set(result.name)
+
               this.client = result;
               this.name?.setValue(result.name)
               this.phone?.setValue(result.phone)
               this.socialMediaLink?.setValue(result.socialMediaLink)
+
+              this.updateMemberships()
             }
           })
       
-        this.membershipService.getMembershipsByClient(this.data()?.id as string)
-          .subscribe((result: MembershipWithDetails[]) =>{
-            this.memberships = result
-          })
       }
     })
   }
@@ -101,13 +102,14 @@ export class ClientDialogComponent {
     }
 
     onDeleteClick(){
-      this.dialogService.showDialog(ConfirmationDialogComponent, '', { message: 'Удалить клиента?'})
+      this.dialogService.showDialog(ConfirmationDialogComponent, { message: 'Удалить клиента?'})
         .afterClosed().subscribe(reuslt =>{
           if(reuslt){
             this.clientService.deleteClient(this.client.id)
               .subscribe((result : string) =>{
                 if(result){
-                  this.dialogRef.close(result)
+                  this.clientDelete.emit(result)
+                  this.dialogRef.close()
                 }
               })
           }
@@ -115,7 +117,7 @@ export class ClientDialogComponent {
     }
 
     onAddMembershipClick(){
-      this.dialogService.showDialog(MembershipDialogComponent, 'Абонемент', {
+      this.dialogService.showDialog(MembershipDialogComponent, {
         client: this.client
       })
       .afterClosed().subscribe((result: MembershipWithDetails) =>{
@@ -139,7 +141,9 @@ export class ClientDialogComponent {
           finalize(()=> this.spinnerService.loadingOff())
         )
         .subscribe((result: Client) =>{
-          this.dialogRef.close(result)
+          this.client = result
+          this.updateMemberships()
+          this.clientSave.emit(result)
         })
       }
     }
@@ -148,4 +152,10 @@ export class ClientDialogComponent {
       this.memberships = this.memberships.filter(x => x.id != id)
     }
 
+    private updateMemberships(){
+      this.membershipService.getMembershipsByClient(this.client?.id)
+          .subscribe((result: MembershipWithDetails[]) =>{
+            this.memberships = result
+          })
+    }
 }

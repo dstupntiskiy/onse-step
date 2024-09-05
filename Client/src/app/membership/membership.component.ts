@@ -31,7 +31,7 @@ export class MembershipComponent {
   }
 
   onEditClick(){
-    this.dialogService.showDialog(MembershipDialogComponent, 'Абонимент', {
+    this.dialogService.showDialog(MembershipDialogComponent, {
       id: this.membership().id
     })
     .afterClosed().subscribe((result) =>{

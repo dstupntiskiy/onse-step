@@ -52,7 +52,7 @@ export class DeleteDialogComponent implements DynamicComponent {
     }
 
     private openConfirmationDialog(){
-      var confDialogRef = this.dialogService.showDialog(ConfirmationDialogComponent, 'Подтверждение',
+      var confDialogRef = this.dialogService.showDialog(ConfirmationDialogComponent,
         {
             message: 'Вы уверены что хотите удалить событие: ' + this.data()?.eventName
         })

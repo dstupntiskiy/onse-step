@@ -1,4 +1,4 @@
-import { Component, Inject, Input, OutputRefSubscription, Signal, effect, inject, input, viewChildren } from '@angular/core';
+import { Component, Inject, Input, OutputRefSubscription, Signal, effect, inject, input, signal, viewChildren } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { EventService } from '../event/event.service';
 import { CommonModule } from '@angular/common';
@@ -36,6 +36,7 @@ export interface OnetimeVisitorDialogData{
   styleUrl: './onetime-visitor-dialog.component.scss'
 })
 export class OnetimeVisitorDialogComponent implements DynamicComponent {
+  title = signal<string>('Разовые посещения')
   eventService = inject(EventService)
   spinnerService = inject(SpinnerService)
 

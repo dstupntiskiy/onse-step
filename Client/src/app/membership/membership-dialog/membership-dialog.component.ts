@@ -10,7 +10,7 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { MatSelectModule } from '@angular/material/select';
 import { StyleService } from '../../styles/style.service';
 import { StyleModel } from '../../shared/models/style-model';
-import { BehaviorSubject, combineLatestWith, finalize, forkJoin, Observable, of, pairwise, startWith } from 'rxjs';
+import { finalize, forkJoin, of, pairwise, startWith } from 'rxjs';
 import { SpinnerComponent } from '../../shared/spinner/spinner.component';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { DialogService } from '../../services/dialog.service';
@@ -39,6 +39,7 @@ export interface MembershipDialogData{
   styleUrl: './membership-dialog.component.scss'
 })
 export class MembershipDialogComponent {
+  title = signal<string>('Абонемент')
   isLoading : boolean = true
 
   amount = new FormControl<number | null>(null, [Validators.required])
@@ -146,7 +147,7 @@ export class MembershipDialogComponent {
   }
 
   onDelete(){
-    this.dialogService.showDialog(ConfirmationDialogComponent, '', {
+    this.dialogService.showDialog(ConfirmationDialogComponent, {
       message: 'Удалить абонемент?'
     }).afterClosed().subscribe(result =>{
       if(result == true){

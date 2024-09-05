@@ -51,7 +51,7 @@ export class MemberComponent {
     style: this.member().group.style
   }
 
-  this.dialogService.showDialog(MembershipDialogComponent, this.member().member.name + ' Абонемент', data)
+  this.dialogService.showDialog(MembershipDialogComponent, data)
     .afterClosed().subscribe((result: MembershipWithDetails) =>{
       if(result){
         this.updateActualMembership()
@@ -60,7 +60,7 @@ export class MemberComponent {
  }
 
  onMemberClick(){
-  this.dialogService.showDialog(ClientDialogComponent, this.member().member.name, {id: this.member().member.id})
+  this.dialogService.showDialog(ClientDialogComponent, {id: this.member().member.id})
     .afterClosed().subscribe((result: Client) =>{
       if(result){
         this.member().member = result

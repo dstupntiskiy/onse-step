@@ -44,7 +44,7 @@ export class CoachesComponent {
   }
 
   handleRowClick(row: CoachModel){
-    this.dialogService.showDialog(CoachDialogComponent, row.name, { coach: row })
+    this.dialogService.showDialog(CoachDialogComponent, { coach: row })
       .afterClosed().subscribe((result: CoachModel) => {
         if(result)
         {

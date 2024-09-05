@@ -13,7 +13,7 @@
             <mat-label>Соц Сеть</mat-label>
             <input matInput formControlName="socialMediaLink">
         </mat-form-field>
-        @if(data()?.id){
+        @if(client?.id){
             <div class="memberships">
                 <div class="memberships-header">
                     <h3>Абонементы</h3>
@@ -28,7 +28,7 @@
         }
         <div class="actions">
             <div class="left-actions">
-                @if(data()?.id){
+                @if(client?.id){
                     <button mat-raised-button color="warn" (click)="onDeleteClick()">Удалить</button>
                 }
             </div>

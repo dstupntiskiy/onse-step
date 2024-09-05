@@ -30,7 +30,7 @@ export class PaymentComponent {
   {}
 
   onEditClick(){
-    this.dialogService.showDialog(PaymentDialogComponent, 'Оплата', {
+    this.dialogService.showDialog(PaymentDialogComponent, {
         payment: this.payment(),
         memberId: this.memberId(), 
         paymentType: this.paymentType()
@@ -43,7 +43,7 @@ export class PaymentComponent {
   }
 
   onAddPaymentClick(){
-    this.dialogService.showDialog(PaymentDialogComponent, 'Оплата', {
+    this.dialogService.showDialog(PaymentDialogComponent, {
       memberId: this.memberId(), 
       paymentType: this.paymentType()
     })

@@ -40,7 +40,7 @@ export class StylesComponent {
   }
 
   handleRowClick(row: StyleModel){
-    this.dialogService.showDialog(StyleDialogComponent, row.name, { style: row })
+    this.dialogService.showDialog(StyleDialogComponent, { style: row })
       .afterClosed().subscribe((result: StyleModel) =>{
         if(result){
           var index = this.dataSource.findIndex(x => x.id === row.id)

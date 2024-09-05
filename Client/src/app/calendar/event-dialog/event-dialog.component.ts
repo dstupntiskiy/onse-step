@@ -1,4 +1,4 @@
-import { Component, effect, inject, input, output } from '@angular/core';
+import { Component, effect, inject, input, output, signal } from '@angular/core';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog'
 import { MatButtonModule } from '@angular/material/button'
 import { MatInputModule } from '@angular/material/input'
@@ -98,6 +98,8 @@ const WEEKDAYS: Weekday[] = [
   ]
 })
 export class EventDialogComponent {
+  title = signal<string>('Новое событие')
+
   timeOptions: string[] = getHalfHourIntervals();
   weekDaysList: Weekday[] = WEEKDAYS;
   groups: Group[];
@@ -155,7 +157,7 @@ export class EventDialogComponent {
         .pipe(
           finalize(() => {
             this.init()
-          this.isLoading = false
+            this.isLoading = false
         }))
         .subscribe(result => {
           if(result){
@@ -165,6 +167,10 @@ export class EventDialogComponent {
   }
 
   init(){
+    if(this.initialEvent?.name){
+      this.title.set(this.initialEvent?.name as string)
+    }
+
     this.coachService.getCoaches().subscribe((options) => {
       this.coaches = options
       const val = options.find(o => o.id == this.initialEvent?.coach?.id)?.id 
@@ -186,8 +192,8 @@ export class EventDialogComponent {
       this.group.setValue(value as string)
       if(this.group.value){
         this.group.disable()
+        this.refetchGroupMembersCount()
       }
-      this.refetchGroupMembersCount()
     })
 
   if(this.initialEvent?.id)
@@ -266,7 +272,7 @@ export class EventDialogComponent {
 
   onDelete(): void{
     if (this.isRecur?.value){
-      var deleteDialog = this.dialogService.showDialog(DeleteDialogComponent, 'Удаление', 
+      var deleteDialog = this.dialogService.showDialog(DeleteDialogComponent, 
         { 
           message: 'Удалить все повторения или экземпляр?', 
           eventName: this.initialEvent?.name
@@ -290,7 +296,7 @@ export class EventDialogComponent {
       })
     }
     else{
-      var confDialogRef = this.dialogService.showDialog(ConfirmationDialogComponent, 'Удаление',
+      var confDialogRef = this.dialogService.showDialog(ConfirmationDialogComponent,
         {
           message: 'Вы уверены что хотите удалить событие: ' + this.initialEvent?.name
         })
@@ -306,7 +312,7 @@ export class EventDialogComponent {
   }
 
   onParticipantsClick(){
-    this.dialogService.showDialog(ParticipantsDialogComponent, 'Участники', {
+    this.dialogService.showDialog(ParticipantsDialogComponent, {
       eventId: this.initialEvent?.id,
       eventDate: this.initialEvent?.startDateTime,
       group: this.group.value}
@@ -320,12 +326,12 @@ export class EventDialogComponent {
   }
 
   onEditGroupClick(){
-    this.dialogService.showDialog(GroupDialogComponent, (this.initialEvent?.group?.name), { id: this.initialEvent?.group?.id as string })
+    this.dialogService.showDialog(GroupDialogComponent, { id: this.initialEvent?.group?.id as string })
       .afterClosed().subscribe(() => this.refetchGroupMembersCount())
   }
 
   onOnetimeVisitorsClick(){
-    this.dialogService.showDialog(OnetimeVisitorDialogComponent, 'Разовые посещения', { eventId: this.initialEvent?.id })
+    this.dialogService.showDialog(OnetimeVisitorDialogComponent, { eventId: this.initialEvent?.id })
       .afterClosed().subscribe(() => this.refetchOnetimeVisitorsCount())
   }
 

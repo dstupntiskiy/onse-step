@@ -1,4 +1,4 @@
-import { Component, effect, inject, input, model } from '@angular/core';
+import { Component, effect, inject, input, model, signal } from '@angular/core';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { Group } from '../../shared/models/group-model';
 import { SpinnerService } from '../../shared/spinner/spinner.service';
@@ -29,6 +29,8 @@ export interface ParticipantsDialogData{
   styleUrl: './participants-dialog.component.scss'
 })
 export class ParticipantsDialogComponent implements DynamicComponent {
+  title = signal<string>('Участники')
+  
   attendants = model<Attendence[]>()
   spinnerService = inject(SpinnerService)
   data = input.required<ParticipantsDialogData>()

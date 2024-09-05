@@ -3,6 +3,7 @@ export class Client{
     name: string;
     phone: string;
     socialMediaLink: string;
+    createDate?: Date
 
     constructor(){}
 }

@@ -1,10 +1,9 @@
-import { Component, Inject, inject, input } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { Component, inject, input, signal } from '@angular/core';
+import { MatDialogRef } from '@angular/material/dialog';
 import { PaymentModel } from '../../../models/payment-model';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
-import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 import { PaymentService, PaymentType } from '../payment.service';
 import { catchError, finalize, of } from 'rxjs';
 import { SpinnerService } from '../../../spinner/spinner.service';
@@ -32,6 +31,8 @@ export interface PaymentDialogData{
   styleUrl: './payment-dialog.component.scss'
 })
 export class PaymentDialogComponent implements DynamicComponent {
+  title = signal<string>('Оплата')
+  
   amount = new FormControl<number>(0, 
     [Validators.required, 
       Validators.min(1),
@@ -78,7 +79,7 @@ export class PaymentDialogComponent implements DynamicComponent {
   }
 
   onDelete(){
-    var confDialogRef = this.dialogservice.showDialog(ConfirmationDialogComponent, '', {message: 'Удалить оплату?'})
+    var confDialogRef = this.dialogservice.showDialog(ConfirmationDialogComponent, {message: 'Удалить оплату?'})
     confDialogRef.afterClosed().subscribe((result) =>{
       if(result == true){
         this.spinnerService.loadingOn()

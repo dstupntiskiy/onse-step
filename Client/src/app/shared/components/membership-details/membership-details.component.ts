@@ -35,7 +35,7 @@ export class MembershipDetailsComponent {
   }
 
   onAddClick(){
-    this.dialogService.showDialog(MembershipDialogComponent, 'Абонемент', {
+    this.dialogService.showDialog(MembershipDialogComponent, {
       client: this.client(),
       style: this.style()
     })
@@ -47,7 +47,7 @@ export class MembershipDetailsComponent {
   }
 
   onEditClick(){
-    this.dialogService.showDialog(MembershipDialogComponent, 'Абонемент', {
+    this.dialogService.showDialog(MembershipDialogComponent, {
       client: this.client(),
       style: this.style(),
       id: this.membership()?.id

@@ -5,7 +5,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { Group } from '../../shared/models/group-model';
 import { GroupService, IGroupSave } from '../group.service';
-import { BehaviorSubject, finalize, forkJoin, Observable, of } from 'rxjs';
+import { finalize, forkJoin, of } from 'rxjs';
 import { SnackBarService } from '../../services/snack-bar.service';
 import { SpinnerService } from '../../shared/spinner/spinner.service';
 import { GroupMembersComponent } from '../group-members/group-members.component';
@@ -48,6 +48,7 @@ export interface GroupDialogData{
   styleUrl: './group-dialog.component.scss'
 })
 export class GroupDialogComponent implements DynamicComponent {
+  title = signal<string>('Группа')
   isLoading : boolean = false
 
   name = new FormControl<string>('', [Validators.required])
@@ -81,6 +82,8 @@ export class GroupDialogComponent implements DynamicComponent {
         .subscribe(result =>{
           this.styles = result.styles
           if(result.group){
+            this.title.set(result.group.name)
+
             this.group = result.group
             this.name?.setValue(result.group.name);
             this.active?.setValue(result.group.active);

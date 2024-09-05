@@ -1,4 +1,4 @@
-import { Component, effect, inject, input } from '@angular/core';
+import { Component, effect, inject, input, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -34,6 +34,7 @@ export interface CoachDialogData{
   styleUrl: './coach-dialog.component.scss'
 })
 export class CoachDialogComponent implements DynamicComponent {
+  title = signal<string>('Тренер')
 
   data = input<CoachDialogData>()
   styles: StyleModel[] = [];
@@ -45,6 +46,7 @@ export class CoachDialogComponent implements DynamicComponent {
   constructor(private dialogRef: MatDialogRef<CoachDialogComponent>,
   ){
     effect(() => {
+      this.title.set(this.data()?.coach.name as string)
       this.styleService.getAllStyles()
         .subscribe((styles: StyleModel[]) =>{
           this.styles = styles

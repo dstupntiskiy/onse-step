@@ -45,7 +45,7 @@ export class GroupsComponent {
   ){}
 
   handleAddGroupClick(){
-    this.dialogService.showDialog(GroupDialogComponent, 'Группа')
+    this.dialogService.showDialog(GroupDialogComponent)
     .afterClosed()
     .subscribe((result : Group) => {
       if (result){
@@ -68,7 +68,7 @@ export class GroupsComponent {
   }
 
   handleRowClick(row: GroupWithDetails){
-    this.dialogService.showDialog(GroupDialogComponent, row.name, { id: row.id })
+    this.dialogService.showDialog(GroupDialogComponent, { id: row.id })
       .afterClosed().subscribe((result: Group) =>{
         if(result){
           this.groupService.getGoupWithDetails(result.id)

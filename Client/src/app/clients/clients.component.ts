@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, Inject, inject, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, Inject, inject, OutputRefSubscription, ViewChild } from '@angular/core';
 import { Client } from '../shared/models/client-model';
 import { ClientService } from './client.service';
 import { MatTable, MatTableModule } from '@angular/material/table';
@@ -13,18 +13,18 @@ import { MatInputModule } from '@angular/material/input';
 import { SpinnerService } from '../shared/spinner/spinner.service';
 import { debounceTime, finalize } from 'rxjs';
 import { MatIconModule } from '@angular/material/icon';
-import { BaseDialogComponent } from '../shared/dialog/base-dialog/base-dialog.component';
+import { ClientCardComponent } from './client-card/client-card.component';
 
 @Component({
   selector: 'app-clients',
   standalone: true,
   imports: [
-    MatTableModule,
     MatButtonModule,
     DatePipe,
     ReactiveFormsModule,
     MatInputModule,
-    MatIconModule
+    MatIconModule,
+    ClientCardComponent
   ],
   providers:[
     
@@ -35,7 +35,6 @@ import { BaseDialogComponent } from '../shared/dialog/base-dialog/base-dialog.co
 })
 export class ClientsComponent {
   public clients: Client[]
-  public displayedColumns: string[] = ['createDate', 'name', 'socialMediaLink', 'phone']
   dialogService = inject(DialogService)
   clientService = inject(ClientService)
   spinnerService = inject(SpinnerService)
@@ -83,30 +82,45 @@ export class ClientsComponent {
   }
 
   handleAddClientClick(){
-    this.dialogService.showDialog(ClientDialogComponent, 'Клиент')
-    .afterClosed().subscribe((result: Client) => {
-      if(result){
-        const newData = [...this.clients]
-        newData.unshift(result)
-        this.clients = newData;
-      }
-    })
+    this.openClientDialog()
   }
 
-  handleRowClick(row: Client){
-    const dialogRef = this.dialogService.showDialog(ClientDialogComponent, row.name, { id: row.id })
-    dialogRef
-      .afterClosed().subscribe((result: Client | string) =>{
-        if(typeof(result) == 'string'){
-          var index = this.clients.findIndex(x => x.id == result)
-          this.clients.splice(index, 1)
-          this.clientsTable.renderRows()
-        }
-        else if(result){
-          var index = this.clients.findIndex(x => x.id === row.id);
-          this.clients[index] = result;
-          this.clients = Object.assign([], this.clients);
-        }
-      })
+  handleClientCardClick(client: Client){
+    console.log(client)
+    this.openClientDialog(client)
+  }
+
+  private openClientDialog(client?: Client){
+    const dialogRef = this.dialogService.showDialog(ClientDialogComponent, { id: client?.id })
+    dialogRef.afterOpened().subscribe( () => {
+
+    const clientDialogComponentRef = <ClientDialogComponent>dialogRef.componentInstance.componentRef.instance
+    var subs: OutputRefSubscription[] = []
+    subs.push(clientDialogComponentRef.clientSave.subscribe((client: Client) => {
+      this.addclient(client)
+    }))
+
+    subs.push(clientDialogComponentRef.clientDelete.subscribe((id: string) =>{
+      var index = this.clients.findIndex(x => x.id == id)
+      this.clients.splice(index, 1)
+    }))
+
+    dialogRef.afterClosed().subscribe(() => {
+      subs.forEach(x => x.unsubscribe())
+    })
+  })
+  }
+
+  private addclient(client: Client){
+    var index = this.clients.findIndex(x => x.id == client.id)
+    if(index >= 0){
+      this.clients[index] = client;
+      this.clients = Object.assign([], this.clients);
+    }
+    else{
+      const newData = [...this.clients]
+      newData.unshift(client)
+      this.clients = newData;
+    }
   }
 }

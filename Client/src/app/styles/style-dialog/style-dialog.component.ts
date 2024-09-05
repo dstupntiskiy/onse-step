@@ -1,4 +1,4 @@
-import { Component, effect, inject, input } from '@angular/core';
+import { Component, effect, inject, input, signal } from '@angular/core';
 import { DynamicComponent } from '../../shared/dialog/base-dialog/base-dialog.component';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { StyleModel } from '../../shared/models/style-model';
@@ -27,6 +27,7 @@ export interface StyleDialogData{
   styleUrl: './style-dialog.component.scss'
 })
 export class StyleDialogComponent implements DynamicComponent {
+  title = signal<string>('Направление')
 
   data = input<StyleDialogData>()
 
@@ -38,6 +39,8 @@ export class StyleDialogComponent implements DynamicComponent {
 
   constructor(private dialogRef: MatDialogRef<StyleDialogComponent>){
     effect(() =>{
+      this.title.set(this.data()?.style.name as string)
+
       this.name.setValue(this.data()?.style.name as string)
       if(this.data()?.style.basePrice){
         this.basePrice.setValue(this.data()?.style.basePrice as number)
