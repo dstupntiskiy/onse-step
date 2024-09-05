@@ -3,13 +3,15 @@
         <app-client-name 
             [client]="attendy().client"
             (clientUpdate)="onClientChange()"></app-client-name>
-        <app-membership-details 
-            [membership]="attendy().membership" 
-            [client]="attendy().client"
-            [style]="style()"
-            [date]="eventDate()"
-            ></app-membership-details>
-        <mat-slide-toggle [formControl]="isAttendant">
-        </mat-slide-toggle>
+        <div class="right-block">
+            <app-membership-details 
+                [membership]="attendy().membership" 
+                [client]="attendy().client"
+                [style]="style()"
+                [date]="eventDate()"
+                ></app-membership-details>
+            <mat-slide-toggle [formControl]="isAttendant">
+            </mat-slide-toggle>
+        </div>
     </div>
 </div>

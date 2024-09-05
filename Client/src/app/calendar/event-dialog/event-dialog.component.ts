@@ -9,15 +9,15 @@ import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
 import { addHours, getFormattedTime, getHalfHourIntervals, setTimeFromStringToDate } from '../../shared/helpers/time-helper';
 import { Group } from '../../shared/models/group-model';
 import { GroupService } from '../../groups/group.service';
-import { CommonModule, DatePipe } from '@angular/common';
+import { AsyncPipe, CommonModule, DatePipe } from '@angular/common';
 import { ConfirmationDialogComponent } from '../../shared/dialog/confirmation-dialog/confirmation-dialog.component';
 import { MatNativeDateModule, MAT_DATE_LOCALE, DateAdapter } from '@angular/material/core';
 import {provideNativeDateAdapter} from '@angular/material/core';
 import { CustomDateAdapter } from '../../shared/adapters/custom.date.adapter';
 import { DeleteDialogComponent, DeleteResult } from '../delete-dialog/delete-dialog.component';
 import { SpinnerService } from '../../shared/spinner/spinner.service';
-import { finalize, forkJoin, map, Observable, of, take, tap } from 'rxjs';
-import { EventService } from '../event/event.service';
+import { finalize, Observable, of } from 'rxjs';
+import { EventRequestModel, EventService } from '../event/event.service';
 import { Guid } from 'typescript-guid';
 import {OverlayModule} from '@angular/cdk/overlay';
 import { PaletteComponent } from '../../shared/components/palette/palette.component';
@@ -85,7 +85,8 @@ const WEEKDAYS: Weekday[] = [
     DatePipe,
     MatButtonToggleModule,
     SpinnerComponent,
-    RentClientComponent ],
+    RentClientComponent,
+    AsyncPipe ],
   templateUrl: './event-dialog.component.html',
   styleUrl: './event-dialog.component.scss',
   providers:[
@@ -117,12 +118,12 @@ export class EventDialogComponent {
   name = new FormControl<string>('', [Validators.required])
   start =  new FormControl<string>('', [Validators.required])
   end = new FormControl<string>('', [Validators.required])
-  group = new FormControl<Group | null>(null)
+  group = new FormControl<string | null>(null)
   weekdays = new FormControl<Weekday[]>([])
   isRecur = new FormControl<boolean>(false)
   recurStart = new FormControl<Date | null>(null)
   recurEnd = new FormControl<Date | null>(null)
-  coach = new FormControl<CoachModel | null>(null)
+  coach = new FormControl<string>('')
 
   eventType = new FormControl<EventType>(EventType.Event)
   eventTypes = EventType
@@ -164,6 +165,14 @@ export class EventDialogComponent {
   }
 
   init(){
+    this.coachService.getCoaches().subscribe((options) => {
+      this.coaches = options
+      const val = options.find(o => o.id == this.initialEvent?.coach?.id)?.id 
+      this.coach.setValue(val as string)
+      if(this.coach.value){
+        this.coach.disable()
+      }
+    })
 
     this.color = this.initialEvent?.color ?? 'teal';
     this.eventType.setValue(this.initialEvent?.eventType ?? EventType.Event)
@@ -171,26 +180,14 @@ export class EventDialogComponent {
       //this.eventType.disable()
     }    
 
-    forkJoin({
-      group: this.initialEvent?.group?.id ? this.groupService.getGroupById(this.initialEvent.group?.id as string) : of(null),
-      groups: this.groupService.getGoups(true)
-    }).subscribe(result =>{
-      this.groups = result.groups
-      
-      if(result.group){
-        this.groups = [result.group]
-        this.group.setValue(result.group)
+    this.groupService.getGoups(true).subscribe((options) => {
+      this.groups = options
+      const value = options.find(o => o.id == this.initialEvent?.group?.id)?.id
+      this.group.setValue(value as string)
+      if(this.group.value){
         this.group.disable()
-        this.refetchGroupMembersCount();
-        this.refetchParticipants();
       }
-    })
-    
-
-  this.coachService.getCoaches()
-    .subscribe((coaches: CoachModel[]) => {
-      this.coaches = coaches
-      this.coach?.setValue(this.coaches.find(x => x.id === this.initialEvent?.coach?.id) as CoachModel)
+      this.refetchGroupMembersCount()
     })
 
   if(this.initialEvent?.id)
@@ -220,27 +217,24 @@ export class EventDialogComponent {
   submit(): void{
     if (this.validateDates() && this.validateWeekdaysNotEmpty())
     {
-      var gr = new Group()
-      gr.id = this.group.value?.id as string
-      const data: EventModel = {
+      const data: EventRequestModel = {
         id: this.initialEvent?.id as string,
         startDateTime: setTimeFromStringToDate(this.date, this.start?.value as string),
         endDateTime: setTimeFromStringToDate(this.date, this.end?.value as string),
         name: this.name?.value as string,
-        group: gr,
+        groupId: this.group.value as string,
         color: this.color,
-        coach: { id: (this.coach?.value as CoachModel)?.id as string },
-        eventType: this.eventType.value as EventType
+        coachId: this.coach?.value as string ,
+        eventType: this.eventType.value as EventType,
+        isRecurrent: this.isRecur.value as boolean
       }
       if (this.isRecur?.value){
-        data.recurrence = {
-          daysOfWeek: (this.weekdays?.value as Weekday[]).map((x : Weekday) => x.number),
-          exceptdates: this.initialEvent?.recurrence?.exceptdates,
-          startDate: this.recurStart?.value as Date,
-          endDate: this.recurEnd?.value as Date,
-          id: this.initialEvent?.recurrence?.id ?? Guid.EMPTY.toString()
+          data.daysOfWeek = (this.weekdays?.value as Weekday[]).map((x : Weekday) => x.number),
+          data.exceptDates = this.initialEvent?.recurrence?.exceptdates,
+          data.recurrencyStartDate = this.recurStart?.value as Date,
+          data.recurrencyEndDate = this.recurEnd?.value as Date,
+          data.recurrenceId = this.initialEvent?.recurrence?.id ?? Guid.EMPTY.toString()
         }
-      }
       
       this.spinnerService.loadingOn();
       this.eventService.saveEvent(data)
@@ -326,7 +320,7 @@ export class EventDialogComponent {
   }
 
   onEditGroupClick(){
-    this.dialogService.showDialog(GroupDialogComponent, (this.group?.value?.name), { id: this.group?.value?.id as string })
+    this.dialogService.showDialog(GroupDialogComponent, (this.initialEvent?.group?.name), { id: this.initialEvent?.group?.id as string })
       .afterClosed().subscribe(() => this.refetchGroupMembersCount())
   }
 
@@ -374,7 +368,7 @@ export class EventDialogComponent {
   }
 
   private refetchGroupMembersCount(){
-    this.groupService.getGroupMembersCount(this.group?.value?.id as string)
+    this.groupService.getGroupMembersCount(this.group?.value as string)
       .subscribe((result: number) =>{
         this.groupParticipantsCount = result;
       })

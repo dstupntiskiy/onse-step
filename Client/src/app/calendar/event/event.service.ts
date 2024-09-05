@@ -58,9 +58,8 @@ export class EventService extends BaseHttpService{
     return this.get<EventModel[]>('GetEventsByPeriod', options)
    }
 
-   saveEvent(event: EventModel):Observable<EventModel[]>{
-    var eventRequest = this.getEventRequestModel(event)
-    return this.post<EventModel[]>('', eventRequest);
+   saveEvent(event: EventRequestModel):Observable<EventModel[]>{
+    return this.post<EventModel[]>('', event);
    }
 
    deleteEvent(event: EventModel):Observable<void>{
@@ -131,25 +130,5 @@ export class EventService extends BaseHttpService{
     }
 
     return this.delete('RemoveOnetimeVisitor', options)
-   }
-
-  private getEventRequestModel(event: EventModel): EventRequestModel{
-    const eventRequestModel: EventRequestModel = {
-      id: event.id,
-      name: event.name,
-      startDateTime: event.startDateTime,
-      endDateTime: event.endDateTime,
-      isRecurrent: !!event.recurrence,
-      color: event.color,
-      daysOfWeek: event.recurrence?.daysOfWeek,
-      exceptDates: event.recurrence?.exceptdates,
-      groupId: event.group?.id,
-      coachId: event.coach?.id,
-      recurrencyStartDate: event.recurrence?.startDate,
-      recurrencyEndDate: event.recurrence?.endDate,
-      recurrenceId: event.recurrence?.id,
-      eventType: event.eventType
-    }
-    return eventRequestModel; 
-  }   
+   }  
 }

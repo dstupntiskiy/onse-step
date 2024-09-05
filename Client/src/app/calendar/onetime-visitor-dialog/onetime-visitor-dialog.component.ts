@@ -28,6 +28,7 @@ export interface OnetimeVisitorDialogData{
     ReactiveFormsModule,
     MatAutocompleteModule,
     AddClientComponent,
+    MatButtonModule
   ],
   providers: [EventService
   ],
