@@ -183,7 +183,7 @@ export class EventDialogComponent {
     this.color = this.initialEvent?.color ?? 'teal';
     this.eventType.setValue(this.initialEvent?.eventType ?? EventType.Event)
     if(this.initialEvent?.id){
-      //this.eventType.disable()
+      this.eventType.disable()
     }    
 
     this.groupService.getGoups(true).subscribe((options) => {

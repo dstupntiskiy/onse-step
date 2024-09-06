@@ -1,4 +1,4 @@
-import { Component, effect, inject, input, output, OutputRefSubscription, signal, Signal, viewChildren } from '@angular/core';
+import { Component, computed, effect, inject, input, output, OutputRefSubscription, signal, Signal, viewChildren } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Client } from '../../shared/models/client-model';
@@ -42,14 +42,18 @@ export interface ClientDialogData{
 })
 export class ClientDialogComponent {
   isLoading : boolean = false
-  title = signal<string>('Клиент')
+  title = computed<string>(() =>{
+    if(this.client()?.name)
+      return this.client()?.name as string
+    return 'Клиент'
+  })
 
   public form: FormGroup;
   public get name() { return this.form.get('name')}
   public get phone() { return this.form.get('phone')}
   public get socialMediaLink() { return this.form.get('socialMediaLink')}
   data = input.required<ClientDialogData | null>()
-  client: Client;
+  client = signal<Client | undefined>(undefined)
 
   dialogService = inject(DialogService)
   memberships: MembershipWithDetails[] = []
@@ -57,7 +61,6 @@ export class ClientDialogComponent {
 
   clientSave = output<Client>()
   clientDelete = output<string>()
-
   constructor(private formBuilder: FormBuilder,
     private dialogRef: MatDialogRef<ClientDialogComponent>,
     private spinnerService: SpinnerService,
@@ -74,9 +77,7 @@ export class ClientDialogComponent {
           .subscribe((result: Client) => {
             if(result)
             {
-              this.title.set(result.name)
-
-              this.client = result;
+              this.client.set(result)
               this.name?.setValue(result.name)
               this.phone?.setValue(result.phone)
               this.socialMediaLink?.setValue(result.socialMediaLink)
@@ -105,7 +106,7 @@ export class ClientDialogComponent {
       this.dialogService.showDialog(ConfirmationDialogComponent, { message: 'Удалить клиента?'})
         .afterClosed().subscribe(reuslt =>{
           if(reuslt){
-            this.clientService.deleteClient(this.client.id)
+            this.clientService.deleteClient(this.client()?.id as string)
               .subscribe((result : string) =>{
                 if(result){
                   this.clientDelete.emit(result)
@@ -141,7 +142,7 @@ export class ClientDialogComponent {
           finalize(()=> this.spinnerService.loadingOff())
         )
         .subscribe((result: Client) =>{
-          this.client = result
+          this.client.set(result)
           this.updateMemberships()
           this.clientSave.emit(result)
         })
@@ -153,7 +154,7 @@ export class ClientDialogComponent {
     }
 
     private updateMemberships(){
-      this.membershipService.getMembershipsByClient(this.client?.id)
+      this.membershipService.getMembershipsByClient(this.client()?.id as string)
           .subscribe((result: MembershipWithDetails[]) =>{
             this.memberships = result
           })

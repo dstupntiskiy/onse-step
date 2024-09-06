@@ -1,14 +1,12 @@
-import { ChangeDetectorRef, Component, Inject, inject, OutputRefSubscription, ViewChild } from '@angular/core';
+import { Component, inject, OutputRefSubscription, ViewChild } from '@angular/core';
 import { Client } from '../shared/models/client-model';
 import { ClientService } from './client.service';
 import { MatTable, MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { DatePipe } from '@angular/common';
 import { DialogService } from '../services/dialog.service';
 import { ClientDialogComponent } from './client-dialog/client-dialog.component';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { SnackBarService } from '../services/snack-bar.service';
 import { MatInputModule } from '@angular/material/input';
 import { SpinnerService } from '../shared/spinner/spinner.service';
 import { debounceTime, finalize } from 'rxjs';
@@ -86,7 +84,6 @@ export class ClientsComponent {
   }
 
   handleClientCardClick(client: Client){
-    console.log(client)
     this.openClientDialog(client)
   }
 
