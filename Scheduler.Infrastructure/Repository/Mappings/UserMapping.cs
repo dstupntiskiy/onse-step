@@ -11,5 +11,6 @@ public class UserMapping: AuditableEntityMap<User>
         Map(x => x.Login).Column("`Login`");
         Map(x => x.PasswordHash).Column("`PasswordHash`");
         Map(x => x.PasswordSalt).Column("`PasswordSalt`");
+        Map(x => x.IsSuperAdmin).Column("`IsSuperAdmin`");
     }
 }

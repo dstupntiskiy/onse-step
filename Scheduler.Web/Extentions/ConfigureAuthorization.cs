@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Scheduler.Handlers;
 using Scheduler.Models;
 
 namespace Scheduler.Extentions;
@@ -21,15 +23,19 @@ public static class ConfigureAuthorization
 
                         ValidateAudience = true,
                         ValidAudience = authOptions.Audience,
-
-                        /* Not Validating token lifetime
-                        ValidateLifetime = true,
-                        ClockSkew = TimeSpan.Zero,
-                        */
                         IssuerSigningKey = authOptions.GetSymmetricSecurityKey(),
                         ValidateIssuerSigningKey = true
                     };
                 });
+
+        services.AddAuthorization(options =>
+        {
+            options.AddPolicy("SuperAdminOnly", policy =>
+            {
+                policy.Requirements.Add(new SuperAdminRequirement());
+            });
+        });
+
 
         return services;
     }

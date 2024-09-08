@@ -27,7 +27,8 @@ public class CommandHandler(IRepository<User> userRepository): IRequestHandler<C
         {
             Login = request.Login,
             PasswordHash = passwordHash,
-            PasswordSalt = passwordSalt
+            PasswordSalt = passwordSalt,
+            IsSuperAdmin = false
         };
 
         await userRepository.AddAsync(user);

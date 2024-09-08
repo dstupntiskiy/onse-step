@@ -55,6 +55,9 @@ export abstract class BaseHttpService {
     if (error.status === 0){
       console.error("Произошла ошибка: ", error.error);
     }
+    if (error.status === 403){
+      this.snackbarService.error("У вас нет прав")
+    }
     else if(!error.error)
     {
         this.snackbarService.error('Произошла неизвестная ошибка')

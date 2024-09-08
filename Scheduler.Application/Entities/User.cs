@@ -7,4 +7,5 @@ public class User : AuditableEntity
     public virtual string Login { get; set; }
     public virtual byte[] PasswordHash { get; set; }
     public virtual byte[] PasswordSalt { get; set; }
+    public virtual bool IsSuperAdmin { get; set; }
 }
