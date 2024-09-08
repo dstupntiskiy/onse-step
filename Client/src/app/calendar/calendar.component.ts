@@ -54,6 +54,11 @@ export class CalendarComponent {
       weekday: 'short',
       month: 'short',
       day: 'numeric'},
+    titleFormat:{
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    },
     allDaySlot: false,
     initialView: 'timeGridWeek',
     eventStartEditable: false,

@@ -22,8 +22,19 @@ body {
     background: #2BB3BA !important;
 }
 
+
 .fc-toolbar-chunk{
     display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: center;
+    align-items: center;
+
+    
+}
+
+.fc-button-group{
+    margin: 0 !important;
 }
 
 ::-webkit-scrollbar{
