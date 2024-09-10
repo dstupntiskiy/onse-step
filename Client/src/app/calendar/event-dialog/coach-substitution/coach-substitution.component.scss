@@ -1,0 +1,21 @@
+:host{
+    width: 100%;
+}
+
+.coach-control{
+    width: 100%;
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    width: 100%;
+
+    .input{
+        width: 100%;
+    }
+
+    button{
+        cursor: pointer;
+        border: none;
+        background: none;
+    }
+}

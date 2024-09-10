@@ -93,19 +93,18 @@
             </mat-select>
         </mat-form-field>
     </div>
-    @if(eventType.value != eventTypes.Rent)
+    @if(eventType.value != eventTypes.Rent && initialEvent?.id)
     {
         <div class="fields-row">
-            <mat-form-field class="input coach">
-                <mat-label>Тренер</mat-label>
-                <mat-select  [formControl]="coach" >
-                    @for (option of coaches; track option.id){
-                        <mat-option [value]="option.id">{{option.name}}</mat-option>
-                    }
-                </mat-select>
-            </mat-form-field>
+            <app-coach-substitution 
+            [eventId]="initialEvent?.id ?? ''"
+            [coach]="initialEvent?.coach?.id"
+            (coachChange)="onCoachChange($event)"
+            [substitution]="substitution$ | async"
+            [coaches]="coaches$ | async"></app-coach-substitution>
         </div>
     }
+    
     @if(eventType.value == eventTypes.Event)
     {
         <div class="fields-row group">
@@ -118,10 +117,13 @@
                 </mat-select>
             </mat-form-field>
             @if(initialEvent?.group){
-                <mat-icon (click)="onEditGroupClick()" class="edit-group-button">edit</mat-icon>
+                <button mat-icon-button (click)="onEditGroupClick()">
+                    <mat-icon  class="edit-group-button icon-button">edit</mat-icon>
+                </button>
             }
         </div>
     }
+    
     @if(initialEvent?.id){
         <div class="participants" >
             @if(eventType.value == eventTypes.Event)

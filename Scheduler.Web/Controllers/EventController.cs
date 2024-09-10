@@ -1,10 +1,13 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Scheduler.Application.Commands.Events;
 using Scheduler.Application.Commands.Events.EventSave;
+using Scheduler.Application.Commands.Events.RemoveCoachSubstitution;
 using Scheduler.Application.Common.Dtos;
 using Scheduler.Application.Entities.Projections;
 using Scheduler.Application.Queries.Events;
+using Scheduler.Application.Queries.Events.GetEventCoachSubstitution;
 
 namespace Scheduler.Controllers;
 
@@ -91,5 +94,23 @@ public class EventController(IMediator mediator) : ControllerBase
     public async Task<Guid> RemoveOnetimeVisitor(Guid visitorId)
     {
         return await mediator.Send(new Application.Commands.Events.EventOnetimeVisitorRemove.Command(visitorId));
+    }
+    
+    [HttpPost("AddCoachSubstitution")]
+    public async Task<EventCoachSubstitutionDto> AddCoachSubstitution(AddCoachSubstitutionCommand cmd)
+    {
+        return await mediator.Send(cmd);
+    }
+    
+    [HttpDelete("RemoveCoachSubstitution")]
+    public async Task<Guid> RemoveCoachSubstitution(Guid substitutionId)
+    {
+        return await mediator.Send(new RemoveCoachSubstitutionCommand(substitutionId));
+    }
+
+    [HttpGet("GetCoachSubstitution/{eventId:guid}")]
+    public async Task<EventCoachSubstitutionDto> GetCoachSubstitution(Guid eventId)
+    {
+        return await mediator.Send(new GetEventCoachSubstitutionQuery(eventId));
     }
 }

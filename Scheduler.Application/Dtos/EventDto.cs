@@ -14,4 +14,5 @@ public class EventDto : EntityDto
     public Recurrence? Recurrence { get; set; }
     public CoachProjection? Coach { get; set; }
     public EventType EventType { get; set; }
+    public EventCoachSubstitutionDto? EventCoachSubstitution { get; set; }
 }

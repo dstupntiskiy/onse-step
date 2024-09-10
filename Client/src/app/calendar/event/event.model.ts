@@ -21,4 +21,9 @@ export class EventModel{
 
     constructor(){}
   }
+
+export class EventCoachSubstitutionModel{
+  id: string
+  coach: CoachModel
+}
   

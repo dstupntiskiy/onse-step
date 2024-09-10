@@ -5,7 +5,7 @@ import { SnackBarService } from '../../services/snack-bar.service';
 import { Observable } from 'rxjs';
 import { Attendence } from '../../shared/models/attendence-model';
 import { OnetimeVisitorModel } from '../../shared/models/onetime-visitor-model';
-import { EventModel, EventType } from './event.model';
+import { EventCoachSubstitutionModel, EventModel, EventType } from './event.model';
 
 export interface EventRequestModel{
   id: string;
@@ -130,5 +130,27 @@ export class EventService extends BaseHttpService{
     }
 
     return this.delete('RemoveOnetimeVisitor', options)
-   }  
+   }
+   
+   addCoachSubstitution(eventId: string, coachId: string): Observable<EventCoachSubstitutionModel>{
+    var data = {
+      eventId: eventId,
+      coachId: coachId
+    }
+
+    return this.post('AddCoachSubstitution', data)
+   }
+
+   removeCoachSubstitution(id: string): Observable<string>{
+    var options: IAngularHttpRequestOptions = {
+      params: { substitutionId: id }
+    }
+
+    return this.delete('RemoveCoachSubstitution', options)
+   }
+
+   getCoachSubstitution(eventId: string): Observable<EventCoachSubstitutionModel>{
+
+    return this.get<EventCoachSubstitutionModel>('GetCoachSubstitution/' + eventId)
+   }
 }

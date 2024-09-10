@@ -16,7 +16,7 @@ import {provideNativeDateAdapter} from '@angular/material/core';
 import { CustomDateAdapter } from '../../shared/adapters/custom.date.adapter';
 import { DeleteDialogComponent, DeleteResult } from '../delete-dialog/delete-dialog.component';
 import { SpinnerService } from '../../shared/spinner/spinner.service';
-import { finalize, Observable, of } from 'rxjs';
+import { finalize, forkJoin, Observable, of } from 'rxjs';
 import { EventRequestModel, EventService } from '../event/event.service';
 import { Guid } from 'typescript-guid';
 import {OverlayModule} from '@angular/cdk/overlay';
@@ -30,10 +30,11 @@ import { DialogService } from '../../services/dialog.service';
 import { ParticipantsDialogComponent } from '../participants-dialog/participants-dialog.component';
 import { GroupDialogComponent } from '../../groups/group-dialog/group-dialog.component';
 import { OnetimeVisitorDialogComponent } from '../onetime-visitor-dialog/onetime-visitor-dialog.component';
-import { EventModel, EventType } from '../event/event.model';
+import { EventCoachSubstitutionModel, EventModel, EventType } from '../event/event.model';
 import { RentClientComponent } from './rent-client/rent-client.component';
 import { OnetimeVisitorModel } from '../../shared/models/onetime-visitor-model';
 import { SpinnerComponent } from '../../shared/spinner/spinner.component';
+import { CoachSubstitutionComponent } from './coach-substitution/coach-substitution.component';
 
 export interface EventDialogData{
   id: string
@@ -86,6 +87,7 @@ const WEEKDAYS: Weekday[] = [
     MatButtonToggleModule,
     SpinnerComponent,
     RentClientComponent,
+    CoachSubstitutionComponent,
     AsyncPipe ],
   templateUrl: './event-dialog.component.html',
   styleUrl: './event-dialog.component.scss',
@@ -99,11 +101,11 @@ const WEEKDAYS: Weekday[] = [
 })
 export class EventDialogComponent {
   title = signal<string>('Новое событие')
+  coach : CoachModel | undefined
 
   timeOptions: string[] = getHalfHourIntervals();
   weekDaysList: Weekday[] = WEEKDAYS;
   groups: Group[];
-  coaches: CoachModel[]
   disableRecur: boolean;
   pickerStart: Date;
   pickerEnd: Date;
@@ -125,16 +127,18 @@ export class EventDialogComponent {
   isRecur = new FormControl<boolean>(false)
   recurStart = new FormControl<Date | null>(null)
   recurEnd = new FormControl<Date | null>(null)
-  coach = new FormControl<string>('')
 
   eventType = new FormControl<EventType>(EventType.Event)
   eventTypes = EventType
 
-  coachService = inject(CoachService) 
+  substitution$ : Observable<EventCoachSubstitutionModel> 
+  coaches$: Observable<CoachModel[]>
+  coachId: string
+
   dialogService = inject(DialogService)
   eventService = inject(EventService)
+  coachService = inject(CoachService)
 
-  oneTimeVisitor$  : Observable<OnetimeVisitorModel>;
   data = input.required<EventDialogData>()
 
   date: Date;
@@ -143,6 +147,7 @@ export class EventDialogComponent {
   eventDeleted = output<string[]>()
 
   isLoading : boolean = true
+
 
   constructor(
     public dialogRef: MatDialogRef<EventDialogComponent>,
@@ -171,14 +176,9 @@ export class EventDialogComponent {
       this.title.set(this.initialEvent?.name as string)
     }
 
-    this.coachService.getCoaches().subscribe((options) => {
-      this.coaches = options
-      const val = options.find(o => o.id == this.initialEvent?.coach?.id)?.id 
-      this.coach.setValue(val as string)
-      if(this.coach.value){
-        this.coach.disable()
-      }
-    })
+    this.coach = this.initialEvent?.coach
+    this.substitution$ = this.eventService.getCoachSubstitution(this.initialEvent?.id as string)
+    this.coaches$ = this.coachService.getCoaches()
 
     this.color = this.initialEvent?.color ?? 'teal';
     this.eventType.setValue(this.initialEvent?.eventType ?? EventType.Event)
@@ -197,7 +197,10 @@ export class EventDialogComponent {
     })
 
   if(this.initialEvent?.id)
+  {
     this.refetchOnetimeVisitorsCount()
+    this.refetchParticipantsCount()
+  }
 
   this.date = this.initialEvent?.startDateTime ?? new Date(this.data().startDateTime)
 
@@ -221,7 +224,7 @@ export class EventDialogComponent {
   }
 
   submit(): void{
-    if (this.validateDates() && this.validateWeekdaysNotEmpty())
+    if (this.validateDates() && this.validateWeekdaysNotEmpty() && this.name.valid)
     {
       const data: EventRequestModel = {
         id: this.initialEvent?.id as string,
@@ -230,7 +233,7 @@ export class EventDialogComponent {
         name: this.name?.value as string,
         groupId: this.group.value as string,
         color: this.color,
-        coachId: this.coach?.value as string ,
+        coachId: this.coachId ?? this.initialEvent?.coach?.id,
         eventType: this.eventType.value as EventType,
         isRecurrent: this.isRecur.value as boolean
       }
@@ -317,7 +320,7 @@ export class EventDialogComponent {
       eventDate: this.initialEvent?.startDateTime,
       group: this.group.value}
     )
-      .afterClosed().subscribe(() => this.refetchParticipants())
+      .afterClosed().subscribe(() => this.refetchParticipantsCount())
   }
 
   colorSelected(color: string){
@@ -333,6 +336,10 @@ export class EventDialogComponent {
   onOnetimeVisitorsClick(){
     this.dialogService.showDialog(OnetimeVisitorDialogComponent, { eventId: this.initialEvent?.id })
       .afterClosed().subscribe(() => this.refetchOnetimeVisitorsCount())
+  }
+
+  onCoachChange(coachId: string){
+    this.coachId = coachId
   }
 
   private validateDates(){
@@ -365,7 +372,7 @@ export class EventDialogComponent {
       }
   }
 
-  private refetchParticipants(){
+  private refetchParticipantsCount(){
     this.eventService.getParticipantsCount(this.initialEvent?.id as string).subscribe(
       (result: number) =>{
         this.participantsCount = result;

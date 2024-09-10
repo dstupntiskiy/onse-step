@@ -18,5 +18,6 @@ public interface IOneStepContext
     DbSet<User> User { get; set; }
     DbSet<Membership> Membership { get; set; }
     DbSet<Style> Style { get; set; }
+    DbSet<EventCoachSubstitution> EventCoachSubstitution { get; set; }
     Task<int> SaveChanges();
 }
