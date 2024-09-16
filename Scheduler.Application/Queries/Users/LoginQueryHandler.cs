@@ -30,7 +30,7 @@ public class LoginQueryHandler(IRepository<User> userRepository,
                 $"Пользователя с логином {request.Login} не существует");
         }
         
-        if (!this.VerifyPassword(request.Password, user.PasswordHash, user.PasswordSalt))
+        if (!VerifyPassword(request.Password, user.PasswordHash, user.PasswordSalt))
         {
             throw new UserException(HttpStatusCode.Unauthorized, "Неправильный пароль");
         }
@@ -68,7 +68,7 @@ public class LoginQueryHandler(IRepository<User> userRepository,
 
         var claims = new List<Claim>() { 
             new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-            new Claim(JwtRegisteredClaimNames.Name, user.Login)
+            new Claim(JwtRegisteredClaimNames.Name, user.Login),
         };
 
         var token = new JwtSecurityToken(

@@ -37,6 +37,11 @@ export class UserService extends BaseHttpService {
     this.isAthenticatedSubject.next(isAuth)
   }
 
+  isSuperAdmin(): Observable<boolean>{
+    return this.get<boolean>('IsSuperAdminAccess')
+  }
+
+
   private storeToken(token: string){
     localStorage.setItem('jwtToken', token)
   }

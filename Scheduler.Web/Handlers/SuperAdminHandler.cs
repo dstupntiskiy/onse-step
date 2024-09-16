@@ -1,6 +1,5 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Scheduler.Application.Entities;
 using Scheduler.Application.Interfaces;
 

@@ -33,6 +33,7 @@ public static class DependencyInjection
             .AddTransient<IRepository<EventCoachSubstitution>, Repository<EventCoachSubstitution>>()
             .AddTransient<DatabaseInitializer>()
             .AddScoped<MembershipService>()
+            .AddScoped<UserService>()
             .AddTransient<IAuthorizationHandler, SuperAdminHandler>();
 
     public static IServiceCollection AddWebApi(this IServiceCollection services)
