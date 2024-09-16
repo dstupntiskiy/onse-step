@@ -21,6 +21,15 @@ public class CommandHandler(IMapper mapper,
             throw new ValidationException("Количество посещений и направления обязательны для заполнения");
         }
         
+        if(membershipRepository.Query().Any(x => ((request.StartDate >= x.StartDate && request.StartDate < x.EndDate)
+           || (request.EndDate > x.StartDate && request.EndDate < x.EndDate))
+           && x.Style != null && request.StyleId == x.Style.Id
+           && x.Client.Id == request.ClientId
+           && x.Id != request.Id))
+        {
+            throw new ValidationException("Уже существует абонемент на эти даты");
+        }
+        
         var client = await clientRepository.GetById(request.ClientId);
         
         var styleId = request.StyleId ?? Guid.Empty;

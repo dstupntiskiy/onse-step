@@ -119,7 +119,7 @@ export class ClientDialogComponent {
 
     onAddMembershipClick(){
       this.dialogService.showDialog(MembershipDialogComponent, {
-        client: this.client
+        client: this.client()
       })
       .afterClosed().subscribe((result: MembershipWithDetails) =>{
         if(result){

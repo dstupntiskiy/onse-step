@@ -15,6 +15,7 @@ import { SpinnerComponent } from '../../shared/spinner/spinner.component';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { DialogService } from '../../services/dialog.service';
 import { ConfirmationDialogComponent } from '../../shared/dialog/confirmation-dialog/confirmation-dialog.component';
+import { SpinnerService } from '../../shared/spinner/spinner.service';
 
 export interface MembershipDialogData{
   id?: string,
@@ -57,6 +58,7 @@ export class MembershipDialogComponent {
   membershipService = inject(MembershipService)
   styleService = inject(StyleService)
   dialogService = inject(DialogService)
+  spinnerService = inject(SpinnerService)
 
   constructor(public dialogRef: MatDialogRef<MembershipDialogComponent>){
     effect(() => {
@@ -137,7 +139,9 @@ export class MembershipDialogComponent {
         membership.visitsNumber = this.visitsNumber.value as number
       }
       
+      this.spinnerService.loadingOn()
       this.membershipService.saveMembership(membership)
+        .pipe(finalize(() => this.spinnerService.loadingOff()))
         .subscribe((result) => this.dialogRef.close(result))
     }
   }
@@ -151,7 +155,9 @@ export class MembershipDialogComponent {
       message: 'Удалить абонемент?'
     }).afterClosed().subscribe(result =>{
       if(result == true){
+        this.spinnerService.loadingOn()
         this.membershipService.deleteMembership(this.data().id as string)
+          .pipe(finalize(() => this.spinnerService.loadingOff()))
           .subscribe((deletedId: string) =>{
             this.dialogRef.close(deletedId)
           })
