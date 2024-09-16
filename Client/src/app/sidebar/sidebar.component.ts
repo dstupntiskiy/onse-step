@@ -8,6 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { IsMobileService } from '../services/is-mobile.service';
 import { UserService } from '../shared/services/user.service';
 import { subscribe } from 'diagnostics_channel';
+import { MatButtonModule } from '@angular/material/button';
 
 export interface navItem{
   name: string,
@@ -24,7 +25,8 @@ export interface navItem{
     MatToolbarModule,
     CommonModule,
     RouterModule,
-    MatIconModule
+    MatIconModule,
+    MatButtonModule
   ],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.scss'
@@ -42,7 +44,7 @@ export class SidebarComponent {
   ]
 
   adminNavigationListItems: navItem[] = [
-    { name: 'Отчеты', link: "", icon: 'close', customIcon: false}
+    { name: 'Отчеты', link: "reports", icon: 'close', customIcon: false}
   ]
 
   constructor(){

@@ -35,7 +35,7 @@ export class PaymentDialogComponent implements DynamicComponent {
   
   amount = new FormControl<number>(0, 
     [Validators.required, 
-      Validators.min(1),
+      Validators.min(0),
       Validators.max(100000), 
       Validators.nullValidator])
   comment = new FormControl<string>('')

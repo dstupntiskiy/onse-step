@@ -1,8 +1,6 @@
 @import '../../styles/mixins.scss';
 
 .clients-content{
-    @include tr-hover;
-    
     margin: 16px;
     display: flex;
     flex-direction: column;

@@ -5,6 +5,7 @@ import { ClientsComponent } from './clients/clients.component';
 import { CoachesComponent } from './coaches/coaches.component';
 import { LoginComponent } from './login/login.component';
 import { StylesComponent } from './styles/styles.component';
+import { ReportsComponent } from './reports/reports.component';
 
 export const routes: Routes = [
     { path: '', component: CalendarComponent},
@@ -13,5 +14,6 @@ export const routes: Routes = [
     { path: 'coaches', component: CoachesComponent},
     { path: 'login', component: LoginComponent },
     { path: 'styles', component: StylesComponent},
+    { path: 'reports', component: ReportsComponent},
     { path: '**', redirectTo: ''}
 ];

@@ -1,6 +1,6 @@
 
 <mat-drawer-container id="container" autosize>
-    <mat-drawer #snav [mode]="'side'" opened="true" disableClose="true">
+    <mat-drawer #snav [mode]="'side'" opened="true" disableClose="true" class="drawer">
         <mat-nav-list>
             <a class="logo" mat-list-item [routerLink]="''">
                 <img [src]="isMobileService.isMobile() ? '../../assets/images/os.svg' : '../../assets/images/one-step.svg'" >
