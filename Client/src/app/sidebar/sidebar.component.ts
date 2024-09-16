@@ -44,7 +44,7 @@ export class SidebarComponent {
   ]
 
   adminNavigationListItems: navItem[] = [
-    { name: 'Отчеты', link: "reports", icon: 'close', customIcon: false}
+    { name: 'Отчеты', link: "reports", icon: 'bar_chart', customIcon: false}
   ]
 
   constructor(){
