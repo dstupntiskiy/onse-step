@@ -3,7 +3,7 @@ import { BaseHttpService, IAngularHttpRequestOptions } from '../services/base-ht
 import { HttpClient } from '@angular/common/http';
 import { SnackBarService } from '../services/snack-bar.service';
 import { Observable } from 'rxjs';
-import { MembershipStyle } from './models/membership-style.model';
+import { MembershipStyle, OnetimeVisitStyle } from './models/style-report.model';
 
 @Injectable({
   providedIn: 'root'
@@ -16,17 +16,6 @@ export class ReportService extends BaseHttpService {
     super(http, snackbarService)
    }
 
-   getMembershipsAmountByPeriod(startDate: Date, endDate: Date) : Observable<number>{ 
-    var options: IAngularHttpRequestOptions = {
-      params: {
-        startDate: startDate.toISOString(),
-        endDate: endDate.toISOString()
-      }
-    }
-    
-    return this.get<number>("GetMembershipsAmountByPeriod", options)
-   }
-
    getMembershipsStylesByPeriod(startDate: Date, endDate: Date) : Observable<MembershipStyle[]>{ 
     var options: IAngularHttpRequestOptions = {
       params: {
@@ -36,5 +25,16 @@ export class ReportService extends BaseHttpService {
     }
     
     return this.get<MembershipStyle[]>("GetMembershipsStylesByPeriod", options)
+   }
+
+   getOnetimeVisitsStylesByPeriod(startDate: Date, endDate: Date) : Observable<OnetimeVisitStyle[]>{ 
+    var options: IAngularHttpRequestOptions = {
+      params: {
+        startDate: startDate.toISOString(),
+        endDate: endDate.toISOString()
+      }
+    }
+    
+    return this.get<OnetimeVisitStyle[]>("GetOnetimeVisitsStylesByPeriod", options)
    }
 }

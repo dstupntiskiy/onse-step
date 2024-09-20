@@ -30,6 +30,11 @@
                     </ng-template>
                 </mat-tab>
                 <mat-tab label="Разовые посещения">
+                    <ng-template matTabContent>
+                        <app-one-time-visits-report
+                            [dateRange]="{ startDate: periodStartDate(), endDate: periodEndDate() }">
+                        </app-one-time-visits-report>
+                    </ng-template>
                 </mat-tab>
             </mat-tab-group>
         </div>

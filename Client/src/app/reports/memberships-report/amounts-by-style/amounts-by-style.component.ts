@@ -1,16 +1,14 @@
 import { Component, computed, input } from '@angular/core';
-import { MembershipStyle } from '../../models/membership-style.model';
+import { MembershipStyle } from '../../models/style-report.model';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
+import { BarChartComponent, ChartData } from '../../shared/bar-chart/bar-chart.component';
 
-export interface ChartData{
-  name: string,
-  value: number
-}
+
 @Component({
   selector: 'app-amounts-by-style',
   standalone: true,
   imports: [
-    NgxChartsModule
+    BarChartComponent
   ],
   templateUrl: './amounts-by-style.component.html',
   styleUrl: './amounts-by-style.component.scss'
@@ -31,14 +29,4 @@ export class AmountsByStyleComponent {
     value: m.totalAmount
   }))
  })
-
- showXAxis = true;
- showYAxis = true;
- gradient = false;
- showLegend = false;
- showXAxisLabel = true;
- xAxisLabel = 'Направление';
- showYAxisLabel = true;
- showGridLines = false
- yAxisLabel = 'Количество';
 }

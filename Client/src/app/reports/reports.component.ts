@@ -6,6 +6,12 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MembershipsReportComponent } from './memberships-report/memberships-report.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
+import { OneTimeVisitsReportComponent } from './one-time-visits-report/one-time-visits-report.component';
+
+export interface DateRange{
+  startDate: Date,
+  endDate: Date
+}
 
 @Component({
   selector: 'app-reports',
@@ -17,7 +23,8 @@ import { MatInputModule } from '@angular/material/input';
     ReactiveFormsModule,
     MatTabsModule,
     MembershipsReportComponent,
-    MatButtonModule
+    MatButtonModule,
+    OneTimeVisitsReportComponent
   ],
   templateUrl: './reports.component.html',
   styleUrl: './reports.component.scss'
