@@ -1,4 +1,4 @@
-import { Component, ComponentRef, DestroyRef, effect, inject, input, model, output } from '@angular/core';
+import { Component, ComponentRef, DestroyRef, effect, inject, input, model, output, OutputRefSubscription } from '@angular/core';
 import { MembershipModel, MembershipWithDetails } from '../shared/models/membership-model';
 import { DatePipe } from '@angular/common';
 import { DialogService } from '../services/dialog.service';
@@ -31,19 +31,21 @@ export class MembershipComponent {
   }
 
   onEditClick(){
-    this.dialogService.showDialog(MembershipDialogComponent, {
+    const dialogRef = this.dialogService.showDialog(MembershipDialogComponent, {
       id: this.membership().id
     })
-    .afterClosed().subscribe((result) =>{
-      if(result instanceof MembershipModel){
-        var membership = new MembershipWithDetails()
-        membership.Map(result)
-        membership.visited = this.membership().visited as number
-        this.membership.set(membership)
-      }
-      else if(typeof(result) == "string"){
-        this.delete.emit(result)
-      }
+
+    const subscriptions: OutputRefSubscription[] = []
+    dialogRef.afterOpened().subscribe(() =>{
+      const instance = dialogRef.componentInstance.componentRef.instance
+      subscriptions.push(instance.membershipSaved.subscribe((membership: MembershipWithDetails) =>{
+        this.membership.update(() => membership)
+      }))
+      subscriptions.push(instance.membershipDeleted.subscribe((membershipId: string) =>{
+        this.delete.emit(membershipId)
+      }))
     })
+
+    dialogRef.afterClosed().subscribe(() => subscriptions.forEach((sub)=> sub.unsubscribe()))
   }
 }

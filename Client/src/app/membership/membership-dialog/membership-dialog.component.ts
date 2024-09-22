@@ -1,4 +1,4 @@
-import { booleanAttribute, Component, computed, effect, inject, input, signal } from '@angular/core';
+import { booleanAttribute, Component, computed, effect, inject, input, output, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
@@ -10,14 +10,15 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { MatSelectModule } from '@angular/material/select';
 import { StyleService } from '../../styles/style.service';
 import { StyleModel } from '../../shared/models/style-model';
-import { finalize, forkJoin, of, pairwise, startWith } from 'rxjs';
+import { finalize, forkJoin, of} from 'rxjs';
 import { SpinnerComponent } from '../../shared/spinner/spinner.component';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { DialogService } from '../../services/dialog.service';
 import { ConfirmationDialogComponent } from '../../shared/dialog/confirmation-dialog/confirmation-dialog.component';
 import { SpinnerService } from '../../shared/spinner/spinner.service';
-import { MatButtonToggleChange, MatButtonToggleModule } from '@angular/material/button-toggle';
-import { CommonModule } from '@angular/common';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MembershipWithDetails } from '../../shared/models/membership-model';
+import { DynamicComponent } from '../../shared/dialog/base-dialog/base-dialog.component';
 
 export interface MembershipDialogData{
   id?: string,
@@ -45,7 +46,7 @@ export type DiscountType = 0 | 20 | 100
   templateUrl: './membership-dialog.component.html',
   styleUrl: './membership-dialog.component.scss'
 })
-export class MembershipDialogComponent {
+export class MembershipDialogComponent implements DynamicComponent  {
   title = signal<string>('Абонемент')
   isLoading : boolean = true
 
@@ -83,6 +84,9 @@ export class MembershipDialogComponent {
   styleService = inject(StyleService)
   dialogService = inject(DialogService)
   spinnerService = inject(SpinnerService)
+
+  membershipSaved = output<MembershipWithDetails>()
+  membershipDeleted = output<string>()
 
   constructor(public dialogRef: MatDialogRef<MembershipDialogComponent>){
     effect(() => {
@@ -161,7 +165,10 @@ export class MembershipDialogComponent {
       this.spinnerService.loadingOn()
       this.membershipService.saveMembership(membership)
         .pipe(finalize(() => this.spinnerService.loadingOff()))
-        .subscribe((result) => this.dialogRef.close(result))
+        .subscribe((result) => {
+          this.membershipSaved.emit(result)
+          this.dialogRef.close(result)
+      })
     }
   }
 
@@ -178,7 +185,8 @@ export class MembershipDialogComponent {
         this.membershipService.deleteMembership(this.data().id as string)
           .pipe(finalize(() => this.spinnerService.loadingOff()))
           .subscribe((deletedId: string) =>{
-            this.dialogRef.close(deletedId)
+            this.membershipDeleted.emit(deletedId)
+            this.dialogRef.close()
           })
       }
     })

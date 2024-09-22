@@ -46,7 +46,7 @@
     }
     <div class="fields-row">
         <h2>Цена: {{ price() }}</h2>
-        <h2 [class.payed-less]="payedAmountSignal() < price()"
+        <h2 [class.payed-less]="payedAmountSignal() != price()"
             [class.payed]="payedAmountSignal() == price() && price() > 0">Оплачено: {{ payedAmountSignal() }}</h2>
     </div>
     <div class="fields-row">
