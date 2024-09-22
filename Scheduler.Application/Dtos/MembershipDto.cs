@@ -11,6 +11,6 @@ public class MembershipDto : EntityDto
     public DateTime EndDate { get; set; }
     public ClientProjection Client { get; set; }
     public StyleDto Style { get; set; }
-    
     public bool Unlimited { get; set; }
+    public decimal Discount { get; set; }
 }

@@ -10,6 +10,5 @@ public class StyleMapping : Profile
     {
         CreateMap<Style, StyleDto>()
             .ForMember(x => x.Name, y => y.MapFrom(z => z.Name));
-
     }
 }

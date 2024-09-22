@@ -1,16 +1,16 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { StyleService } from './style.service';
 import { StyleModel } from '../shared/models/style-model';
 import { DialogService } from '../services/dialog.service';
-import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { StyleDialogComponent } from './style-dialog/style-dialog.component';
+import { StyleCardComponent } from './style-card/style-card.component';
 
 @Component({
   selector: 'app-style',
   standalone: true,
   imports: [
-    MatTableModule,
+    StyleCardComponent,
     MatButtonModule
   ],
   templateUrl: './styles.component.html',
@@ -18,13 +18,13 @@ import { StyleDialogComponent } from './style-dialog/style-dialog.component';
 })
 export class StylesComponent {
   styleService = inject(StyleService)
-  displayedColumns: string[] = ['name', 'basePrice']
-  dataSource: StyleModel[] = []
+
+  styles = signal<StyleModel[]>([])
   dialogService = inject(DialogService)
 
   ngOnInit(){
     this.styleService.getAllStyles().subscribe((result: StyleModel[]) =>{
-      this.dataSource = result
+      this.styles.update(() => result)
     })
   }
 
@@ -32,20 +32,9 @@ export class StylesComponent {
     this.dialogService.showDialog(StyleDialogComponent, 'Направление')
       .afterClosed().subscribe((result: StyleModel) =>{
         if(result){
-          const newData = [...this.dataSource]
+          const newData = [...this.styles()]
           newData.unshift(result)
-          this.dataSource = newData
-        }
-      })
-  }
-
-  handleRowClick(row: StyleModel){
-    this.dialogService.showDialog(StyleDialogComponent, { style: row })
-      .afterClosed().subscribe((result: StyleModel) =>{
-        if(result){
-          var index = this.dataSource.findIndex(x => x.id === row.id)
-          this.dataSource[index] = result
-          this.dataSource = Object.assign([], this.dataSource)
+          this.styles.update(() => newData)
         }
       })
   }

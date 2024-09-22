@@ -11,6 +11,6 @@ public class Membership : AuditableEntity
     public virtual DateTime EndDate { get; set; }
     public virtual Client Client { get; set; }
     public virtual Style? Style { get; set; }
-    
     public virtual bool Unlimited { get; set; }
+    public virtual decimal Discount { get; set; }
 }

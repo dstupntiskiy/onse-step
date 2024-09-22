@@ -1,4 +1,4 @@
-import { Component, effect, inject, input, signal } from '@angular/core';
+import { booleanAttribute, Component, computed, effect, inject, input, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
@@ -16,12 +16,17 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { DialogService } from '../../services/dialog.service';
 import { ConfirmationDialogComponent } from '../../shared/dialog/confirmation-dialog/confirmation-dialog.component';
 import { SpinnerService } from '../../shared/spinner/spinner.service';
+import { MatButtonToggleChange, MatButtonToggleModule } from '@angular/material/button-toggle';
+import { CommonModule } from '@angular/common';
 
 export interface MembershipDialogData{
   id?: string,
   client: Client,
   style: StyleModel
 }
+
+export type VisitsCount = 8 | 4
+export type DiscountType = 0 | 20 | 100
 
 @Component({
   selector: 'app-membership-dialog',
@@ -34,7 +39,8 @@ export interface MembershipDialogData{
     MatNativeDateModule,
     MatSelectModule,
     SpinnerComponent,
-    MatCheckboxModule
+    MatCheckboxModule,
+    MatButtonToggleModule
   ],
   templateUrl: './membership-dialog.component.html',
   styleUrl: './membership-dialog.component.scss'
@@ -43,10 +49,28 @@ export class MembershipDialogComponent {
   title = signal<string>('Абонемент')
   isLoading : boolean = true
 
-  amount = new FormControl<number | null>(null, [Validators.required])
+  private readonly UNLIMITED_PRICE = 18000
+
+  visitsCount = signal<VisitsCount>(8)
+
+  discountSignal = signal<DiscountType>(0)
+  isUnlimited = signal<boolean>(false)
+  styleSignal = signal<StyleModel | undefined | null>(undefined)
+  payedAmountSignal = signal<number>(0)
+
+  price = computed(() => {
+    if(this.isUnlimited() === true){
+      return this.UNLIMITED_PRICE
+    }
+    if(this.styleSignal()){
+      var price = this.visitsCount() == 8 ? <number>this.styleSignal()?.basePrice : <number>this.styleSignal()?.secondaryPrice
+      return price * (100 - this.discountSignal()) / 100
+    }
+    return 0
+  })
+
   startDate = new FormControl<string>('',[Validators.required])
   endDate = new FormControl<string>('', [Validators.required])
-  visitsNumber = new FormControl<number>(8, [Validators.required])
   style = new FormControl<StyleModel | null>(null, [Validators.required])
   comment = new FormControl<string>('')
   unlimited = new FormControl<boolean>(false)
@@ -73,14 +97,15 @@ export class MembershipDialogComponent {
           this.styles = result.styles
 
           if(result.membership){
-            this.amount.setValue(result.membership.amount)
+            this.payedAmountSignal.set(result.membership.amount)
             this.startDate.setValue(result.membership.startDate.toString())
             this.endDate.setValue(result.membership.endDate.toString())
             this.comment.setValue(result.membership.comment as string)
             this.client = result.membership.client
             this.unlimited.setValue(result.membership.unlimited)
-            this.visitsNumber.setValue(result.membership.visitsNumber as number)
+            this.visitsCount.set(result.membership.visitsNumber as VisitsCount)
             this.style.setValue(this.styles.find(x => x.id == result.membership?.style?.id) as StyleModel)
+            this.discountSignal.set(result.membership.discount as DiscountType)
           }
           else{
             this.client = this.data().client
@@ -91,10 +116,10 @@ export class MembershipDialogComponent {
 
             this.startDate.setValue(firstDay.toISOString()) 
             this.endDate.setValue(lastDay.toISOString())
-            this.visitsNumber.setValue(8)
             
             if(this.data().style){
               this.style.setValue(this.styles.find(x => x.id == this.data().style.id) as StyleModel)
+              this.styleSignal.set(this.data().style)
             }
           }
         })
@@ -103,20 +128,13 @@ export class MembershipDialogComponent {
 
   ngOnInit(){
     this.style.valueChanges
-      .pipe(
-        startWith(this.style.value),
-        pairwise())
-      .subscribe(([prev, next]: [any, any]) =>{
-        if(this.amount.value == null || prev?.basePrice == this.amount.value){
-          this.amount.setValue(next.basePrice as number)
-        }
+      .subscribe(value => {
+        this.styleSignal.set(value)
       })
 
     this.unlimited.valueChanges
       .subscribe(value =>{
-        if(value == true && this.amount.value == null){
-          this.amount.setValue(18000)
-        }
+          this.isUnlimited.set(booleanAttribute(value))
       })
   }
 
@@ -124,19 +142,20 @@ export class MembershipDialogComponent {
     if(this.isValid()){
       var membership: IMembershipSave = {
         id: this.data().id as string,
-        amount: this.amount.value as number,
+        amount: this.price(),
         clientId: this.client.id,
         startDate: this.startDate.value as string,
         endDate: this.endDate.value as string,
         comment: this.comment.value as string,
         unlimited: this.unlimited.value as boolean,
         styleId: this.unlimited.value ? undefined : this.style.value?.id as string,
-        visitsNumber: this.unlimited.value ? undefined : this.visitsNumber.value as number
+        visitsNumber: this.unlimited.value ? undefined : this.visitsCount(),
+        discount: this.discountSignal()
       }
 
       if(!membership.unlimited){
         membership.styleId = this.style.value?.id as string
-        membership.visitsNumber = this.visitsNumber.value as number
+        membership.visitsNumber = this.visitsCount()
       }
       
       this.spinnerService.loadingOn()
@@ -165,10 +184,16 @@ export class MembershipDialogComponent {
     })
   }
 
+  onVisitsCOuntChange(visits: VisitsCount){
+    this.visitsCount.update(() => visits)
+  }
+
+  onSaleChange(sale: DiscountType){
+    this.discountSignal.update(() => sale)
+  }
+
   private isValid(): boolean{
-    return this.amount.valid 
-    && this.startDate.valid
+    return this.startDate.valid
     && this.endDate.valid
-    && this.visitsNumber.valid
   }
 }

@@ -1,0 +1,15 @@
+<div class="style-card" (click)="onClick()">
+    <div class="style-card-header">
+        <h2>{{ style().name }}</h2>
+    </div>
+    <div class="prices">
+        <div class="prices-header">
+            <h3>Базовая стоимость</h3>
+            <p>4 посещения</p>
+        </div>
+        <div class="prices-values">
+            <p class="main-price">{{ style().basePrice}} RSD</p>
+            <p>{{ style().secondaryPrice}} RSD</p>
+        </div>
+    </div>
+</div>

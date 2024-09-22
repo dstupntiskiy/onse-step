@@ -18,6 +18,7 @@ public class CommandHandler(IRepository<Style> styleRepository) : IRequestHandle
         style = style ?? new Style();
         style.Name = request.Name;
         style.BasePrice = request.BasePrice;
+        style.SecondaryPrice = request.SecondaryPrice;
 
         return await styleRepository.AddAsync(style);
     }

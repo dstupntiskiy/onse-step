@@ -16,7 +16,8 @@ public class MembershipMapping : Profile
                 .ForMember(x => x.VisitsNumber, y => y.MapFrom(z => z.VisitsNumber))
                 .ForMember(x => x.Client, y => y.MapFrom(z => z.Client))
                 .ForMember(x => x.Style, y => y.MapFrom(z => z.Style))
-                .ForMember(x => x.Unlimited, y => y.MapFrom(z=> z.Unlimited));
+                .ForMember(x => x.Unlimited, y => y.MapFrom(z=> z.Unlimited))
+                .ForMember(x => x.Discount, y=> y.MapFrom(z => z.Discount));
         
             CreateMap<Membership, MembershipWithDetailsDto>()
                 .ForMember(x => x.Amount, y => y.MapFrom(z => z.Amount))
@@ -26,6 +27,7 @@ public class MembershipMapping : Profile
                 .ForMember(x => x.VisitsNumber, y => y.MapFrom(z => z.VisitsNumber))
                 .ForMember(x => x.Client, y => y.MapFrom(z => z.Client))
                 .ForMember(x => x.Style, y => y.MapFrom(z => z.Style))
-                .ForMember(x => x.Unlimited, y => y.MapFrom(z=> z.Unlimited));
+                .ForMember(x => x.Unlimited, y => y.MapFrom(z=> z.Unlimited))
+                .ForMember(x => x.Discount, y=> y.MapFrom(z => z.Discount));
         }
 }

@@ -12,6 +12,7 @@ export class MembershipModel{
     id: string
     unlimited: boolean
     expired: boolean
+    discount: number
 
     constructor(){}
 

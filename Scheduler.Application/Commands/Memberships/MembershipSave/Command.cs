@@ -12,4 +12,5 @@ public record Command(
     Guid ClientId,
     Guid? StyleId,
     string? Comment,
+    decimal Discount,
     bool Unlimited = false) : IRequest<MembershipWithDetailsDto>;

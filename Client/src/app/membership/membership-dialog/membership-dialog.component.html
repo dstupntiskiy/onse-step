@@ -15,17 +15,39 @@
             </mat-select>
         </mat-form-field>
     }
+    @if(!isUnlimited()){
+        <div class="fields-row">
+            <mat-button-toggle-group
+                [hideSingleSelectionIndicator]="true"
+                [value]="visitsCount()"
+                (change)="onVisitsCOuntChange($event.value)">
+                <mat-button-toggle [value]="8">
+                    <span>8</span>
+                </mat-button-toggle>
+                <mat-button-toggle [value]="4">
+                    <span>4</span>
+                </mat-button-toggle>
+            </mat-button-toggle-group>
+            <mat-button-toggle-group
+                [hideSingleSelectionIndicator]="true"
+                [value]="discountSignal()"
+                (change)="onSaleChange($event.value)">
+                <mat-button-toggle [value]="0">
+                    <span>0%</span>
+                </mat-button-toggle>
+                <mat-button-toggle [value]="20">
+                    <span>20%</span>
+                </mat-button-toggle>
+                <mat-button-toggle [value]="100">
+                    <span>100%</span>
+                </mat-button-toggle>
+            </mat-button-toggle-group>
+        </div>
+    }
     <div class="fields-row">
-        <mat-form-field>
-            <mat-label>Сумма RSD</mat-label>
-            <input matInput [formControl]="amount">
-        </mat-form-field>
-        @if(!unlimited.value){
-            <mat-form-field>
-                <mat-label>Посещения</mat-label>
-                <input matInput [formControl]="visitsNumber">
-            </mat-form-field>
-        }
+        <h2>Цена: {{ price() }}</h2>
+        <h2 [class.payed-less]="payedAmountSignal() < price()"
+            [class.payed]="payedAmountSignal() == price() && price() > 0">Оплачено: {{ payedAmountSignal() }}</h2>
     </div>
     <div class="fields-row">
         <mat-form-field>

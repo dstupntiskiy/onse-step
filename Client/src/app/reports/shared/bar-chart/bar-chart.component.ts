@@ -33,7 +33,7 @@ export class BarChartComponent {
 
   }
 
-  ngAfterViewInit(){
+  ngOnInit(){
     this.updateChartSize()
   }
 

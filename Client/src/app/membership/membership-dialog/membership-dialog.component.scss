@@ -7,6 +7,14 @@
     .fields-row{
         display: flex;
         gap: 16px;
+
+        .payed-less{
+            color: red;
+        }
+
+        .payed{
+            color: green;
+        }
     }
 
     .actions{

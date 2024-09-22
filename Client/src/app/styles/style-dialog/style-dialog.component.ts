@@ -1,4 +1,4 @@
-import { Component, effect, inject, input, signal } from '@angular/core';
+import { Component, effect, inject, input, output, signal } from '@angular/core';
 import { DynamicComponent } from '../../shared/dialog/base-dialog/base-dialog.component';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { StyleModel } from '../../shared/models/style-model';
@@ -36,14 +36,18 @@ export class StyleDialogComponent implements DynamicComponent {
 
   name = new FormControl<string>('', [Validators.required])
   basePrice = new FormControl<number>(0, [Validators.required])
+  secondaryPrice = new FormControl<number>(0, [Validators.required])
 
   constructor(private dialogRef: MatDialogRef<StyleDialogComponent>){
     effect(() =>{
-      this.title.set(this.data()?.style.name as string)
-
-      this.name.setValue(this.data()?.style.name as string)
-      if(this.data()?.style.basePrice){
-        this.basePrice.setValue(this.data()?.style.basePrice as number)
+      if(this.data()?.style){
+        this.name.setValue(this.data()?.style.name as string)
+        if(this.data()?.style.basePrice){
+          this.basePrice.setValue(this.data()?.style.basePrice as number)
+        }
+        if(this.data()?.style.secondaryPrice){
+          this.secondaryPrice.setValue(this.data()?.style.secondaryPrice as number)
+        }
       }
     })
   }
@@ -53,11 +57,12 @@ export class StyleDialogComponent implements DynamicComponent {
   }
 
   onSave(){
-    if(this.name.valid && this.basePrice.valid){
+    if(this.name.valid && this.basePrice.valid && this.secondaryPrice.valid){
       const style: StyleModel = {
-        id: this.data()?.style.id as string,
+        id: this.data()?.style?.id as string,
         name: this.name.value as string,
-        basePrice: this.basePrice.value as number
+        basePrice: this.basePrice.value as number,
+        secondaryPrice: this.secondaryPrice.value as number
       }
 
       this.spinnerService.loadingOn()
@@ -65,7 +70,10 @@ export class StyleDialogComponent implements DynamicComponent {
         .pipe(
           finalize(() => this.spinnerService.loadingOff())
         )
-        .subscribe((result: StyleModel) => this.dialogRef.close(result))
+        .subscribe((result: StyleModel) => 
+          {
+            this.dialogRef.close(result)
+          })
     }
   }
 }

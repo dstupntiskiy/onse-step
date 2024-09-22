@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Scheduler.Infrastructure.Data;
@@ -11,9 +12,11 @@ using Scheduler.Infrastructure.Data;
 namespace Scheduler.Infrastructure.Migrations
 {
     [DbContext(typeof(OneStepContext))]
-    partial class OneStepContextModelSnapshot : ModelSnapshot
+    [Migration("20240920164240_secondary-price")]
+    partial class secondaryprice
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -263,9 +266,6 @@ namespace Scheduler.Infrastructure.Migrations
 
                     b.Property<DateTime?>("CreateDate")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<decimal>("Discount")
-                        .HasColumnType("numeric");
 
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("timestamp with time zone");

@@ -13,6 +13,7 @@ public class MembershipMap : AuditableEntityMap<Membership>
         Map(x => x.EndDate).Column("`EndDate`");
         Map(x => x.VisitsNumber).Column("`VisitsNumber`");
         Map(x => x.Unlimited).Column("`Unlimited`");
+        Map(x => x.Discount).Column("`Discount`");
         References(x => x.Client).Column("`ClientId`");
         References(x => x.Style).Column("`StyleId`");
     }

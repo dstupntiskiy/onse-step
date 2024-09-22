@@ -14,7 +14,8 @@ export interface IMembershipSave{
   clientId: string,
   styleId?: string,
   comment?: string,
-  unlimited: boolean
+  unlimited: boolean,
+  discount: number
 }
 @Injectable({
   providedIn: 'root'

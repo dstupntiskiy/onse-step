@@ -47,6 +47,7 @@ public class CommandHandler(IMapper mapper,
         membership.Client = client;
         membership.Style = style;
         membership.Unlimited = request.Unlimited;
+        membership.Discount = request.Discount;
 
         var savedMembership = mapper.Map<MembershipWithDetailsDto>(await membershipRepository.AddAsync(membership));
         savedMembership.Visited = await membershipService.GetVisitedCount(request.ClientId, savedMembership.Id);
