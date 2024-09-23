@@ -123,7 +123,7 @@ export class MembershipDialogComponent implements DynamicComponent  {
             
             if(this.data().style){
               this.style.setValue(this.styles.find(x => x.id == this.data().style.id) as StyleModel)
-              this.styleSignal.set(this.data().style)
+              this.styleSignal.update(() => this.data().style)
             }
           }
         })

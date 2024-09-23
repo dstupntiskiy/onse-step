@@ -73,7 +73,7 @@ export class MemberComponent {
  }
 
  private updateActualMembership(){
-  this.membershipService.getActualMembership(this.member().member.id, this.member().group.style.id)
+  this.membershipService.getActualMembership(this.member().member.id, this.member().group.style.id, this.member().group.startDate)
         .subscribe(result =>{
           this.member().membership = result
         })

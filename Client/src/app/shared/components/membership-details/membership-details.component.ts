@@ -1,4 +1,4 @@
-import { Component, effect, inject, input, model } from '@angular/core';
+import { Component, effect, inject, input, model, OutputRefSubscription } from '@angular/core';
 import { MembershipModel, MembershipWithDetails } from '../../models/membership-model';
 import { DialogService } from '../../../services/dialog.service';
 import { StyleModel } from '../../models/style-model';
@@ -35,34 +35,37 @@ export class MembershipDetailsComponent {
   }
 
   onAddClick(){
-    this.dialogService.showDialog(MembershipDialogComponent, {
-      client: this.client(),
-      style: this.style()
-    })
-    .afterClosed().subscribe(result =>{
-      if(result){
-        this.membership.set(result)
-      }
-    })
+    this.OpenMembershipDialog(this.client(), this.style() as StyleModel)
   }
 
   onEditClick(){
-    this.dialogService.showDialog(MembershipDialogComponent, {
+    this.OpenMembershipDialog(this.client(), this.style() as StyleModel, this.membership()?.id)
+  }
+
+  private OpenMembershipDialog(client: Client, style: StyleModel, id?: string){
+    const dialogRef = this.dialogService.showDialog(MembershipDialogComponent, {
       client: this.client(),
       style: this.style(),
       id: this.membership()?.id
     })
-    .afterClosed().subscribe((result : MembershipWithDetails | string) => {
-      if(typeof(result) == 'string'){
-        this.membershipService.getActualMembership(this.client().id, this.style()?.id, this.date())
-        .subscribe(result =>{
-          this.membership.set(result)
-        })
-        return
-      }
-      else if(result){
-        this.membership.set(result)
-      }
-    } )
+    const subscriptions: OutputRefSubscription[] = []
+    dialogRef.afterOpened().subscribe(() =>{
+      const component = dialogRef.componentInstance.componentRef.instance
+      subscriptions.push(component.membershipSaved.subscribe(() =>{
+        this.updateActualMembership()
+      }))
+      subscriptions.push(component.membershipDeleted.subscribe(() =>{
+        this.updateActualMembership()
+      }))
+    })
+
+    dialogRef.afterClosed().subscribe(() => {
+      subscriptions.forEach((sub) => sub.unsubscribe())
+    })
+  }
+
+  private updateActualMembership(){
+    this.membershipService.getActualMembership(this.client().id, this.style()?.id, this.date())
+          .subscribe(result => this.membership.update(() => result))
   }
 }

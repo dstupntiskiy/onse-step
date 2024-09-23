@@ -48,7 +48,7 @@ export class MembershipService extends BaseHttpService {
       params: {
         clientId: clientId,
         styleId: styleId ?? '',
-        date: date ? date.toISOString() : ''
+        date: date ? date.toString() : ''
       }
     }
     return this.get<MembershipWithDetails>('GetActualMembership', options)

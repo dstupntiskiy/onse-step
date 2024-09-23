@@ -318,7 +318,7 @@ export class EventDialogComponent {
     this.dialogService.showDialog(ParticipantsDialogComponent, {
       eventId: this.initialEvent?.id,
       eventDate: this.initialEvent?.startDateTime,
-      group: this.group.value}
+      group: this.groups.find(x => x.id == this.group.value)}
     )
       .afterClosed().subscribe(() => this.refetchParticipantsCount())
   }
