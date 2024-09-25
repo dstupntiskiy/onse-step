@@ -37,16 +37,16 @@ export class StyleDialogComponent implements DynamicComponent {
   name = new FormControl<string>('', [Validators.required])
   basePrice = new FormControl<number>(0, [Validators.required])
   secondaryPrice = new FormControl<number>(0, [Validators.required])
+  onetimeVisitPrice = new FormControl<number>(0, [Validators.required])
 
   constructor(private dialogRef: MatDialogRef<StyleDialogComponent>){
     effect(() =>{
       if(this.data()?.style){
         this.name.setValue(this.data()?.style.name as string)
-        if(this.data()?.style.basePrice){
+        if(this.data()?.style){
           this.basePrice.setValue(this.data()?.style.basePrice as number)
-        }
-        if(this.data()?.style.secondaryPrice){
           this.secondaryPrice.setValue(this.data()?.style.secondaryPrice as number)
+          this.onetimeVisitPrice.setValue(this.data()?.style.onetimeVisitPrice as number)
         }
       }
     })
@@ -62,7 +62,8 @@ export class StyleDialogComponent implements DynamicComponent {
         id: this.data()?.style?.id as string,
         name: this.name.value as string,
         basePrice: this.basePrice.value as number,
-        secondaryPrice: this.secondaryPrice.value as number
+        secondaryPrice: this.secondaryPrice.value as number,
+        onetimeVisitPrice: this.onetimeVisitPrice.value as number
       }
 
       this.spinnerService.loadingOn()

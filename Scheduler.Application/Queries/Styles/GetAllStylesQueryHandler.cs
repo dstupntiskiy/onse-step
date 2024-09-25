@@ -8,6 +8,7 @@ public class GetAllStylesQueryHandler(IRepository<Style> styleRepository) : IReq
 {
     public async Task<List<Style>> Handle(GetAllStylesQuery request, CancellationToken cancellationToken)
     {
-        return await styleRepository.GetAll();
+        var styles = await styleRepository.GetAll();
+        return styles.OrderBy(x => x.Name).ToList();
     }
 }

@@ -12,6 +12,10 @@
             <mat-label>Стоимость 4 занятий, RSD</mat-label>
             <input matInput type="number" [formControl]="secondaryPrice">
         </mat-form-field>
+        <mat-form-field>
+            <mat-label>Разовое посещение, RSD</mat-label>
+            <input matInput type="number" [formControl]="onetimeVisitPrice">
+        </mat-form-field>
     </div>
     <div class="actions">
         <button mat-button (click)="onClose()">Закрыть</button>

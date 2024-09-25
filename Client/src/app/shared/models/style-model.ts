@@ -3,6 +3,7 @@ export class StyleModel{
     name: string
     basePrice: number
     secondaryPrice: number
+    onetimeVisitPrice: number
 
     constructor(){}
 }

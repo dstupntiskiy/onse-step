@@ -5,7 +5,8 @@
             <app-payment 
                 [payment]="visitor().payment" 
                 [paymentType]="paymentType"
-                [memberId]="visitor().id"></app-payment>
+                [memberId]="visitor().id"
+                [onetimeVisitPrice]="style().onetimeVisitPrice"></app-payment>
             <button mat-icon-button (click)="removeVisitor()">
                 <mat-icon>clear</mat-icon>
             </button>

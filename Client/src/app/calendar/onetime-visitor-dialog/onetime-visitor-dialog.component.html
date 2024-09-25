@@ -5,7 +5,9 @@
         </div>
         <div class="visitors-list">
             @for(visitor of onetimeVisitors; track visitor){
-                <app-onetime-visitor [visitor]="visitor">asdasd</app-onetime-visitor>
+                <app-onetime-visitor 
+                    [visitor]="visitor"
+                    [style]="styleSignal()">asdasd</app-onetime-visitor>
             }
         </div>
     </div>

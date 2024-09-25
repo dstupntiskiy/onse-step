@@ -9,14 +9,15 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { Client } from '../../shared/models/client-model';
 import { AddClientComponent } from '../../shared/components/add-client/add-client.component';
-import { MatIconModule } from '@angular/material/icon';
 import { OnetimeVisitorModel } from '../../shared/models/onetime-visitor-model';
-import { BehaviorSubject, Observable, finalize } from 'rxjs';
+import { BehaviorSubject, finalize } from 'rxjs';
 import { SpinnerService } from '../../shared/spinner/spinner.service';
 import { DynamicComponent } from '../../shared/dialog/base-dialog/base-dialog.component';
+import { StyleModel } from '../../shared/models/style-model';
 
 export interface OnetimeVisitorDialogData{
   eventId: string
+  style: StyleModel
 }
 
 @Component({
@@ -41,6 +42,7 @@ export class OnetimeVisitorDialogComponent implements DynamicComponent {
   spinnerService = inject(SpinnerService)
 
   data = input<OnetimeVisitorDialogData>()
+  styleSignal = signal<StyleModel>(new StyleModel())
 
   onetimeVisitors: OnetimeVisitorModel[] = []
   clearControlSubject = new BehaviorSubject<boolean>(false)
@@ -75,6 +77,9 @@ export class OnetimeVisitorDialogComponent implements DynamicComponent {
   }
 
   ngOnInit(){
+    const style = this.data()?.style ?? new StyleModel() 
+    this.styleSignal.set(style)
+
     if (this.data() && this.data()?.eventId)
       this.eventService.getOneTimeVisitors(this.data()?.eventId as string).subscribe((result: OnetimeVisitorModel[]) =>{
         this.onetimeVisitors = result

@@ -334,7 +334,7 @@ export class EventDialogComponent {
   }
 
   onOnetimeVisitorsClick(){
-    this.dialogService.showDialog(OnetimeVisitorDialogComponent, { eventId: this.initialEvent?.id })
+    this.dialogService.showDialog(OnetimeVisitorDialogComponent, { eventId: this.initialEvent?.id, style: this.initialEvent?.group?.style })
       .afterClosed().subscribe(() => this.refetchOnetimeVisitorsCount())
   }
 

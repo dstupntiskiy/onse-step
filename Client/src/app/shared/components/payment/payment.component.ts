@@ -24,6 +24,7 @@ export class PaymentComponent {
   payment = model<PaymentModel>()
   memberId = input.required<string>()
   paymentType = input.required<PaymentType>()
+  onetimeVisitPrice = input<number | undefined>(undefined)
 
   dialogService = inject(DialogService)
   constructor()
@@ -45,7 +46,8 @@ export class PaymentComponent {
   onAddPaymentClick(){
     this.dialogService.showDialog(PaymentDialogComponent, {
       memberId: this.memberId(), 
-      paymentType: this.paymentType()
+      paymentType: this.paymentType(),
+      onetimeVisitPrice: this.onetimeVisitPrice()
     })
     .afterClosed().subscribe((result: PaymentModel) =>{
       if(result){

@@ -17,6 +17,7 @@ export interface PaymentDialogData{
   memberId: string, 
   title: string,
   paymentType: PaymentType
+  onetimeVisitPrice: number
 }
 @Component({
   selector: 'app-payment-dialog',
@@ -50,7 +51,7 @@ export class PaymentDialogComponent implements DynamicComponent {
   ){}
 
   ngOnInit(){
-    this.amount.setValue(this.data().payment?.amount)
+    this.amount.setValue(this.data().payment?.amount ?? this.data().onetimeVisitPrice)
     this.comment.setValue(this.data().payment?.comment as string)
   }
 

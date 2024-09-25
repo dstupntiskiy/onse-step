@@ -11,7 +11,11 @@
             </mat-form-field>
         </div>
         <div class="actions">
-            <button mat-button mat-raised-button color="warn" (click)="onDelete()">Удалить</button>
+            <div class="left-buttons">
+                @if(this.data()?.payment?.id){
+                    <button mat-button mat-raised-button color="warn" (click)="onDelete()">Удалить</button>
+                }
+            </div>
             <div class="right-buttons">
                 <button mat-button (click)="onClose()">Закрыть</button>
                 <button mat-raised-button color="accent" (click)="onSave()">Сохранить</button>

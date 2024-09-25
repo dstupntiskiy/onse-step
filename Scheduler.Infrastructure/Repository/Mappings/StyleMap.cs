@@ -9,5 +9,6 @@ public class StyleMap : AuditableEntityMap<Style>
         Map(x => x.Name).Column("`Name`");
         Map(x => x.BasePrice).Column("`BasePrice`");
         Map(x => x.SecondaryPrice).Column("`SecondaryPrice`");
+        Map(x => x.OnetimeVisitPrice).Column("`OnetimeVisitPrice`");
     }
 }
