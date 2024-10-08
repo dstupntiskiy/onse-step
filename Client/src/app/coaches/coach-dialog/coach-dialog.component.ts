@@ -46,7 +46,6 @@ export class CoachDialogComponent implements DynamicComponent {
   constructor(private dialogRef: MatDialogRef<CoachDialogComponent>,
   ){
     effect(() => {
-      this.title.set(this.data()?.coach.name as string)
       this.styleService.getAllStyles()
         .subscribe((styles: StyleModel[]) =>{
           this.styles = styles
