@@ -7,6 +7,7 @@ import { MembershipsReportComponent } from './memberships-report/memberships-rep
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { OneTimeVisitsReportComponent } from './one-time-visits-report/one-time-visits-report.component';
+import { CoachReportComponent } from "./coach-report/coach-report.component";
 
 export interface DateRange{
   startDate: Date,
@@ -24,8 +25,9 @@ export interface DateRange{
     MatTabsModule,
     MembershipsReportComponent,
     MatButtonModule,
-    OneTimeVisitsReportComponent
-  ],
+    OneTimeVisitsReportComponent,
+    CoachReportComponent
+],
   templateUrl: './reports.component.html',
   styleUrl: './reports.component.scss'
 })

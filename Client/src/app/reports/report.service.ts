@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { SnackBarService } from '../services/snack-bar.service';
 import { Observable } from 'rxjs';
 import { MembershipStyle, OnetimeVisitStyle } from './models/style-report.model';
+import { CoachWithEventsDto } from './models/coaches-report.model';
 
 @Injectable({
   providedIn: 'root'
@@ -37,4 +38,15 @@ export class ReportService extends BaseHttpService {
     
     return this.get<OnetimeVisitStyle[]>("GetOnetimeVisitsStylesByPeriod", options)
    }
+
+   getAllCoachesEventsWithParticipantsByPeriod(startDate: Date, endDate: Date) : Observable<CoachWithEventsDto[]>{
+    var options: IAngularHttpRequestOptions = {
+      params: {
+        startDate: startDate.toISOString(),
+        endDate: endDate.toISOString()
+      }
+    }
+
+    return this.get<CoachWithEventsDto[]>("GetAllCoachesEventsWithParticipantsByPeriod", options)
+  }
 }

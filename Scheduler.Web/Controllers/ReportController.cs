@@ -2,6 +2,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Scheduler.Application.Common.Dtos.Reports;
+using Scheduler.Application.Queries.Reports.GetAllCoachesEventsWithParticipants;
 using Scheduler.Application.Queries.Reports.GetMembershipsStylesByPeriod;
 using Scheduler.Application.Queries.Reports.GetOnetimeVisitsStylesByPeriodQuery;
 
@@ -22,5 +23,12 @@ public class ReportController(IMediator mediator) : ControllerBase
     public async Task<List<OnetimeVisitStyle>> GetOnetimeVisitsStylesByPeriod(DateTime startDate, DateTime endDate)
     {
         return await mediator.Send(new GetOnetimeVisitsStylesByPeriodQuery(startDate, endDate));
+    }
+
+    [HttpGet("GetAllCoachesEventsWithParticipantsByPeriod")]
+    public async Task<List<CoachWithEventsDto>> GetAllCoachesEventsWithParticipantsByPeriod(DateTime startDate,
+        DateTime endDate)
+    {
+        return await mediator.Send(new GetAllCoachesEventsWithParticipantsByPeriodQuery(startDate, endDate));
     }
 }
