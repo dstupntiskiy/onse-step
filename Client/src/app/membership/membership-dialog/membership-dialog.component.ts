@@ -27,7 +27,7 @@ export interface MembershipDialogData{
 }
 
 export type VisitsCount = 8 | 4
-export type DiscountType = 0 | 20 | 100
+export type DiscountType = 0 | 20 | 100 | 500 // Remove 500
 
 @Component({
   selector: 'app-membership-dialog',
@@ -65,6 +65,9 @@ export class MembershipDialogComponent implements DynamicComponent  {
     }
     if(this.styleSignal()){
       var price = this.visitsCount() == 8 ? <number>this.styleSignal()?.basePrice : <number>this.styleSignal()?.secondaryPrice
+      if (this.discountSignal() == 500){
+        return price - 500 // remove 500
+      }
       return price * (100 - this.discountSignal()) / 100
     }
     return 0
@@ -144,13 +147,14 @@ export class MembershipDialogComponent implements DynamicComponent  {
 
   onSave(){
     if(this.isValid()){
+      var comment = !this.comment.value && this.discountSignal() == 500 ? 'Скидка 500 RSD' : this.comment.value // remove 500 
       var membership: IMembershipSave = {
         id: this.data().id as string,
         amount: this.price(),
         clientId: this.client.id,
         startDate: this.startDate.value as string,
         endDate: this.endDate.value as string,
-        comment: this.comment.value as string,
+        comment: comment as string,
         unlimited: this.unlimited.value as boolean,
         styleId: this.unlimited.value ? undefined : this.style.value?.id as string,
         visitsNumber: this.unlimited.value ? undefined : this.visitsCount(),
