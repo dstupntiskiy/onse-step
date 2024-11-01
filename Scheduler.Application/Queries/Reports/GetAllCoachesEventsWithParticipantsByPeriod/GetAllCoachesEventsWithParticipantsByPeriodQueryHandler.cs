@@ -24,7 +24,8 @@ public class GetAllCoachesEventsWithParticipantsByPeriodQueryHandler(
     {
         var events = eventRepository.Query().Where(x => x.StartDateTime >= request.StartDate
                                                         && x.StartDateTime <= request.EndDate
-                                                        && x.EventType == EventType.Event).ToList();
+                                                        && x.EventType == EventType.Event
+                                                        && x.Group != null).ToList();
         var eventWithCounts = events.Select(x =>
         {
             var substitution = eventCoachSubstitutionRepository.Query().SingleOrDefault(y => y.Event.Id == x.Id);
@@ -36,8 +37,9 @@ public class GetAllCoachesEventsWithParticipantsByPeriodQueryHandler(
                 OnetimeVisits = oneTimeVisitRepository.Query().Count(y => y.Event.Id == x.Id),
                 MembershipsCount = membershipRepository.Query().Count(y => y.StartDate <= x.StartDateTime &&
                                                                            y.EndDate >= x.StartDateTime
-                                                                           && (y.Style != null && x.Group != null)
-                                                                           && y.Style.Id == x.Group.Style.Id
+                                                                           && (y.Style != null
+                                                                           && x.Group != null
+                                                                           && y.Style.Id == x.Group.Style.Id)
                 ),
                 ParticipantsCount = eventParticipanceRepository.Query().Count(y => y.Event.Id == x.Id)
 
