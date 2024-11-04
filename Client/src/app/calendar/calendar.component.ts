@@ -109,7 +109,7 @@ export class CalendarComponent {
     this.calendarApi.refetchEvents()
     this.resizeService.resize$.subscribe((result: boolean) =>{
       result ?
-        this.calendarApi.changeView('dayGrid')
+        this.calendarApi.changeView('timeGrid')
         : this.calendarApi.changeView('timeGridWeek')
     })
   }
