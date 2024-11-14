@@ -1,7 +1,9 @@
 
 <div class="report-content">
     <app-spinner [isLoading$$]="isLoading"></app-spinner>
-    @for(item of coachesWithEvents(); track item){
-        <app-coach-report-item [item] = "item"></app-coach-report-item>
-    }
+    <div class="coach-items-list">
+        @for(item of coachesWithEvents(); track item){
+            <app-coach-report-item [item] = "item"></app-coach-report-item>
+        }
+    </div>
 </div>

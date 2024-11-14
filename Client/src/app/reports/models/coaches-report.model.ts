@@ -3,6 +3,8 @@ import { CoachModel } from "../../shared/models/coach-model";
 export class CoachWithEventsDto{
     coach: CoachModel
     eventWithParticipants: EventWithParticipantsDto[]
+    totalEvents: number
+    totalSalary: number
 }
 
 export class EventWithParticipantsDto{

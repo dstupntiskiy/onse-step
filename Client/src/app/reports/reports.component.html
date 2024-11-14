@@ -22,13 +22,6 @@
         </div>
         <div class="tabs">
             <mat-tab-group animationDuration="0">
-                <mat-tab label="Тренеры">
-                    <ng-template matTabContent>
-                        <app-coach-report
-                            [dateRange]="{ startDate: periodStartDate(), endDate: periodEndDate() }">
-                        </app-coach-report>
-                    </ng-template>
-                </mat-tab>
                 <mat-tab label="Абонементы">
                     <ng-template matTabContent>
                         <app-memberships-report
@@ -43,7 +36,13 @@
                         </app-one-time-visits-report>
                     </ng-template>
                 </mat-tab>
-                
+                <mat-tab label="Тренеры">
+                    <ng-template matTabContent>
+                        <app-coach-report
+                            [dateRange]="{ startDate: periodStartDate(), endDate: periodEndDate() }">
+                        </app-coach-report>
+                    </ng-template>
+                </mat-tab>
             </mat-tab-group>
         </div>
     </div>

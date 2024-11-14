@@ -40,11 +40,15 @@ public class GetAllCoachesEventsWithParticipantsByPeriodQueryHandler(
                 coachesWithEvents.Add(new CoachWithEventsDto
                 {
                     Coach = mapper.Map<CoachDto>(x.Key),
-                    EventWithParticipants = Task.WhenAll(x.Select(async ev => await GetEventWithParticipants(ev))).Result.ToList()
+                    EventWithParticipants = Task.WhenAll(
+                            x.Select(async ev => await GetEventWithParticipants(ev)))
+                        .Result
+                        .OrderBy(ev => ev.Name)
+                        .ThenBy(ev => ev.StartDate).ToList()
                 });
             });
         
-        return coachesWithEvents;
+        return coachesWithEvents.OrderBy(x => x.Coach?.Name ?? string.Empty).ToList();
     }
 
     private async Task<int> GetMembersCount(Guid groupId, Guid styleId, DateTime date)

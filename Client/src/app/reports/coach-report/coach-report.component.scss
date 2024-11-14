@@ -2,3 +2,9 @@
     margin-top: 16px;
     min-height: 300px;
 }
+
+.coach-items-list{
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+}
