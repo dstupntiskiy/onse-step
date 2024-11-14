@@ -17,8 +17,4 @@ export class SpinnerComponent {
   isLoading$$ = input.required<boolean>()
   size = input<'small' | 'large'>('large')
   diameter = computed<number>(() => this.size() == 'small' ? 30 : 50)
-  
-  ngOnInit(){
-      
-  }
 }

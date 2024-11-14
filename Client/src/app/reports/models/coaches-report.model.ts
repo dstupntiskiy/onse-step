@@ -8,7 +8,10 @@ export class CoachWithEventsDto{
 export class EventWithParticipantsDto{
     name: string
     startDate: Date
-    membershipsCount: number
+    membersCount: number
     onetimeVisitsCount: number
     participantsCount: number
+    baseSalary: number
+    bonusSalary: number
+    totalSalary: number
 }

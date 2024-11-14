@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Scheduler.Infrastructure.Data;
@@ -11,9 +12,11 @@ using Scheduler.Infrastructure.Data;
 namespace Scheduler.Infrastructure.Migrations
 {
     [DbContext(typeof(OneStepContext))]
-    partial class OneStepContextModelSnapshot : ModelSnapshot
+    [Migration("20241113133953_base-salary")]
+    partial class basesalary
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -376,9 +379,6 @@ namespace Scheduler.Infrastructure.Migrations
                         .HasColumnType("numeric");
 
                     b.Property<decimal>("BaseSalary")
-                        .HasColumnType("numeric");
-
-                    b.Property<decimal>("BonusSalary")
                         .HasColumnType("numeric");
 
                     b.Property<DateTime?>("CreateDate")

@@ -16,6 +16,14 @@
             <mat-label>Разовое посещение, RSD</mat-label>
             <input matInput type="number" [formControl]="onetimeVisitPrice">
         </mat-form-field>
+        <mat-form-field>
+            <mat-label>Базовая оплата тренера, RSD</mat-label>
+            <input matInput type="number" [formControl]="baseSalary">
+        </mat-form-field>
+        <mat-form-field>
+            <mat-label>Бонусная оплата тренера, RSD</mat-label>
+            <input matInput type="number" [formControl]="bonusSalary">
+        </mat-form-field>
     </div>
     <div class="actions">
         <button mat-button (click)="onClose()">Закрыть</button>

@@ -19,7 +19,8 @@ public class GetMembershipsByClientQueryHandler(IMapper mapper,
         var membershipsWithDetails = Task.WhenAll(memberships.Select(async x =>
         {
             var membershipWithDetails = mapper.Map<MembershipWithDetailsDto>(x);
-            membershipWithDetails.Visited = await membershipService.GetVisitedCount(request.ClientId, x.Id) ;
+            (membershipWithDetails.Visited, membershipWithDetails.Expired) = await membershipService.GetVisitedCount(request.ClientId, x.Id, null) ;
+            
             return membershipWithDetails;
         })).Result.ToList();
         return membershipsWithDetails;

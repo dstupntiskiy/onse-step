@@ -4,6 +4,8 @@ export class StyleModel{
     basePrice: number
     secondaryPrice: number
     onetimeVisitPrice: number
+    baseSalary: number
+    bonusSalary: number
 
     constructor(){}
 }

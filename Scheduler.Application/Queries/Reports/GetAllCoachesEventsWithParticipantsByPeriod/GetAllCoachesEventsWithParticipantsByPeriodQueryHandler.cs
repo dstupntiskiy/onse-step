@@ -16,9 +16,12 @@ public class GetAllCoachesEventsWithParticipantsByPeriodQueryHandler(
     IRepository<OneTimeVisit> oneTimeVisitRepository,
     IRepository<EventCoachSubstitution> eventCoachSubstitutionRepository,
     IRepository<EventParticipance> eventParticipanceRepository,
+    IRepository<GroupMemberLink> groupMemberRepository,
+    IRepository<Style> styleRepository,
     IMapper mapper)
     : IRequestHandler<GetAllCoachesEventsWithParticipantsByPeriodQuery, List<CoachWithEventsDto>>
 {
+    public const int MIN_MEMBERS = 5;
     public async Task<List<CoachWithEventsDto>> Handle(GetAllCoachesEventsWithParticipantsByPeriodQuery request,
         CancellationToken cancellationToken)
     {
@@ -26,44 +29,68 @@ public class GetAllCoachesEventsWithParticipantsByPeriodQueryHandler(
                                                         && x.StartDateTime <= request.EndDate
                                                         && x.EventType == EventType.Event
                                                         && x.Group != null).ToList();
-        var eventWithCounts = events.Select(x =>
-        {
-            var substitution = eventCoachSubstitutionRepository.Query().SingleOrDefault(y => y.Event.Id == x.Id);
-            var ev = x;
-            ev.Coach = substitution != null ? substitution.Coach : ev.Coach;
-            return new
-            {
-                Event = ev,
-                OnetimeVisits = oneTimeVisitRepository.Query().Count(y => y.Event.Id == x.Id),
-                MembershipsCount = membershipRepository.Query().Count(y => y.StartDate <= x.StartDateTime &&
-                                                                           y.EndDate >= x.StartDateTime
-                                                                           && (y.Style != null
-                                                                           && x.Group != null
-                                                                           && y.Style.Id == x.Group.Style.Id)
-                ),
-                ParticipantsCount = eventParticipanceRepository.Query().Count(y => y.Event.Id == x.Id)
 
-            };
-        }).ToList();
-
+        events = UpdateCoachFromSub(events);
         
         var coachesWithEvents = new List<CoachWithEventsDto>();
-        eventWithCounts.GroupBy(x => x.Event.Coach).ToList().ForEach(x =>
-        {
-            coachesWithEvents.Add(new CoachWithEventsDto
+
+        events.GroupBy(x => x.Coach).ToList()
+            .ForEach(x =>
             {
-                Coach = mapper.Map<CoachDto>(x.Key),
-                EventWithParticipants = x.Select(y => new EventWithParticipantsDto
+                coachesWithEvents.Add(new CoachWithEventsDto
                 {
-                    Name = y.Event.Name,
-                    StartDate = y.Event.StartDateTime,
-                    OnetimeVisitsCount = y.OnetimeVisits,
-                    MembershipsCount = y.MembershipsCount,
-                    ParticipantsCount = y.ParticipantsCount
-                }).ToList()
+                    Coach = mapper.Map<CoachDto>(x.Key),
+                    EventWithParticipants = Task.WhenAll(x.Select(async ev => await GetEventWithParticipants(ev))).Result.ToList()
+                });
             });
-        });
         
         return coachesWithEvents;
+    }
+
+    private async Task<int> GetMembersCount(Guid groupId, Guid styleId, DateTime date)
+    {
+        var count = 0;
+        var members = groupMemberRepository.Query().Where(x => x.Group.Id == groupId).ToList().Select(x => x.Client);
+        foreach (var member in members)
+        {
+            var membership = await membershipService.GetActualMembership(member.Id, styleId, date);
+            if (membership != null && !membership.Expired)
+            {
+                count += 1;
+            }
+        }
+
+        return count;
+    }
+
+    private List<Event> UpdateCoachFromSub(List<Event> events)
+    {
+        return events.Select(x =>
+        {
+            var substitution = eventCoachSubstitutionRepository.Query().SingleOrDefault(y => y.Event.Id == x.Id);
+            x.Coach = substitution != null ? substitution.Coach : x.Coach;
+            return x;
+        }).ToList();
+    }
+    
+    private async Task<EventWithParticipantsDto> GetEventWithParticipants(Event ev)
+    {
+        var onetimeVisitsCount = oneTimeVisitRepository.Query().Count(y => y.Event.Id == ev.Id);
+        var membersCount = await GetMembersCount(ev.Group.Id, ev.Group.Style.Id, ev.StartDateTime);
+        var additionalMembers = onetimeVisitsCount + membersCount - MIN_MEMBERS;
+
+        var baseSalary = (int)ev.Group.Style.BaseSalary;
+        var bonusSalary = additionalMembers > 0 ? additionalMembers * (int)ev.Group.Style.BonusSalary : 0;
+        return new EventWithParticipantsDto
+        {
+            Name = ev.Name,
+            StartDate = ev.StartDateTime,
+            OnetimeVisitsCount = onetimeVisitsCount,
+            ParticipantsCount = eventParticipanceRepository.Query().Count(y => y.Event.Id == ev.Id),
+            MembersCount = membersCount,
+            BaseSalary = (int)ev.Group.Style.BaseSalary,
+            BonusSalary = bonusSalary,
+            TotalSalary = baseSalary + bonusSalary
+        };
     }
 }

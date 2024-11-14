@@ -8,13 +8,13 @@
 
     <ItemGroup>
       <PackageReference Include="FluentConfiguration" Version="1.0.0" />
-      <PackageReference Include="FluentNHibernate" Version="3.3.0" />
+      <PackageReference Include="FluentNHibernate" Version="3.4.0" />
       <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.4" />
       <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.4">
         <PrivateAssets>all</PrivateAssets>
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>
-      <PackageReference Include="NHibernate" Version="5.5.1" />
+      <PackageReference Include="NHibernate" Version="5.5.2" />
       <PackageReference Include="NHibernate.Linq" Version="1.0.0" />
       <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.2" />
     </ItemGroup>

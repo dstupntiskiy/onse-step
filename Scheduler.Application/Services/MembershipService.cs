@@ -20,8 +20,7 @@ public class MembershipService(IMapper mapper,
         }
 
         var membershipWithDetails = mapper.Map<MembershipWithDetailsDto>(membership);
-        membershipWithDetails.Visited = await GetVisitedCount(clientId, membershipWithDetails.Id);
-        membershipWithDetails.Expired = membershipWithDetails.EndDate < DateTime.Now;
+        (membershipWithDetails.Visited, membershipWithDetails.Expired) = await GetVisitedCount(clientId, membershipWithDetails.Id, date);
 
         return membershipWithDetails;
     }
@@ -39,10 +38,17 @@ public class MembershipService(IMapper mapper,
         }
         
         var membershipWithDetails = mapper.Map<MembershipWithDetailsDto>(membership);
-        membershipWithDetails.Visited = await GetVisitedCount(clientId, membershipWithDetails.Id);
-        membershipWithDetails.Expired = membershipWithDetails.EndDate < DateTime.Now;
+        (membershipWithDetails.Visited, membershipWithDetails.Expired) = await GetVisitedCount(clientId, membershipWithDetails.Id, null);
 
         return membershipWithDetails;
+    }
+
+    public async Task<List<MembershipDto>> GetMembershipsOnDate(Guid styleId, DateTime date)
+    {
+        return mapper.Map<List<MembershipDto>>(membershipRepository.Query().Where(x =>
+            x.Style != null && x.Style.Id == styleId
+            && x.StartDate <= date && x.EndDate >= date))
+            .ToList();
     }
 
     private List<Membership> GetMemberships(Guid clientId, Guid? styleId)
@@ -54,10 +60,11 @@ public class MembershipService(IMapper mapper,
             .ToList();
     }
 
-    public async Task<int> GetVisitedCount(Guid clientId, Guid membershipId)
+    public async Task<(int, bool)> GetVisitedCount(Guid clientId, Guid membershipId, DateTime? date)
     {
         var membership = await membershipRepository.GetById(membershipId);
-        var participance = participanceRepository.Query().Where(x => x.Client.Id == clientId).ToList();
+        var participance = participanceRepository.Query().Where(x => x.Client.Id == clientId
+            && (date == null || x.Event.StartDateTime <= date)).ToList();
         var count = participance.Count(x => x.Client.Id == clientId
                                             && x.Event.Group != null
                                             && membership.StartDate < x.Event.StartDateTime
@@ -65,6 +72,10 @@ public class MembershipService(IMapper mapper,
                                             && (membership.Unlimited || (membership.Style != null &&
                                                                          membership.Style.Id ==
                                                                          x.Event.Group.Style.Id)));
-        return count;
+
+        var isExpired = count > membership.VisitsNumber
+                        || (count == membership.VisitsNumber &&
+                            participance.Exists(x => x.Event.StartDateTime == date));
+        return (count, isExpired);
     }
 }

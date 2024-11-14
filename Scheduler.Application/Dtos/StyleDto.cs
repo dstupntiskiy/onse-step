@@ -6,4 +6,7 @@ public class StyleDto : EntityDto
     public decimal BasePrice { get; set; }
     public decimal SecondaryPrice { get; set; }
     public decimal OnetimeVisitPrice { get; set; }
+    public decimal BaseSalary { get; set; }
+    
+    public decimal BonusSalary { get; set; }
 }

@@ -1,11 +1,17 @@
 .reports-content{
-    margin: 16px;
+    padding: 16px;
+    height: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    position: relative;
     
     .content{
         display: flex;
         flex-direction: column;
         gap: 12px;
-
+        flex-grow: 1;
+        
         .controls{
             display: flex;
             flex-direction: column;
@@ -15,6 +21,10 @@
                 display: flex;
                 gap: 6px;
             }
+        }
+
+        .tabs{
+            flex-grow: 1;
         }
     }
 }

@@ -20,6 +20,8 @@ public class CommandHandler(IRepository<Style> styleRepository) : IRequestHandle
         style.BasePrice = request.BasePrice;
         style.SecondaryPrice = request.SecondaryPrice;
         style.OnetimeVisitPrice = request.OnetimeVisitPrice;
+        style.BaseSalary = request.BaseSalary;
+        style.BonusSalary = request.BonusSalary;
 
         return await styleRepository.AddAsync(style);
     }

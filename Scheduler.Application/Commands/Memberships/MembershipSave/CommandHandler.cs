@@ -50,7 +50,7 @@ public class CommandHandler(IMapper mapper,
         membership.Discount = request.Discount;
 
         var savedMembership = mapper.Map<MembershipWithDetailsDto>(await membershipRepository.AddAsync(membership));
-        savedMembership.Visited = await membershipService.GetVisitedCount(request.ClientId, savedMembership.Id);
+        (savedMembership.Visited, savedMembership.Expired) = await membershipService.GetVisitedCount(request.ClientId, savedMembership.Id, null);
 
         return savedMembership;
     }
