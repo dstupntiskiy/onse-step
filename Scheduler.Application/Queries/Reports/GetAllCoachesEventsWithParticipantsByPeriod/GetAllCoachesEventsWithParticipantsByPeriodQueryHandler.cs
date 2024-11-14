@@ -12,12 +12,10 @@ namespace Scheduler.Application.Queries.Reports.GetAllCoachesEventsWithParticipa
 public class GetAllCoachesEventsWithParticipantsByPeriodQueryHandler(
     IRepository<Event> eventRepository,
     MembershipService membershipService,
-    IRepository<Membership> membershipRepository,
     IRepository<OneTimeVisit> oneTimeVisitRepository,
     IRepository<EventCoachSubstitution> eventCoachSubstitutionRepository,
     IRepository<EventParticipance> eventParticipanceRepository,
     IRepository<GroupMemberLink> groupMemberRepository,
-    IRepository<Style> styleRepository,
     IMapper mapper)
     : IRequestHandler<GetAllCoachesEventsWithParticipantsByPeriodQuery, List<CoachWithEventsDto>>
 {
