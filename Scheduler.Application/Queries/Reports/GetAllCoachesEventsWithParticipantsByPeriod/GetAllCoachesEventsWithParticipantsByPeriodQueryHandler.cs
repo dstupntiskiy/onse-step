@@ -49,14 +49,17 @@ public class GetAllCoachesEventsWithParticipantsByPeriodQueryHandler(
         return coachesWithEvents.OrderBy(x => x.Coach?.Name ?? string.Empty).ToList();
     }
 
-    private async Task<int> GetMembersCount(Guid groupId, Guid styleId, DateTime date)
+    private async Task<int> GetMembersCount(Event ev)
     {
         var count = 0;
-        var members = groupMemberRepository.Query().Where(x => x.Group.Id == groupId).ToList().Select(x => x.Client);
+        var members = groupMemberRepository.Query().Where(x => ev.Group != null && x.Group.Id == ev.Group.Id).ToList().Select(x => x.Client);
         foreach (var member in members)
         {
-            var membership = await membershipService.GetActualMembership(member.Id, styleId, date);
-            if (membership != null && !membership.Expired)
+            var membership = await membershipService.GetActualMembership(member.Id, ev.Group!.Style.Id, ev.StartDateTime);
+
+            
+            if (membership is { Expired: false }
+                && (membership is not { Unlimited: true } || eventParticipanceRepository.Query().Any(x => x.Client.Id == membership.Client.Id && x.Event.Id == ev.Id)))
             {
                 count += 1;
             }
@@ -78,7 +81,7 @@ public class GetAllCoachesEventsWithParticipantsByPeriodQueryHandler(
     private async Task<EventWithParticipantsDto> GetEventWithParticipants(Event ev)
     {
         var onetimeVisitsCount = oneTimeVisitRepository.Query().Count(y => y.Event.Id == ev.Id);
-        var membersCount = await GetMembersCount(ev.Group.Id, ev.Group.Style.Id, ev.StartDateTime);
+        var membersCount = await GetMembersCount(ev);
         var additionalMembers = onetimeVisitsCount + membersCount - MIN_MEMBERS;
 
         var baseSalary = (int)ev.Group.Style.BaseSalary;

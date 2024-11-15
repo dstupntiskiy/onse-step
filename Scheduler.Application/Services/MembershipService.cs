@@ -12,7 +12,10 @@ public class MembershipService(IMapper mapper,
     public async Task<MembershipWithDetailsDto?> GetActualMembership(Guid clientId, Guid? styleId, DateTime? date)
     {
         var membership = GetMemberships(clientId, styleId)
-            .FirstOrDefault(x => date == null || (date > x.StartDate && date < x.EndDate.AddDays(1).AddSeconds(-1)));
+            .FirstOrDefault(x => 
+                date == null || 
+                (date > x.StartDate 
+                    && date < x.EndDate.AddDays(1).AddSeconds(-1)));
         
         if (membership is null)
         {
