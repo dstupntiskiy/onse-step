@@ -2,7 +2,6 @@
 
 .groups-content{
     margin: 16px;
-    @include tr-hover;
     display: flex;
     flex-direction: column;
     gap: 16px;
@@ -21,11 +20,9 @@
         flex-shrink: 0;
     }
 
-    .red{
-        color: red;
-    }
-
-    .align-text-right{
-        text-align: right;
+    .groups-list{
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
     }
 }

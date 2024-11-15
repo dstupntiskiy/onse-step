@@ -1,0 +1,9 @@
+<div class="group-card" (click)="onClick()">
+    <app-card [header]="group().name">
+        <div class="group-card-content">
+            <h3>{{ group().style.name }} <mat-checkbox [checked]="group().active" disabled="true"></mat-checkbox></h3>
+            <p>Участники/Абонементы: <span [class.color-red]="group().membersCount - group().membershipsCount > 0"> 
+                {{group().membershipsCount}}/{{group().membersCount}}</span></p>
+        </div>
+    </app-card>
+</div>

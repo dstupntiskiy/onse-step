@@ -6,29 +6,9 @@
         <button mat-stroked-button (click)="handleAddGroupClick()">Добавить</button>
         <mat-slide-toggle [formControl]="onlyActive">Только активные</mat-slide-toggle>
     </div>
-    <table mat-table [dataSource]="dataSource">
-        <ng-container matColumnDef="active">
-            <th mat-header-cell *matHeaderCellDef>
-                <mat-checkbox [checked]="true" disabled="true"></mat-checkbox>
-            </th>
-            <td mat-cell *matCellDef="let element">
-                <mat-checkbox [checked]="element.active" disabled="true"></mat-checkbox></td>
-        </ng-container>
-        <ng-container matColumnDef="name">
-            <th mat-header-cell *matHeaderCellDef>Название</th>
-            <td mat-cell *matCellDef="let element">{{element.name}}</td>
-        </ng-container>
-        <ng-container matColumnDef="style">
-            <th mat-header-cell *matHeaderCellDef>Направление</th>
-            <td mat-cell *matCellDef="let element">{{element.style?.name}}</td>
-        </ng-container>
-        <ng-container matColumnDef="counts">
-            <th mat-header-cell *matHeaderCellDef>Абонементы/Участники</th>
-            <td mat-cell *matCellDef="let element" class="align-text-right" [class.red]="element.membershipsCount < element.membersCount">{{element.membershipsCount}}/{{element.membersCount}}</td>
-        </ng-container>
-
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"
-            (click)="handleRowClick(row)"></tr>
-    </table>
+    <div class="groups-list">
+        @for(group of groups(); track group){
+            <app-group-card [group]="group"></app-group-card>
+        }
+    </div>
 </div>

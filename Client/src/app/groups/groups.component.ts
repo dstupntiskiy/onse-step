@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import {MatTableModule} from '@angular/material/table';
 import {MatButtonModule} from '@angular/material/button';
 import { GroupService } from './group.service';
@@ -12,16 +12,17 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { SpinnerComponent } from '../shared/spinner/spinner.component';
 import { SpinnerService } from '../shared/spinner/spinner.service';
 import { finalize } from 'rxjs';
+import { GroupCardComponent } from './group-card/group-card.component';
 
 @Component({
   selector: 'app-groups',
   standalone: true,
   imports: [
-    MatTableModule,
     MatButtonModule,
     MatCheckboxModule,
     MatSlideToggleModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    GroupCardComponent
   ],
   templateUrl: './groups.component.html',
   styleUrl: './groups.component.scss',
@@ -36,12 +37,12 @@ import { finalize } from 'rxjs';
   GroupService]
 })
 export class GroupsComponent {
-  displayedColumns: string[] = ['active','name', 'style', 'counts']
-  dataSource: GroupWithDetails[]
   dialogService = inject(DialogService)
   spinnerService = inject(SpinnerService)
 
   onlyActive = new FormControl<boolean>(true)
+
+  groups = signal<GroupWithDetails[]>([])
 
   constructor(
     private groupService: GroupService,
@@ -50,14 +51,9 @@ export class GroupsComponent {
   handleAddGroupClick(){
     this.dialogService.showDialog(GroupDialogComponent)
     .afterClosed()
-    .subscribe((result : Group) => {
+    .subscribe((result : GroupWithDetails) => {
       if (result){
-        const newData = [...this.dataSource]
-        this.groupService.getGoupWithDetails(result.id)
-          .subscribe((groupDetails: GroupWithDetails) =>{
-            newData.unshift(groupDetails)
-            this.dataSource = newData;
-          })
+        this.groups().unshift(result)
       }
     });
   }
@@ -70,24 +66,6 @@ export class GroupsComponent {
     })
   }
 
-  handleRowClick(row: GroupWithDetails){
-    this.dialogService.showDialog(GroupDialogComponent, { id: row.id })
-      .afterClosed().subscribe((result: Group) =>{
-        if(result){
-          this.groupService.getGoupWithDetails(result.id)
-            .subscribe((groupWithDetails: GroupWithDetails) =>{
-              var index = this.dataSource.findIndex(x => x.id === result.id)
-            this.dataSource[index] = groupWithDetails;
-            this.dataSource = Object.assign([], this.dataSource);
-            })
-          }
-      })
-  }
-
-  toggleOnlyActive(){
-
-  }
-
   private refetchGroups(){
     this.spinnerService.loadingOn()
     this.groupService.getGoupsWithDetails(this.onlyActive.value as boolean)
@@ -95,7 +73,7 @@ export class GroupsComponent {
       finalize(() => this.spinnerService.loadingOff())
     )
     .subscribe( (groups) => {
-      this.dataSource = groups
+      this.groups.set(groups)
     });
   }
 
