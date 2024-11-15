@@ -10,6 +10,8 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { SpinnerComponent } from '../shared/spinner/spinner.component';
+import { SpinnerService } from '../shared/spinner/spinner.service';
+import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-groups',
@@ -37,6 +39,7 @@ export class GroupsComponent {
   displayedColumns: string[] = ['active','name', 'style', 'counts']
   dataSource: GroupWithDetails[]
   dialogService = inject(DialogService)
+  spinnerService = inject(SpinnerService)
 
   onlyActive = new FormControl<boolean>(true)
 
@@ -86,7 +89,12 @@ export class GroupsComponent {
   }
 
   private refetchGroups(){
-    this.groupService.getGoupsWithDetails(this.onlyActive.value as boolean).subscribe( (groups) => {
+    this.spinnerService.loadingOn()
+    this.groupService.getGoupsWithDetails(this.onlyActive.value as boolean)
+    .pipe(
+      finalize(() => this.spinnerService.loadingOff())
+    )
+    .subscribe( (groups) => {
       this.dataSource = groups
     });
   }

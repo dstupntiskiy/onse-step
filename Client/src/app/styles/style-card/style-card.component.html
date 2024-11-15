@@ -1,17 +1,18 @@
 <div class="style-card" (click)="onClick()">
-    <div class="style-card-header">
-        <h2>{{ style().name }}</h2>
-    </div>
-    <div class="prices">
-        <div class="prices-header">
-            <h3>Базовая стоимость</h3>
-            <p>4 посещения</p>
-            <p>Разовое</p>
+    <app-card [header]=" style().name">
+        <div class="prices">
+            <div class="price">
+                <h3>Базовая стоимость</h3>
+                <h3>{{ style().basePrice}} RSD</h3>
+            </div>
+            <div class="price">
+                <span>4 посещения</span>
+                <span>{{ style().secondaryPrice}} RSD</span>
+            </div>
+            <div class="price">
+                <span>Разовое</span>
+                <span>{{ style().onetimeVisitPrice }} RSD</span>
+            </div>
         </div>
-        <div class="prices-values">
-            <p class="main-price">{{ style().basePrice}} RSD</p>
-            <p>{{ style().secondaryPrice}} RSD</p>
-            <p>{{ style().onetimeVisitPrice }} RSD</p>
-        </div>
-    </div>
+    </app-card>
 </div>

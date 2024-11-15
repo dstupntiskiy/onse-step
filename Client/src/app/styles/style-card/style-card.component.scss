@@ -1,47 +1,20 @@
 .style-card{
-    background-color: #779b9b;
-    border-radius: 12px;
     max-width: 300px;
 
     cursor: pointer;
 
-    .style-card-header{
-        padding: 8px;
-        h2{
-            margin: 0;
-        }
-    }
-
     .prices{
         display: flex;
+        flex-direction: column;
         gap: 12px;
-        justify-content: space-between;
-        align-items: center;
 
-        background-color: #444b4e;
-        color: #DFDFDC;
-        border-radius: 12px;
-
-        padding: 8px;
-        .prices-header{
+        .price{
             display: flex;
-            flex-direction: column;
-            align-items: flex-start;
+            justify-content: space-between;
 
             h3{
-                margin-bottom: 12px;
-
                 font-weight: 500;
-            }
-        }
-
-        .prices-values{
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-
-            .main-price{
-                font-weight: 500;
+                margin-bottom: 0;
             }
         }
     }

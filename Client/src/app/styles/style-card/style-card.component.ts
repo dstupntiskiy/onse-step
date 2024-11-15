@@ -2,11 +2,12 @@ import { Component, inject, input, model, OutputRefSubscription } from '@angular
 import { StyleModel } from '../../shared/models/style-model';
 import { DialogService } from '../../services/dialog.service';
 import { StyleDialogComponent } from '../style-dialog/style-dialog.component';
+import { CardComponent } from '../../shared/components/card/card.component';
 
 @Component({
   selector: 'app-style-card',
   standalone: true,
-  imports: [],
+  imports: [CardComponent],
   templateUrl: './style-card.component.html',
   styleUrl: './style-card.component.scss'
 })

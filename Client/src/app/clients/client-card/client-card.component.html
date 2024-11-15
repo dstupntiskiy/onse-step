@@ -1,10 +1,14 @@
 <div class="client-card" (click)="clientClicked.emit(client())">
-    <h2>{{ client().name}}</h2>
-    @if(client().socialMediaLink){
-        <span>{{ client().socialMediaLink }}</span>
-    }
-    @if(client().phone){
-        <span>{{ client().phone }}</span>
-    }
-    <span>{{ client().createDate| date: 'dd.MM.YY'}}</span>
+    <app-card [header]="client().name">
+        <div class="client-card-content">
+            @if(client().socialMediaLink){
+                <span>{{ client().socialMediaLink }}</span>
+            }
+            @if(client().phone){
+                <span>{{ client().phone }}</span>
+            }
+            <span>{{ client().createDate| date: 'dd.MM.YY'}}</span>
+        </div>
+    </app-card>
 </div>
+
