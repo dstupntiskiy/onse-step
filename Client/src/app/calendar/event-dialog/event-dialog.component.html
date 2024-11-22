@@ -41,7 +41,7 @@
                 </mat-button-toggle>
         </mat-button-toggle-group>
     </div>
-    @if(eventType.value == eventTypes.Event)
+    @if(eventType.value == eventTypes.Event || eventType.value == eventTypes.Rent)
     {
         <div class="fields-row">
             <mat-checkbox [formControl]="isRecur" (change)="changeIsRecur($event.checked)">

@@ -22,7 +22,7 @@ public class GetMembershipsByClientQueryHandler(IMapper mapper,
             (membershipWithDetails.Visited, membershipWithDetails.Expired) = await membershipService.GetVisitedCount(request.ClientId, x.Id, null) ;
             
             return membershipWithDetails;
-        })).Result.ToList();
+        })).Result.OrderByDescending(x => x.StartDate).ToList();
         return membershipsWithDetails;
     }
 }
