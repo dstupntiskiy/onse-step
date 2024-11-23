@@ -6,17 +6,12 @@
     .memberships{
         display: flex;
         flex-direction: column;
-        gap: 16px;
+        gap: 8px;
+    }
 
-        .memberships-header{
-            display: flex;
-            gap: 16px;
-            align-items: center;
+    .tab-content{
+        margin-top: 8px;
 
-            h3{
-                margin: 0;
-            }
-        }
     }
 
     .actions{

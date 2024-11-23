@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Client } from '../shared/models/client-model';
+import { Client, ClientOnetimeVisit } from '../shared/models/client-model';
 import { Observable, of } from 'rxjs';
 import { BaseHttpService, IAngularHttpRequestOptions } from '../services/base-http.service';
 import { HttpClient } from '@angular/common/http';
@@ -38,5 +38,9 @@ export class ClientService extends BaseHttpService{
 
   deleteClient(id: string): Observable<string>{
     return this.delete<string>('Delete/' + id)
+  }
+
+  getClientOnetimeVisits(id: string): Observable<ClientOnetimeVisit[]>{
+    return this.get<ClientOnetimeVisit[]>('GetClientOnetimeVisits/' + id)
   }
 }

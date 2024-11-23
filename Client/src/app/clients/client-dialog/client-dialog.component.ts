@@ -1,10 +1,10 @@
 import { Component, computed, effect, inject, input, output, OutputRefSubscription, signal, Signal, viewChildren } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
-import { Client } from '../../shared/models/client-model';
+import { Client, ClientOnetimeVisit } from '../../shared/models/client-model';
 import { SpinnerService } from '../../shared/spinner/spinner.service';
 import { ClientService } from '../client.service';
-import { BehaviorSubject, finalize, Observable } from 'rxjs';
+import { BehaviorSubject, finalize, Observable, of } from 'rxjs';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
@@ -16,6 +16,8 @@ import { MembershipService } from '../../membership/membership.service';
 import { MembershipComponent } from '../../membership/membership.component';
 import { SpinnerComponent } from '../../shared/spinner/spinner.component';
 import { ConfirmationDialogComponent } from '../../shared/dialog/confirmation-dialog/confirmation-dialog.component';
+import { MatTabsModule } from '@angular/material/tabs';
+import { AsyncPipe, DatePipe } from '@angular/common';
 
 export interface ClientDialogData{
   id: string
@@ -31,10 +33,12 @@ export interface ClientDialogData{
     FormsModule,
     ReactiveFormsModule,
     MembershipComponent,
-    SpinnerComponent
+    SpinnerComponent,
+    MatTabsModule,
+    AsyncPipe,
+    DatePipe
   ],
   providers:[
-    ClientService,
     SnackBarService
   ],
   templateUrl: './client-dialog.component.html',
@@ -58,13 +62,18 @@ export class ClientDialogComponent {
   dialogService = inject(DialogService)
   memberships: MembershipWithDetails[] = []
   membershipService = inject(MembershipService)
+  clientService = inject(ClientService)
 
   clientSave = output<Client>()
   clientDelete = output<string>()
+
+  onetimeVisits = computed(() => this.data()?.id != undefined 
+    ? this.clientService.getClientOnetimeVisits(this.data()?.id as string)
+    : of([]) )
+
   constructor(private formBuilder: FormBuilder,
     private dialogRef: MatDialogRef<ClientDialogComponent>,
     private spinnerService: SpinnerService,
-    private clientService: ClientService
   ){
     effect(() =>{
       if(this.data()?.id)

@@ -14,17 +14,28 @@
             <input matInput formControlName="socialMediaLink">
         </mat-form-field>
         @if(client()?.id){
-            <div class="memberships">
-                <div class="memberships-header">
-                    <h3>Абонементы</h3>
-                    <button mat-raised-button color="primary" (click)="onAddMembershipClick()">+</button>
-                </div>
-                <div class="memberships-list">
-                    @for(membership of memberships; track membership){
-                        <app-membership [membership]="membership" (delete)="onMembershipDelete($event)"></app-membership>
-                    }
-                </div>
-            </div>
+            <mat-tab-group>
+                <mat-tab label="Абонементы">
+                    <div class="memberships tab-content">
+                        <div class="memberships-header">
+                            <button mat-raised-button color="primary" (click)="onAddMembershipClick()">Добавить</button>
+                        </div>
+                        <div class="memberships-list">
+                            @for(membership of memberships; track membership){
+                                <app-membership [membership]="membership" (delete)="onMembershipDelete($event)"></app-membership>
+                            }
+                        </div>
+                    </div>
+                </mat-tab>
+                <mat-tab label="Разовые">
+                    <div class="onetme-visits tab-content">
+                        @for(onetimeVisit of onetimeVisits() | async; track onetimeVisit){
+                            <p>{{ onetimeVisit.date | date : "dd-MM-yy"}} {{ onetimeVisit.name }}</p>
+                        }
+                    </div>
+                </mat-tab>
+            </mat-tab-group>
+           
         }
         <div class="actions">
             <div class="left-actions">

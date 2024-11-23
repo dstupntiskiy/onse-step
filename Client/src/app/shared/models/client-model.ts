@@ -7,3 +7,8 @@ export class Client{
 
     constructor(){}
 }
+
+export class ClientOnetimeVisit{
+    date: Date
+    name: string
+}

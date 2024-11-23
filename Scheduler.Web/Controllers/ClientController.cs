@@ -32,6 +32,12 @@ public class ClientController(IMediator mediator) : ControllerBase
         return await mediator.Send(new GetClientsByQuery(query));
     }
 
+    [HttpGet("GetClientOnetimeVisits/{id:guid}")]
+    public async Task<List<OnetimeVisitSimpleDto>> GetClientOnetimeVisits(Guid id)
+    {
+        return await mediator.Send(new GetClientOnetimeVisitsQuery(id));
+    }
+
     [HttpPost]
     public async Task<ClientDto> Add(Command cmd)
     {
