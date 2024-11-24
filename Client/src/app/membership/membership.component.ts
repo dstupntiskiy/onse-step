@@ -5,13 +5,17 @@ import { DialogService } from '../services/dialog.service';
 import { MembershipDialogComponent } from './membership-dialog/membership-dialog.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { IComponent } from '../shared/i/i.component';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-membership',
   standalone: true,
   imports: [DatePipe,
     MatButtonModule,
-    MatIconModule
+    MatIconModule,
+    IComponent,
+    MatTooltipModule
   ],
   templateUrl: './membership.component.html',
   styleUrl: './membership.component.scss'
