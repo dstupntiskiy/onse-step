@@ -1,6 +1,6 @@
 <div class="membership">
     @if(membership()){
-        <button mat-raised-button class="membership-details" (click)="onEditClick()">
+        <button mat-raised-button [color]="membership()?.comment ? 'accent' : 'basic'" [matTooltip]="membership()?.comment ?? ''" class="membership-details" (click)="onEditClick()">
             <span>{{membership()?.amount}} RSD ({{membership()?.visited}}/{{visitsNumber}})</span>
         </button>
     }

@@ -1,17 +1,19 @@
 import { Component, effect, inject, input, model, OutputRefSubscription } from '@angular/core';
-import { MembershipModel, MembershipWithDetails } from '../../models/membership-model';
+import { MembershipWithDetails } from '../../models/membership-model';
 import { DialogService } from '../../../services/dialog.service';
 import { StyleModel } from '../../models/style-model';
 import { MembershipDialogComponent } from '../../../membership/membership-dialog/membership-dialog.component';
 import { Client } from '../../models/client-model';
 import { MatButtonModule } from '@angular/material/button';
 import { MembershipService } from '../../../membership/membership.service';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-membership-details',
   standalone: true,
   imports: [
-    MatButtonModule
+    MatButtonModule,
+    MatTooltipModule
   ],
   templateUrl: './membership-details.component.html',
   styleUrl: './membership-details.component.scss'
