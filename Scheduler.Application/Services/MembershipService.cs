@@ -76,9 +76,7 @@ public class MembershipService(IMapper mapper,
                                                                          membership.Style.Id ==
                                                                          x.Event.Group.Style.Id)));
 
-        var isExpired = count > membership.VisitsNumber
-                        || (count == membership.VisitsNumber &&
-                            participance.Exists(x => x.Event.StartDateTime == date));
+        var isExpired = count > membership.VisitsNumber;
         return (count, isExpired);
     }
 }

@@ -53,22 +53,23 @@ public class GetAllCoachesEventsWithParticipantsByPeriodQueryHandler(
     {
         var count = 0;
         var members = groupMemberRepository.Query().Where(x => ev.Group != null && x.Group.Id == ev.Group.Id).ToList().Select(x => x.Client);
+
+        var index = 0;
+        if (ev.Recurrence != null)
+        {
+            index = eventRepository.Query()
+                .Where(x => x.Recurrence != null && x.Recurrence.Id == ev.Recurrence.Id)
+                .OrderBy(x => x.StartDateTime).ToList().FindIndex(x => x.Id == ev.Id);
+        }
+
         foreach (var member in members)
         {
             var membership = await membershipService.GetActualMembership(member.Id, ev.Group!.Style.Id, ev.StartDateTime);
 
-            if (ev.Recurrence != null)
+            if (membership != null && index >= membership.VisitsNumber)
             {
-                var index = eventRepository.Query()
-                    .Where(x => x.Recurrence != null && x.Recurrence.Id == ev.Recurrence.Id)
-                    .OrderBy(x => x.StartDateTime).ToList().FindIndex(x => x.Id == ev.Id);
-
-                if (membership != null && index >= membership.VisitsNumber)
-                {
-                    continue;
-                }
+                continue;
             }
-
             
             if (membership is { Expired: false }
                 && (membership is not { Unlimited: true } || eventParticipanceRepository.Query().Any(x => x.Client.Id == membership.Client.Id && x.Event.Id == ev.Id)))

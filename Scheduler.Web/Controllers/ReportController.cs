@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Scheduler.Application.Common.Dtos.Reports;
 using Scheduler.Application.Queries.Reports.GetAllCoachesEventsWithParticipants;
+using Scheduler.Application.Queries.Reports.GetMembershipPaymentAmountByDate;
 using Scheduler.Application.Queries.Reports.GetMembershipsStylesByPeriod;
 using Scheduler.Application.Queries.Reports.GetOnetimeVisitsStylesByPeriodQuery;
 
@@ -30,5 +31,11 @@ public class ReportController(IMediator mediator) : ControllerBase
         DateTime endDate)
     {
         return await mediator.Send(new GetAllCoachesEventsWithParticipantsByPeriodQuery(startDate, endDate));
+    }
+
+    [HttpGet("GetPaymentsAmountByPeriod")]
+    public async Task<List<KeyValuePair<DateTime, decimal>>> GetPaymentsAmountByPeriod(DateTime startDate, DateTime endDate)
+    {
+        return await mediator.Send(new GetPaymentsAmountByPeriodQueryQuery(startDate, endDate));
     }
 }
