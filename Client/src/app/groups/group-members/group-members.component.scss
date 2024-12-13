@@ -18,6 +18,8 @@
     .member-list{
         max-height: 300px;
         overflow-y: scroll;
+        position: relative;
+        min-height: 50px;
 
         .member-row{
             margin-top: 6px;

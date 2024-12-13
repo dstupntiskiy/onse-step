@@ -1,11 +1,11 @@
-import { Component, effect, inject, input, signal } from '@angular/core';
+import { Component, computed, effect, inject, input, signal } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { Group } from '../../shared/models/group-model';
 import { GroupService, IGroupSave } from '../group.service';
-import { finalize, forkJoin, of } from 'rxjs';
+import { finalize, forkJoin, Observable, of } from 'rxjs';
 import { SnackBarService } from '../../services/snack-bar.service';
 import { SpinnerService } from '../../shared/spinner/spinner.service';
 import { GroupMembersComponent } from '../group-members/group-members.component';
@@ -38,7 +38,7 @@ export interface GroupDialogData{
     SpinnerComponent,
     MatDatepickerModule,
     MatNativeDateModule,
-    MatIconModule
+    MatIconModule,
   ],
   providers:[
     GroupService,
@@ -66,7 +66,6 @@ export class GroupDialogComponent implements DynamicComponent {
   groupService = inject(GroupService)
   spinnerService = inject(SpinnerService)
   styleService = inject(StyleService)
-
   constructor(private dialogRef: MatDialogRef<GroupDialogComponent>,
   ){
     effect(()=>{

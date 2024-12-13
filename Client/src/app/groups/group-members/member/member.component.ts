@@ -2,7 +2,6 @@ import { Component, effect, inject, input, output } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule} from '@angular/material/icon'
 import { GroupMember } from '../../../shared/models/group-members';
-import { DatePipe } from '@angular/common';
 import { DialogService } from '../../../services/dialog.service';
 import { MembershipDialogComponent, MembershipDialogData } from '../../../membership/membership-dialog/membership-dialog.component';
 import { MembershipWithDetails } from '../../../shared/models/membership-model';
@@ -18,7 +17,6 @@ import { MembershipDetailsComponent } from '../../../shared/components/membershi
   imports: [
     MatButtonModule, 
     MatIconModule,
-    DatePipe,
     ClientNameComponent,
     MembershipDetailsComponent
   ],
@@ -27,7 +25,7 @@ import { MembershipDetailsComponent } from '../../../shared/components/membershi
 })
 export class MemberComponent {
  member = input<GroupMember>(new GroupMember)
- removeMemberOutput = output<GroupMember>();
+ memberRemoved = output<GroupMember>();
  visitsNumber: string;
 
  dialogService = inject(DialogService)
@@ -42,7 +40,7 @@ export class MemberComponent {
  }
 
  removeMember(member: GroupMember){
-  this.removeMemberOutput.emit(member);
+  this.memberRemoved.emit(member);
  }
 
  onAddMembershipClick(){

@@ -1,11 +1,11 @@
-import { Component,  Input, OutputRefSubscription, Signal, effect, viewChildren } from '@angular/core';
+import { Component,  Input, OutputRefSubscription, Signal, computed, effect, inject, input, signal, viewChildren } from '@angular/core';
 import { Group } from '../../shared/models/group-model';
 import { MatInputModule } from '@angular/material/input';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import { GroupService } from '../group.service';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Client } from '../../shared/models/client-model';
-import { BehaviorSubject, finalize } from 'rxjs';
+import { BehaviorSubject, finalize, of } from 'rxjs';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS, MatFormFieldModule } from '@angular/material/form-field';
 import { AsyncPipe, CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
@@ -14,6 +14,8 @@ import { MemberComponent } from './member/member.component';
 import { MatIconModule } from '@angular/material/icon';
 import { GroupMember } from '../../shared/models/group-members';
 import { AddClientComponent } from '../../shared/components/add-client/add-client.component';
+import { toSignal } from '@angular/core/rxjs-interop/index'
+import { SpinnerComponent } from '../../shared/spinner/spinner.component';
 
 @Component({
   selector: 'app-group-members',
@@ -25,11 +27,11 @@ import { AddClientComponent } from '../../shared/components/add-client/add-clien
     MatButtonModule,
     FormsModule,
     ReactiveFormsModule,
-    AsyncPipe,
     CommonModule,
     MemberComponent,
     MatIconModule,
-    AddClientComponent
+    AddClientComponent,
+    SpinnerComponent
   ],
   providers:[
     GroupService,
@@ -44,55 +46,30 @@ import { AddClientComponent } from '../../shared/components/add-client/add-clien
   styleUrl: './group-members.component.scss'
 })
 export class GroupMembersComponent {
-  @Input() group: Group
-  public members: GroupMember[] = []; 
+  group = input.required<Group>()
   clearControlSubject = new BehaviorSubject<boolean>(false)
+  groupMembers$$ = signal<GroupMember[]>([])
+  
+  groupService = inject(GroupService)
+  spinnerService = inject(SpinnerService)
 
-  private subscriptions: OutputRefSubscription[] = []
-  
-  memberRefs: Signal<readonly MemberComponent[]> = viewChildren(MemberComponent)
-  
-  constructor(
-    private groupService: GroupService,
-    private spinnerService: SpinnerService
+  isLoading: boolean = false
+
+   constructor(
   ){
     effect(() =>{
-      this.subscriptions.forEach(s => s.unsubscribe());
-      this.subscriptions = [];
-
-      this.memberRefs().forEach(memberRef =>{
-        const sub = memberRef.removeMemberOutput.subscribe((groupMember: GroupMember) =>{
-          this.spinnerService.loadingOn();
-          this.groupService.removeClientFromGroup(groupMember)
-          .pipe(
-            finalize(() => this.spinnerService.loadingOff())
-          )
-          .subscribe(() =>{
-            var member = this.members.find(x=> x.id === groupMember.id) as GroupMember
-            var index = this.members.indexOf(member)
-            this.members.splice(index, 1)
-          })
-        })
-        this.subscriptions.push(sub)
-      })
+      this.isLoading = true
+      this.groupService.getGroupMembers(this.group().id)
+        .pipe(
+          finalize(() => this.isLoading = false)
+        )
+        .subscribe((result) => this.groupMembers$$.set(result))
     })
-  }
-
-  ngOnInit(){
-    this.groupService.getGroupMembers(this.group.id).subscribe((result: GroupMember[]) =>{
-      if(result){
-        result.forEach(element => {
-          this.members.push(element);
-        });
-        this.members = Object.assign([], this.members);
-      }
-    })
-    
   }
 
   public onClientSelect(client: Client){
     this.spinnerService.loadingOn();
-      this.groupService.addClientToGroup(this.group.id, client.id)
+      this.groupService.addClientToGroup(this.group().id, client.id)
         .pipe(
           finalize(() => {
             this.spinnerService.loadingOff()
@@ -100,7 +77,19 @@ export class GroupMembersComponent {
           this.spinnerService.loadingOff()
         }))
         .subscribe((result: GroupMember) =>{
-          this.members.unshift(result);
+          this.groupMembers$$().unshift(result);
         })
+  }
+
+  onMemberRemove(member: GroupMember){
+    this.isLoading = true
+    this.groupService.removeClientFromGroup(member)
+      .pipe(finalize(() => this.isLoading = false))
+      .subscribe(() => {
+        const index = this.groupMembers$$().indexOf(member, 0)
+        if(index > -1){
+          this.groupMembers$$().splice(index, 1)
+        }
+      })
   }
 }
