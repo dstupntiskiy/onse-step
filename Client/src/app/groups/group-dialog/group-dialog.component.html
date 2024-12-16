@@ -41,9 +41,9 @@
         <div class="field-row">
                 <mat-slide-toggle [formControl]="active">Активность</mat-slide-toggle>
         </div>
-        @if(group){
+        @if(group()){
             <h3>Состав группы</h3>
-            <app-group-members [group]="group"></app-group-members>
+            <app-group-members [group]="group()!"></app-group-members>
         }
         <div class="actions">
             <button mat-button (click)="onCloseClick()">Закрыть</button>

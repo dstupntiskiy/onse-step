@@ -48,7 +48,6 @@ export interface GroupDialogData{
   styleUrl: './group-dialog.component.scss'
 })
 export class GroupDialogComponent implements DynamicComponent {
-  title = signal<string>('Группа')
   isLoading : boolean = false
 
   name = new FormControl<string>('', [Validators.required])
@@ -57,7 +56,8 @@ export class GroupDialogComponent implements DynamicComponent {
   startDate = new FormControl<string | null>(null, [Validators.required]);
   endDate = new FormControl<string | null>(null)
 
-  group: Group
+  group = signal<Group | undefined>(undefined)
+  title = computed<string>(() => { return this.group()?.name ?? 'Группа' })
 
   public isNew: boolean = false;
   styles: StyleModel[] = []
@@ -81,9 +81,7 @@ export class GroupDialogComponent implements DynamicComponent {
         .subscribe(result =>{
           this.styles = result.styles
           if(result.group){
-            this.title.set(result.group.name)
-
-            this.group = result.group
+            this.group.set(result.group)
             this.name?.setValue(result.group.name);
             this.active?.setValue(result.group.active);
             this.startDate.setValue(result.group.startDate.toString())
@@ -105,9 +103,6 @@ export class GroupDialogComponent implements DynamicComponent {
           }
         })
     })
-  }
-
-  ngOnInit(){
   }
 
   onCloseClick(){
