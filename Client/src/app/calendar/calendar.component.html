@@ -1,16 +1,18 @@
-<div class="calendar-content">
-  <full-calendar #calendar
-    [options]="calendarOptions"
-    [events]="events">
-    <ng-template #eventContent let-arg>
-      <app-event
-      [title]="arg.event.title"
-      [start]="arg.event.start"
-      [end]="arg.event.end"
-      [borderColor]="arg.event.extendedProps['color'] ?? 'teal'"
-      [groupName]="arg.event.extendedProps['groupName']"
-      [coachName]="arg.event.extendedProps['coachName']"
-      [eventType]="arg.event.extendedProps['eventType']"></app-event>
-    </ng-template>
-  </full-calendar>
-</div>
+<app-page>
+  <div class="calendar-content">
+    <full-calendar #calendar
+      [options]="calendarOptions"
+      [events]="events">
+      <ng-template #eventContent let-arg>
+        <app-event
+        [title]="arg.event.title"
+        [start]="arg.event.start"
+        [end]="arg.event.end"
+        [borderColor]="arg.event.extendedProps['color'] ?? 'teal'"
+        [groupName]="arg.event.extendedProps['groupName']"
+        [coachName]="arg.event.extendedProps['coachName']"
+        [eventType]="arg.event.extendedProps['eventType']"></app-event>
+      </ng-template>
+    </full-calendar>
+  </div>
+</app-page>

@@ -1,11 +1,13 @@
-<div class="styles-content">
-    <div class="header">
-        <h1>Направления</h1>
+<app-page>
+    <div class="styles-content">
+        <div class="header">
+            <h1>Направления</h1>
+        </div>
+        <button mat-stroked-button (click)="handleAddStyleClick()">Добавить</button>
+        <div class="styles-list">
+            @for(style of styles(); track style){
+                <app-style-card [style]="style"></app-style-card>
+            }
+        </div>
     </div>
-    <button mat-stroked-button (click)="handleAddStyleClick()">Добавить</button>
-    <div class="styles-list">
-        @for(style of styles(); track style){
-            <app-style-card [style]="style"></app-style-card>
-        }
-    </div>
-</div>
+</app-page>

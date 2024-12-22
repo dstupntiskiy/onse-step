@@ -1,22 +1,26 @@
-<div class="clients-content">
-    <div class="header">
-        <h1>Клиенты</h1>
-    </div>
-    <div class="header-actions">
-        <button mat-stroked-button (click)="handleAddClientClick()">Добавить</button>
-        <mat-form-field>
-            <mat-label>Поиск</mat-label>
-            <input matInput [formControl]="nameFilter">
-            @if(nameFilter.value){
-                <button matSuffix mat-icon-button (click)="nameFilter.setValue('')">
-                    <mat-icon>close</mat-icon>
-                </button>
+<app-page [scroll]="false">
+    <div class="clients-content">
+        <div class="header">
+            <h1>Клиенты</h1>
+        </div>
+        <div class="header-actions">
+            <button mat-stroked-button (click)="handleAddClientClick()">Добавить</button>
+            <mat-form-field>
+                <mat-label>Поиск</mat-label>
+                <input matInput [formControl]="nameFilter">
+                @if(nameFilter.value){
+                    <button matSuffix mat-icon-button (click)="nameFilter.setValue('')">
+                        <mat-icon>close</mat-icon>
+                    </button>
+                }
+            </mat-form-field>
+        </div>
+        <div class="infinite-scroll" appScrollNearEnd (nearEnd)="loadOnScroll()">
+            @for(client of clients; track client){
+                <app-client-card 
+                    [client]="client"
+                    (clientClicked)="handleClientCardClick($event)"></app-client-card>
             }
-        </mat-form-field>
+        </div>
     </div>
-    @for(client of clients; track client){
-        <app-client-card 
-            [client]="client"
-            (clientClicked)="handleClientCardClick($event)"></app-client-card>
-    }
-</div>
+</app-page>

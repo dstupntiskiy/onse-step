@@ -1,10 +1,11 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { Client, ClientOnetimeVisit } from '../shared/models/client-model';
-import { Observable, of } from 'rxjs';
+import { finalize, Observable, of, tap } from 'rxjs';
 import { BaseHttpService, IAngularHttpRequestOptions } from '../services/base-http.service';
 import { HttpClient } from '@angular/common/http';
 import { SnackBarService } from '../services/snack-bar.service';
 
+const TAKE = 20
 
 @Injectable({
   providedIn: 'root'
@@ -12,14 +13,13 @@ import { SnackBarService } from '../services/snack-bar.service';
 export class ClientService extends BaseHttpService{
 
   protected route: string = 'Client';
+  
+  isLoading = signal(false)
+  skip = signal(0)
 
   constructor(http: HttpClient, snackbarService: SnackBarService) {
     super(http, snackbarService)
    }
-
-  getClients():Observable<Client[]>{
-    return this.get<Client[]>('GetAll')
-  }
 
   getClientsByQuery(query: string):Observable<Client[]>{
     var options: IAngularHttpRequestOptions = {
@@ -42,5 +42,30 @@ export class ClientService extends BaseHttpService{
 
   getClientOnetimeVisits(id: string): Observable<ClientOnetimeVisit[]>{
     return this.get<ClientOnetimeVisit[]>('GetClientOnetimeVisits/' + id)
+  }
+
+  loadMoreClients(): Observable<Client[]>{
+    if(this.isLoading()){
+      return of([])
+    }
+    this.isLoading.set(true)
+    var options: IAngularHttpRequestOptions = {
+      params: { 
+        take: TAKE.toString(),
+        skip: this.skip().toString()
+      }
+    }
+    return this.get<Client[]>('GetAll', options)
+            .pipe(
+              tap(() =>{
+                this.skip.set(this.skip() + TAKE)
+              }),
+              finalize(() => this.isLoading.set(false))
+            )
+    
+  }
+
+  reset(){
+    this.skip.set(0)
   }
 }

@@ -1,9 +1,8 @@
 import { Component, inject, OutputRefSubscription, ViewChild } from '@angular/core';
 import { Client } from '../shared/models/client-model';
 import { ClientService } from './client.service';
-import { MatTable, MatTableModule } from '@angular/material/table';
+import { MatTable } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
-import { DatePipe } from '@angular/common';
 import { DialogService } from '../services/dialog.service';
 import { ClientDialogComponent } from './client-dialog/client-dialog.component';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
@@ -12,17 +11,20 @@ import { SpinnerService } from '../shared/spinner/spinner.service';
 import { debounceTime, finalize } from 'rxjs';
 import { MatIconModule } from '@angular/material/icon';
 import { ClientCardComponent } from './client-card/client-card.component';
+import { ScrollNearEndDirective } from '../directives/scroll-near-end.directive';
+import { PageComponent } from '../shared/components/page/page.component';
 
 @Component({
   selector: 'app-clients',
   standalone: true,
   imports: [
     MatButtonModule,
-    DatePipe,
     ReactiveFormsModule,
     MatInputModule,
     MatIconModule,
-    ClientCardComponent
+    ClientCardComponent,
+    ScrollNearEndDirective,
+    PageComponent
   ],
   providers:[
     
@@ -32,7 +34,7 @@ import { ClientCardComponent } from './client-card/client-card.component';
   styleUrl: './clients.component.scss'
 })
 export class ClientsComponent {
-  public clients: Client[]
+  public clients: Client[] = []
   dialogService = inject(DialogService)
   clientService = inject(ClientService)
   spinnerService = inject(SpinnerService)
@@ -45,15 +47,17 @@ export class ClientsComponent {
   constructor(){}
 
   ngOnInit(){
-    this.refetchClients()
+    this.loadClients()
 
     this.nameFilter.valueChanges
       .pipe(
         debounceTime(this.debounceTime)
       )
       .subscribe((value) =>{
+        this.clientService.reset()
         if(value){
           this.spinnerService.loadingOn()
+          this.clients = []
           this.clientService.getClientsByQuery(value)
             .pipe(
               finalize(() => this.spinnerService.loadingOff())
@@ -63,19 +67,19 @@ export class ClientsComponent {
             })
         }
         else{
-          this.refetchClients()
+          this.loadClients()
         }
       })
   }
 
-  private refetchClients(){
+  private loadClients(){
     this.spinnerService.loadingOn()
-    this.clientService.getClients()
+    this.clientService.loadMoreClients()
       .pipe(
         finalize(() => this.spinnerService.loadingOff())
       )
       .subscribe((result: Client[]) =>{
-        this.clients = result
+        this.clients = [...this.clients, ...result]
     })
   }
 
@@ -106,6 +110,12 @@ export class ClientsComponent {
       subs.forEach(x => x.unsubscribe())
     })
   })
+  }
+
+  loadOnScroll(){
+    if(!this.nameFilter.value){
+      this.loadClients()
+    }
   }
 
   private addclient(client: Client){

@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
-import { CalendarComponent } from './calendar/calendar.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { SpinnerComponent } from './shared/spinner/spinner.component';
 import { UserService } from './shared/services/user.service';
@@ -14,7 +13,6 @@ import { SpinnerService } from './shared/spinner/spinner.service';
   imports: [
     RouterOutlet,
     CommonModule,
-    CalendarComponent,
     SidebarComponent,
     SpinnerComponent],
   providers:[

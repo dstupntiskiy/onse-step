@@ -3,16 +3,18 @@ import { CoachService } from './coach.service';
 import { CoachModel } from '../shared/models/coach-model';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { DialogService } from '../services/dialog.service';
 import { CoachDialogComponent } from './coach-dialog/coach-dialog.component';
+import { PageComponent } from '../shared/components/page/page.component';
 
 @Component({
   selector: 'app-coaches',
   standalone: true,
   imports: [
     MatTableModule,
-    MatButtonModule],
+    MatButtonModule,
+    PageComponent
+  ],
   providers:[
     CoachService
   ],

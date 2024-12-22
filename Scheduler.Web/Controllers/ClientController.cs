@@ -15,9 +15,9 @@ namespace Scheduler.Controllers;
 public class ClientController(IMediator mediator) : ControllerBase
 {
     [HttpGet("GetAll")]
-    public async Task<List<ClientDto>> GetAll()
+    public async Task<List<ClientDto>> GetAll(int take, int skip)
     {
-        return await mediator.Send(new GetAllClientsQuery());
+        return await mediator.Send(new GetAllClientsQuery(take, skip));
     }
 
     [HttpGet("GetById/{id:guid}")]

@@ -5,13 +5,15 @@ import { DialogService } from '../services/dialog.service';
 import { MatButtonModule } from '@angular/material/button';
 import { StyleDialogComponent } from './style-dialog/style-dialog.component';
 import { StyleCardComponent } from './style-card/style-card.component';
+import { PageComponent } from '../shared/components/page/page.component';
 
 @Component({
   selector: 'app-style',
   standalone: true,
   imports: [
     StyleCardComponent,
-    MatButtonModule
+    MatButtonModule,
+    PageComponent
   ],
   templateUrl: './styles.component.html',
   styleUrl: './styles.component.scss'

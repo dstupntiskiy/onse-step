@@ -1,14 +1,16 @@
-<div class="groups-content">
-    <div class="header">
-        <h1>Группы</h1>
+<app-page>
+    <div class="groups-content">
+        <div class="header">
+            <h1>Группы</h1>
+        </div>
+        <div class="header-actions">
+            <button mat-stroked-button (click)="handleAddGroupClick()">Добавить</button>
+            <mat-slide-toggle [formControl]="onlyActive">Только активные</mat-slide-toggle>
+        </div>
+        <div class="groups-list">
+            @for(group of groups(); track group){
+                <app-group-card [group]="group"></app-group-card>
+            }
+        </div>
     </div>
-    <div class="header-actions">
-        <button mat-stroked-button (click)="handleAddGroupClick()">Добавить</button>
-        <mat-slide-toggle [formControl]="onlyActive">Только активные</mat-slide-toggle>
-    </div>
-    <div class="groups-list">
-        @for(group of groups(); track group){
-            <app-group-card [group]="group"></app-group-card>
-        }
-    </div>
-</div>
+</app-page>

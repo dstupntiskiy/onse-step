@@ -11,16 +11,20 @@ import { EventDialogComponent } from './event-dialog/event-dialog.component';
 import { SnackBarService } from '../services/snack-bar.service';
 import { EventService } from './event/event.service';
 import { SpinnerService } from '../shared/spinner/spinner.service';
-import { finalize, map, Subscription } from 'rxjs';
+import { finalize, map } from 'rxjs';
 import { ResizeService } from '../shared/services/resize.service';
 import { DialogService } from '../services/dialog.service';
 import { EventModel } from './event/event.model';
+import { PageComponent } from '../shared/components/page/page.component';
 
 @Component({
   selector: 'app-calendar',
   standalone: true,
-    imports: [FullCalendarModule,
-      EventComponent, MatDialogModule
+    imports: [
+      FullCalendarModule,
+      EventComponent, 
+      MatDialogModule,
+      PageComponent
     ],
   templateUrl: './calendar.component.html',
   styleUrl: './calendar.component.scss'
