@@ -53,6 +53,8 @@ export class GroupsComponent {
     .afterClosed()
     .subscribe((result : GroupWithDetails) => {
       if (result){
+        result.membersCount = result.membersCount ?? 0
+        result.membershipsCount = result.membershipsCount ?? 0
         this.groups().unshift(result)
       }
     });

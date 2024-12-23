@@ -45,15 +45,7 @@ public class MembershipService(IMapper mapper,
 
         return membershipWithDetails;
     }
-
-    public async Task<List<MembershipDto>> GetMembershipsOnDate(Guid styleId, DateTime date)
-    {
-        return mapper.Map<List<MembershipDto>>(membershipRepository.Query().Where(x =>
-            x.Style != null && x.Style.Id == styleId
-            && x.StartDate <= date && x.EndDate >= date))
-            .ToList();
-    }
-
+    
     private List<Membership> GetMemberships(Guid clientId, Guid? styleId)
     {
         return membershipRepository.Query()
