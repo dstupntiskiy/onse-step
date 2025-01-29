@@ -7,7 +7,6 @@ import { RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { IsMobileService } from '../services/is-mobile.service';
 import { UserService } from '../shared/services/user.service';
-import { subscribe } from 'diagnostics_channel';
 import { MatButtonModule } from '@angular/material/button';
 
 export interface navItem{
