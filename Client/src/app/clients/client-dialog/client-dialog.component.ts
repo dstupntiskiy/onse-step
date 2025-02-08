@@ -140,7 +140,7 @@ export class ClientDialogComponent {
     submit(){
       if (this.form.valid){
         const client: Client = {
-          id: this.data()?.id as string,
+          id: this.client()?.id as string,
           name: this.name?.value,
           phone: this.phone?.value,
           socialMediaLink: this.socialMediaLink?.value
