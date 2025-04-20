@@ -1,4 +1,4 @@
-import { Component, effect, inject, input, output, signal } from '@angular/core';
+import { Component, computed, effect, inject, input, output, signal } from '@angular/core';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog'
 import { MatButtonModule } from '@angular/material/button'
 import { MatInputModule } from '@angular/material/input'
@@ -6,7 +6,7 @@ import { MatSelectModule } from '@angular/material/select'
 import { MatCheckboxModule } from '@angular/material/checkbox'
 import { MatDatepickerModule} from '@angular/material/datepicker'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { addHours, getFormattedTime, getHalfHourIntervals, setTimeFromStringToDate } from '../../shared/helpers/time-helper';
+import { addHours, getFormattedTime, getHalfHourIntervalFromDate, getHalfHourIntervals, setTimeFromStringToDate } from '../../shared/helpers/time-helper';
 import { Group } from '../../shared/models/group-model';
 import { GroupService } from '../../groups/group.service';
 import { AsyncPipe, CommonModule, DatePipe } from '@angular/common';
@@ -16,7 +16,7 @@ import {provideNativeDateAdapter} from '@angular/material/core';
 import { CustomDateAdapter } from '../../shared/adapters/custom.date.adapter';
 import { DeleteDialogComponent, DeleteResult } from '../delete-dialog/delete-dialog.component';
 import { SpinnerService } from '../../shared/spinner/spinner.service';
-import { finalize, forkJoin, Observable, of } from 'rxjs';
+import { finalize, Observable, of } from 'rxjs';
 import { EventRequestModel, EventService } from '../event/event.service';
 import { Guid } from 'typescript-guid';
 import {OverlayModule} from '@angular/cdk/overlay';
@@ -32,15 +32,16 @@ import { GroupDialogComponent } from '../../groups/group-dialog/group-dialog.com
 import { OnetimeVisitorDialogComponent } from '../onetime-visitor-dialog/onetime-visitor-dialog.component';
 import { EventCoachSubstitutionModel, EventModel, EventType } from '../event/event.model';
 import { RentClientComponent } from './rent-client/rent-client.component';
-import { OnetimeVisitorModel } from '../../shared/models/onetime-visitor-model';
 import { SpinnerComponent } from '../../shared/spinner/spinner.component';
 import { CoachSubstitutionComponent } from './coach-substitution/coach-substitution.component';
+import { DynamicComponent } from '../../shared/dialog/base-dialog/base-dialog.component';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { UpdateOnlyThisDialogComponent } from './update-only-this-dialog/update-only-this-dialog.component';
 
 export interface EventDialogData{
   id: string
   startDateTime: string
 }
-
 
 export interface Recurrence{
   exceptdates?: string[];
@@ -99,25 +100,29 @@ const WEEKDAYS: Weekday[] = [
     { provide: DateAdapter, useClass: CustomDateAdapter}
   ]
 })
-export class EventDialogComponent {
-  title = signal<string>('Новое событие')
+export class EventDialogComponent implements DynamicComponent {
+  data = input.required<EventDialogData>()
+  title = computed(() => this.initialEvent()?.name ?? 'Новое событие')
+
   coach : CoachModel | undefined
 
   timeOptions: string[] = getHalfHourIntervals();
   weekDaysList: Weekday[] = WEEKDAYS;
+
   groups: Group[];
   disableRecur: boolean;
   pickerStart: Date;
   pickerEnd: Date;
   color: string;
   isColorSelectorOpen: boolean = false;
+  coachId = signal<string | null>(null)
   
 
   groupParticipantsCount: number = 0;
   participantsCount: number = 0;
   onetimeVisitorsCount: number = 0;
 
-  initialEvent: EventModel | null;
+  initialEvent = signal<EventModel| null>(null);
 
   name = new FormControl<string>('', [Validators.required])
   start =  new FormControl<string>('', [Validators.required])
@@ -127,21 +132,34 @@ export class EventDialogComponent {
   isRecur = new FormControl<boolean>(false)
   recurStart = new FormControl<Date | null>(null)
   recurEnd = new FormControl<Date | null>(null)
-
   eventType = new FormControl<EventType>(EventType.Event)
+
+  nameSignal = toSignal(this.name.valueChanges)
+  startSignal = toSignal(this.start.valueChanges)
+  endSignal = toSignal(this.end.valueChanges)
+  groupSignal = toSignal(this.group.valueChanges)
+
+  dirty = computed(() => this.nameSignal() != this.initialEvent()?.name
+                        || this.startSignal() != getHalfHourIntervalFromDate(this.initialEvent()?.startDateTime as Date)
+                        || this.endSignal() != getHalfHourIntervalFromDate(this.initialEvent()?.endDateTime as Date)
+                        || this.groupSignal() != this.initialEvent()?.group
+                        || this.coach?.id != this.initialEvent()?.coach?.id)
+
   eventTypes = EventType
 
   substitution$ : Observable<EventCoachSubstitutionModel> 
   coaches$: Observable<CoachModel[]>
-  coachId: string
 
   dialogService = inject(DialogService)
   eventService = inject(EventService)
   coachService = inject(CoachService)
 
-  data = input.required<EventDialogData>()
-
-  date: Date;
+  date = computed(() =>  {
+    var dateValue = this.initialEvent()?.startDateTime ?? new Date(this.data().startDateTime)
+    var parsedDate = new Date(dateValue)
+    return  isNaN(parsedDate.getTime()) ? new Date() : parsedDate;
+  }
+  )
 
   eventSaved = output<EventModel[]>()
   eventDeleted = output<string[]>()
@@ -154,10 +172,14 @@ export class EventDialogComponent {
     private groupService: GroupService,
     private spinnerService: SpinnerService,
     private recurrenceService: RecurrenceService,
-  ){
+  ){}
 
-    effect(() => {
-      var request = this.data()?.id ? this.eventService.getEventById(this.data()?.id) : of(new EventModel)
+  public ngOnInit(){
+    this.loadData()
+  }
+
+  private loadData(){
+    var request = this.data()?.id ? this.eventService.getEventById(this.data()?.id) : of(new EventModel)
       request
         .pipe(
           finalize(() => {
@@ -166,29 +188,24 @@ export class EventDialogComponent {
         }))
         .subscribe(result => {
           if(result){
-            this.initialEvent = result
+            this.initialEvent.update(() => result)
         }})
-    })
   }
 
   init(){
-    if(this.initialEvent?.name){
-      this.title.set(this.initialEvent?.name as string)
-    }
-
-    this.coach = this.initialEvent?.coach
-    this.substitution$ = this.eventService.getCoachSubstitution(this.initialEvent?.id as string)
+    this.coach = this.initialEvent()?.coach
+    this.substitution$ = this.eventService.getCoachSubstitution(this.initialEvent()?.id as string)
     this.coaches$ = this.coachService.getCoaches()
 
-    this.color = this.initialEvent?.color ?? 'teal';
-    this.eventType.setValue(this.initialEvent?.eventType ?? EventType.Event)
-    if(this.initialEvent?.id){
+    this.color = this.initialEvent()?.color ?? 'teal';
+    this.eventType.setValue(this.initialEvent()?.eventType ?? EventType.Event)
+    if(this.initialEvent()?.id){
       this.eventType.disable()
     }    
 
     this.groupService.getGoups(true).subscribe((options) => {
       this.groups = options
-      const value = options.find(o => o.id == this.initialEvent?.group?.id)?.id
+      const value = options.find(o => o.id == this.initialEvent()?.group?.id)?.id
       this.group.setValue(value as string)
       if(this.group.value){
         this.group.disable()
@@ -196,30 +213,29 @@ export class EventDialogComponent {
       }
     })
 
-  if(this.initialEvent?.id)
+  if(this.initialEvent()?.id)
   {
     this.refetchOnetimeVisitorsCount()
     this.refetchParticipantsCount()
   }
 
-  this.date = this.initialEvent?.startDateTime ?? new Date(this.data().startDateTime)
 
-  this.name.setValue(this.initialEvent?.name as string)
-  this.start?.setValue(getFormattedTime(this.initialEvent?.startDateTime as Date ?? this.data().startDateTime))
-  this.initialEvent?.endDateTime
-    ? this.end?.setValue(getFormattedTime(this.initialEvent?.endDateTime))
-    :  this.end?.setValue(getFormattedTime(addHours(this.date, 1)))
+  this.name.setValue(this.initialEvent()?.name as string)
+  this.start?.setValue(getFormattedTime(this.initialEvent()?.startDateTime as Date ?? this.data().startDateTime))
+  this.initialEvent()?.endDateTime
+    ? this.end?.setValue(getFormattedTime(this.initialEvent()?.endDateTime as Date))
+    :  this.end?.setValue(getFormattedTime(addHours(this.date(), 1)))
 
-  this.isRecur?.setValue(!!(this.initialEvent?.recurrence?.startDate));
-  if (this.isRecur?.value || this.initialEvent?.id){
+  this.isRecur?.setValue(!!(this.initialEvent()?.recurrence?.startDate));
+  if (this.isRecur?.value || this.initialEvent()?.id){
     this.isRecur?.disable();
 
     this.recurStart?.disable();
     this.recurEnd?.disable();
     this.weekdays?.disable();
-    this.recurStart?.setValue(this.initialEvent?.recurrence?.startDate as Date)
-    this.recurEnd?.setValue(this.initialEvent?.recurrence?.endDate as Date)
-    this.weekdays?.setValue(this.initialEvent?.recurrence?.daysOfWeek?.map(x => WEEKDAYS.find(y => y.number == x)) as Weekday[])
+    this.recurStart?.setValue(this.initialEvent()?.recurrence?.startDate as Date)
+    this.recurEnd?.setValue(this.initialEvent()?.recurrence?.endDate as Date)
+    this.weekdays?.setValue(this.initialEvent()?.recurrence?.daysOfWeek?.map(x => WEEKDAYS.find(y => y.number == x)) as Weekday[])
     }
   }
 
@@ -227,26 +243,47 @@ export class EventDialogComponent {
     if (this.validateDates() && this.validateWeekdaysNotEmpty() && this.name.valid)
     {
       const data: EventRequestModel = {
-        id: this.initialEvent?.id as string,
-        startDateTime: setTimeFromStringToDate(this.date, this.start?.value as string),
-        endDateTime: setTimeFromStringToDate(this.date, this.end?.value as string),
-        name: this.name?.value as string,
+        id: this.initialEvent()?.id as string,
+        startDateTime: setTimeFromStringToDate(this.date(), this.start?.value as string),
+        endDateTime: setTimeFromStringToDate(this.date(), this.end?.value as string),
+        name: this.name.value as string,
         groupId: this.group.value as string,
         color: this.color,
-        coachId: this.coachId ?? this.initialEvent?.coach?.id,
+        coachId: this.coachId() ?? this.initialEvent()?.coach?.id,
         eventType: this.eventType.value as EventType,
-        isRecurrent: this.isRecur.value as boolean
+        isRecurrent: this.isRecur.value as boolean,
+        updateOnlyThis: true
       }
       if (this.isRecur?.value){
           data.daysOfWeek = (this.weekdays?.value as Weekday[]).map((x : Weekday) => x.number),
-          data.exceptDates = this.initialEvent?.recurrence?.exceptdates,
+          data.exceptDates = this.initialEvent()?.recurrence?.exceptdates,
           data.recurrencyStartDate = this.recurStart?.value as Date,
           data.recurrencyEndDate = this.recurEnd?.value as Date,
-          data.recurrenceId = this.initialEvent?.recurrence?.id ?? Guid.EMPTY.toString()
-        }
+          data.recurrenceId = this.initialEvent()?.recurrence?.id ?? Guid.EMPTY.toString()
+      }
+
+      if(this.isRecur?.value && this.dirty()){
+        var dialog = this.dialogService.showDialog(UpdateOnlyThisDialogComponent, {})
+        dialog.afterClosed().subscribe((result) => {
+          if(result == 'all'){
+            data.updateOnlyThis = false
+          }
+          if(!result){
+            return;
+          }
+          this.saveEvent(data)
+        })
+      }
+      else{
+        this.saveEvent(data)
+      }
       
-      this.spinnerService.loadingOn();
-      this.eventService.saveEvent(data)
+    }
+  }
+
+  private saveEvent(event: EventRequestModel){
+    this.spinnerService.loadingOn();
+      this.eventService.saveEvent(event)
         .pipe(
           finalize(() => this.spinnerService.loadingOff())
         )
@@ -254,7 +291,7 @@ export class EventDialogComponent {
           if(events){
             this.eventSaved.emit(events)
             if(events.length == 1){
-              this.initialEvent = events[0]
+              this.initialEvent.update(() => events[0])
               this.init()
             }
             else {
@@ -262,7 +299,6 @@ export class EventDialogComponent {
             }
           }
         })
-    }
   }
 
   changeIsRecur(isRecur: boolean){
@@ -278,18 +314,18 @@ export class EventDialogComponent {
       var deleteDialog = this.dialogService.showDialog(DeleteDialogComponent, 
         { 
           message: 'Удалить все повторения или экземпляр?', 
-          eventName: this.initialEvent?.name
+          eventName: this.initialEvent()?.name
         })
       deleteDialog.afterClosed().subscribe((result: DeleteResult) =>{
           if (result?.delete == 'all'){
-            var recurrToDelete = this.initialEvent?.recurrence?.id ?? '';
+            var recurrToDelete = this.initialEvent()?.recurrence?.id ?? '';
             this.recurrenceService.deleteRecurrence(recurrToDelete).subscribe((eventIdsToDelete: string[]) => {
               this.eventDeleted.emit(eventIdsToDelete)
               this.dialogRef.close()
             })
           }
           if (result?.delete == 'one'){
-            var event = this.initialEvent as EventModel
+            var event = this.initialEvent() as EventModel
             this.eventService.deleteEvent(event).subscribe(() => {
               this.eventDeleted.emit([event.id])
               this.dialogRef.close()
@@ -305,8 +341,8 @@ export class EventDialogComponent {
         })
       confDialogRef.afterClosed().subscribe((result) => {
         if (result == true){
-          this.eventService.deleteEvent(this.initialEvent as EventModel).subscribe(() =>{
-            this.eventDeleted.emit([this.initialEvent?.id as string])
+          this.eventService.deleteEvent(this.initialEvent() as EventModel).subscribe(() =>{
+            this.eventDeleted.emit([this.initialEvent()?.id as string])
             this.dialogRef.close()
           })
         }
@@ -316,8 +352,8 @@ export class EventDialogComponent {
 
   onParticipantsClick(){
     this.dialogService.showDialog(ParticipantsDialogComponent, {
-      eventId: this.initialEvent?.id,
-      eventDate: this.initialEvent?.startDateTime,
+      eventId: this.initialEvent()?.id,
+      eventDate: this.initialEvent()?.startDateTime,
       group: this.groups.find(x => x.id == this.group.value)}
     )
       .afterClosed().subscribe(() => this.refetchParticipantsCount())
@@ -329,17 +365,17 @@ export class EventDialogComponent {
   }
 
   onEditGroupClick(){
-    this.dialogService.showDialog(GroupDialogComponent, { id: this.initialEvent?.group?.id as string })
+    this.dialogService.showDialog(GroupDialogComponent, { id: this.initialEvent()?.group?.id as string })
       .afterClosed().subscribe(() => this.refetchGroupMembersCount())
   }
 
   onOnetimeVisitorsClick(){
-    this.dialogService.showDialog(OnetimeVisitorDialogComponent, { eventId: this.initialEvent?.id, style: this.initialEvent?.group?.style })
+    this.dialogService.showDialog(OnetimeVisitorDialogComponent, { eventId: this.initialEvent()?.id, style: this.initialEvent()?.group?.style })
       .afterClosed().subscribe(() => this.refetchOnetimeVisitorsCount())
   }
 
   onCoachChange(coachId: string){
-    this.coachId = coachId
+    this.coachId.update(() => coachId)
   }
 
   private validateDates(){
@@ -373,7 +409,7 @@ export class EventDialogComponent {
   }
 
   private refetchParticipantsCount(){
-    this.eventService.getParticipantsCount(this.initialEvent?.id as string).subscribe(
+    this.eventService.getParticipantsCount(this.initialEvent()?.id as string).subscribe(
       (result: number) =>{
         this.participantsCount = result;
       }
@@ -388,7 +424,7 @@ export class EventDialogComponent {
   }
 
   private refetchOnetimeVisitorsCount(){
-    this.eventService.getOnetimeVisitorsCount(this.initialEvent?.id as string)
+    this.eventService.getOnetimeVisitorsCount(this.initialEvent()?.id as string)
       .subscribe((result: number) =>{
         this.onetimeVisitorsCount = result;
       })

@@ -20,11 +20,11 @@ public class CommandHandler(
     public async Task<List<EventDto>> Handle(Command request, CancellationToken cancellationToken)
     {
         
-            List<EventDto> events = new List<EventDto>();
+            var events = new List<EventDto>();
             var group = mapper.Map<Group>(await groupRepository.GetById(request.GroupId ?? Guid.Empty));
             var coach = mapper.Map<Coach>(await coachRepository.GetById(request.CoachId ?? Guid.Empty));
             var recurrence = await recurrencyRepository.GetById(request.RecurrenceId ?? Guid.Empty);
-            if (!request.IsRecurrent)
+            if (!request.IsRecurrent || request.UpdateOnlyThis)
             {
                 var ev = await this.CreateEvent(request.Id, request.Name, request.StartDateTime, request.EndDateTime, request.Color,
                     recurrence, group: group, coach: coach, request.EventType);
@@ -78,7 +78,7 @@ public class CommandHandler(
         if (endDateTime < startDateTime)
             throw new ValidationException($"Конец события {endDateTime} меньше, чем начало {startDateTime}");
         
-        if (this.IsOverlap(startDateTime, endDateTime, id))
+        if (IsOverlap(startDateTime, endDateTime, id))
         {
             throw new ValidationException($"В период {startDateTime} - {endDateTime} уже существует другое событие");
         }

@@ -22,7 +22,8 @@ import { PageComponent } from '../shared/components/page/page.component';
     MatSlideToggleModule,
     ReactiveFormsModule,
     GroupCardComponent,
-    PageComponent
+    PageComponent,
+    
   ],
   templateUrl: './groups.component.html',
   styleUrl: './groups.component.scss',

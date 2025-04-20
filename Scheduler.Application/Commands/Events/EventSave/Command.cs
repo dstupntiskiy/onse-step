@@ -19,6 +19,7 @@ public record Command(
     DateTime? RecurrencyEndDate,
     DateOnly[]? ExceptDates,
     DayOfWeek[]? DaysOfWeek,
-    EventType EventType
+    EventType EventType,
+    bool UpdateOnlyThis
 ) : IRequest<List<EventDto>>;
 

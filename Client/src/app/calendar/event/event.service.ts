@@ -5,7 +5,7 @@ import { SnackBarService } from '../../services/snack-bar.service';
 import { Observable } from 'rxjs';
 import { Attendence } from '../../shared/models/attendence-model';
 import { OnetimeVisitorModel } from '../../shared/models/onetime-visitor-model';
-import { EventCoachSubstitutionModel, EventModel, EventType } from './event.model';
+import { EventCoachSubstitutionModel, EventModel } from './event.model';
 
 export interface EventRequestModel{
   id: string;
@@ -21,7 +21,8 @@ export interface EventRequestModel{
   exceptDates?: string[];
   daysOfWeek?: number[]; 
   recurrenceId?: string;
-  eventType: number
+  eventType: number;
+  updateOnlyThis: boolean;
 }
 
 export interface AddParticipantModel{

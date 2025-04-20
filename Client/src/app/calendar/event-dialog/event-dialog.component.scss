@@ -30,9 +30,21 @@
         }
     }
 
+    .recur{
+        > .event-start,
+        > .recur-checkbox{
+            flex: 1
+        }
+    }
+
     .period{
         display: flex;
         gap: 16px;
+
+        > .event-start,
+        > .event-end {
+            flex: 1;
+        }
     }
 
 

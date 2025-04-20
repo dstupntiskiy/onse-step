@@ -19,6 +19,14 @@ export function getHalfHourIntervals(): string[] {
     return intervals;
 }
 
+export function getHalfHourIntervalFromDate(date: Date): string{
+    var date = new Date(date)
+    const hours = date.getHours();
+    const minutes = date.getMinutes() < 30 ? '00' : '30';
+    const formattedHours = hours.toString().padStart(2, '0');
+    return `${formattedHours}:${minutes}`;
+}
+
 export function setTimeFromStringToDate(date: Date, timeString: string): Date {
     const [hourStr, minuteStr] = timeString.split(':');
     const hour = parseInt(hourStr, 10);
