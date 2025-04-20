@@ -1,4 +1,7 @@
 <div class="scroll-wrapper" [class.scroll]="scroll()">
+    @if(header()){
+        <app-page-header [header]="header()"></app-page-header>
+    }
     <div class="page-content">
         <ng-content></ng-content>
     </div>

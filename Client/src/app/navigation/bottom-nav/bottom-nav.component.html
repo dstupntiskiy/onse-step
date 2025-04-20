@@ -3,7 +3,8 @@
         <div class="bottom-nav-list">
             <a *ngFor="let nav of navigationService.navigationList"
                 class="nav-item"
-                mat-list-item [routerLink]="nav.link">
+                [routerLink]="nav.link"
+                >
                 <mat-icon class="nav-icon" [svgIcon]="nav.customIcon ? nav.icon : ''">{{ nav.icon }}</mat-icon>
             </a>
         </div>
