@@ -19,7 +19,7 @@ export class BarChartComponent {
   chartData = input.required<ChartData[]>()
   xLabel = input<string>('')
   yLabel = input<string>('')
-  view: [number, number] = [350,300]
+  view: [number,number] = [350,300]
 
   showXAxis = true;
   showYAxis = true;

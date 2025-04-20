@@ -1,0 +1,18 @@
+:host{
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1;
+}
+
+.bottom-nav{
+    height: 50px;
+    width: 100%;
+    background-color: white;
+}
+
+.bottom-nav-list{
+    display: flex;
+    flex-direction: row;
+}

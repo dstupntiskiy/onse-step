@@ -1,7 +1,14 @@
 @if(userService.isAuthenticated$ | async){
-    <app-sidebar></app-sidebar>
+    @if(!isMobileService.isMobile())
+    {
+        <app-sidebar></app-sidebar>
+    }
 }
-<div class="main-content">
+<div class="main-content" [style.padding-bottom]="isMobileService.isMobile() ? '40px' : '0px'">
     <router-outlet></router-outlet>
 </div>
 <app-spinner [isLoading$$]="spinnerService.loading$$()"></app-spinner>
+@if(isMobileService.isMobile())
+{
+    <app-bottom-nav></app-bottom-nav>
+}

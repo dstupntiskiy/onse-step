@@ -3,18 +3,12 @@
     <mat-drawer #snav [mode]="'side'" opened="true" disableClose="true" class="drawer">
         <mat-nav-list>
             <a class="logo" mat-list-item [routerLink]="''">
-                <img [src]="isMobileService.isMobile() ? '../../assets/images/os.svg' : '../../assets/images/one-step.svg'" >
+                <img [src]="'../../assets/images/one-step.svg'" >
             </a>
-            <a *ngFor="let nav of navigationList"
+            <a *ngFor="let nav of navigationService.navigationList"
                 class="nav-item"
                 mat-list-item [routerLink]="nav.link">
-                @if(isMobileService.isMobile()){
-                    <mat-icon class="nav-icon" [svgIcon]="nav.customIcon ? nav.icon : ''">{{ nav.icon }}</mat-icon>
-
-                }
-                @else{
                     <span class="nav-name">{{nav.name}}</span>
-                }
             </a>
         </mat-nav-list>
     </mat-drawer >
