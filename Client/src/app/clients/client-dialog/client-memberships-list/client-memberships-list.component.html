@@ -1,0 +1,11 @@
+<div class="client-memberships-list">
+    <div class="memberships-header">
+        <button mat-raised-button color="primary" (click)="onAddMembershipClick()">Добавить</button>
+    </div>
+    <div class="memberships-list">
+        <app-spinner [size]="'small'" [isLoading$$]="isLoading"></app-spinner>
+        @for(membership of memberships(); track membership){
+            <app-membership [membership]="membership" (delete)="onMembershipDelete($event)"></app-membership>
+        }
+    </div>
+</div>

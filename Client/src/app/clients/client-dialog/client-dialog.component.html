@@ -17,14 +17,8 @@
             <mat-tab-group>
                 <mat-tab label="Абонементы">
                     <div class="memberships tab-content">
-                        <div class="memberships-header">
-                            <button mat-raised-button color="primary" (click)="onAddMembershipClick()">Добавить</button>
-                        </div>
-                        <div class="memberships-list">
-                            @for(membership of memberships; track membership){
-                                <app-membership [membership]="membership" (delete)="onMembershipDelete($event)"></app-membership>
-                            }
-                        </div>
+                        <app-client-memberships-list [client]="client()!">
+                        </app-client-memberships-list>
                     </div>
                 </mat-tab>
                 <mat-tab label="Разовые">

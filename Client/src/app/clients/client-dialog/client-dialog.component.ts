@@ -18,6 +18,7 @@ import { SpinnerComponent } from '../../shared/spinner/spinner.component';
 import { ConfirmationDialogComponent } from '../../shared/dialog/confirmation-dialog/confirmation-dialog.component';
 import { MatTabsModule } from '@angular/material/tabs';
 import { AsyncPipe, DatePipe } from '@angular/common';
+import { ClientMembershipsListComponent } from './client-memberships-list/client-memberships-list.component';
 
 export interface ClientDialogData{
   id: string
@@ -32,11 +33,11 @@ export interface ClientDialogData{
     MatButtonModule,
     FormsModule,
     ReactiveFormsModule,
-    MembershipComponent,
     SpinnerComponent,
     MatTabsModule,
     AsyncPipe,
-    DatePipe
+    DatePipe,
+    ClientMembershipsListComponent
   ],
   providers:[
     SnackBarService
@@ -90,8 +91,6 @@ export class ClientDialogComponent {
               this.name?.setValue(result.name)
               this.phone?.setValue(result.phone)
               this.socialMediaLink?.setValue(result.socialMediaLink)
-
-              this.updateMemberships()
             }
           })
       
@@ -126,17 +125,6 @@ export class ClientDialogComponent {
         })
     }
 
-    onAddMembershipClick(){
-      this.dialogService.showDialog(MembershipDialogComponent, {
-        client: this.client()
-      })
-      .afterClosed().subscribe((result: MembershipWithDetails) =>{
-        if(result){
-          this.memberships.unshift(result)
-        }
-      })
-    }
-
     submit(){
       if (this.form.valid){
         const client: Client = {
@@ -152,20 +140,8 @@ export class ClientDialogComponent {
         )
         .subscribe((result: Client) =>{
           this.client.set(result)
-          this.updateMemberships()
           this.clientSave.emit(result)
         })
       }
-    }
-
-    onMembershipDelete(id: string){
-      this.memberships = this.memberships.filter(x => x.id != id)
-    }
-
-    private updateMemberships(){
-      this.membershipService.getMembershipsByClient(this.client()?.id as string)
-          .subscribe((result: MembershipWithDetails[]) =>{
-            this.memberships = result
-          })
     }
 }
