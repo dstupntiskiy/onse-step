@@ -1,6 +1,5 @@
 using System.Reflection;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Scheduler.Application.Entities;
 using Scheduler.Application.Entities.Base;
@@ -10,6 +9,7 @@ using Scheduler.Handlers;
 using Scheduler.Infrastructure.Data;
 using Scheduler.Infrastructure.Repository;
 using Scheduler.Mappings;
+using Scheduler.Services;
 
 namespace Scheduler.Extentions;
 
@@ -34,6 +34,8 @@ public static class DependencyInjection
             .AddTransient<DatabaseInitializer>()
             .AddScoped<MembershipService>()
             .AddScoped<UserService>()
+            .AddHttpContextAccessor()
+            .AddScoped<ICurrentUserService, CurrentUserService>()
             .AddTransient<IAuthorizationHandler, SuperAdminHandler>();
 
     public static IServiceCollection AddWebApi(this IServiceCollection services)

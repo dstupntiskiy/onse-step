@@ -128,11 +128,11 @@
     
     @if(initialEvent()?.id){
         <div class="participants" >
-            @if(eventType.value == eventTypes.Event)
+            @if(eventType.value == eventTypes.Event && initialEvent()?.group)
             {
                 <app-event-participants 
                     [eventId]="initialEvent()!.id" 
-                    [groupId]="initialEvent()!.group!.id"
+                    [groupId]="initialEvent()!.group?.id!"
                     [eventDate]="initialEvent()!.startDateTime"
                     [group]="initialEvent()!.group!"
                     [triggerUpdateGroupMembersCount]="triggerUpdateGroupMembersCount()"></app-event-participants>

@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Configuration;
 using NHibernate;
 using NHibernate.Linq;
 using Scheduler.Application.Interfaces;
@@ -6,7 +5,7 @@ using Scheduler.Application.Entities.Base;
 
 namespace Scheduler.Infrastructure.Repository;
 
-public class Repository<TEntity>(ISession session) : IRepository<TEntity>
+public class Repository<TEntity>(ISession session, ICurrentUserService currentUserService) : IRepository<TEntity>
     where TEntity : AuditableEntity
 {
     public IQueryable<TEntity> Query() => session.Query<TEntity>();
@@ -23,7 +22,18 @@ public class Repository<TEntity>(ISession session) : IRepository<TEntity>
 
     public async Task<TEntity> AddAsync(TEntity entity)
     {
-        entity.MarkNew();
+        var now = DateTime.Now;
+        var userId = currentUserService.UserId ?? string.Empty;
+
+        if (entity.CreateDate == default)
+        {
+            entity.MarkNew();
+            entity.CreatedBy = userId;
+        }
+
+        entity.ModifiedAt = now;
+        entity.ModifiedBy = userId;    
+            
         using var transaction = session.BeginTransaction();
         try
         {
@@ -49,6 +59,12 @@ public class Repository<TEntity>(ISession session) : IRepository<TEntity>
 
     public async Task<TEntity> UpdateAsync(TEntity entity, CancellationToken cancellationToken)
     {
+        var now = DateTime.Now;
+        var userId = currentUserService.UserId ?? string.Empty;
+
+        entity.ModifiedAt = now;
+        entity.ModifiedBy = userId;   
+        
         using var transaction = session.BeginTransaction();
         TEntity mergedEntity;
         try

@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Configuration;
 using Scheduler.Application.Entities;
+using Scheduler.Application.Interfaces;
 using Scheduler.Infrastructure.Contracts;
 
 namespace Scheduler.Infrastructure.Data;
@@ -9,7 +10,7 @@ namespace Scheduler.Infrastructure.Data;
 public class OneStepContext: DbContext, IOneStepContext
 {
     protected readonly IConfiguration Configuration;
-
+    
     public OneStepContext(DbContextOptions<OneStepContext> options, IConfiguration configuration)
         : base(options)
     {
