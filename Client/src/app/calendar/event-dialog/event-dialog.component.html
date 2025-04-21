@@ -130,7 +130,6 @@
         <div class="participants" >
             @if(eventType.value == eventTypes.Event)
             {
-                <!--<button mat-stroked-button (click)="onParticipantsClick()">Группа: {{participantsCount}}/{{ groupParticipantsCount }}</button>-->
                 <app-event-participants 
                     [eventId]="initialEvent()!.id" 
                     [groupId]="initialEvent()!.group!.id"
@@ -140,7 +139,10 @@
             }
             @if(eventType.value != eventTypes.Rent)
             {
-                <button mat-stroked-button (click)="onOnetimeVisitorsClick()">{{ eventType.value == eventTypes.Event ? 'Разовые' : 'Участники' }}: {{ onetimeVisitorsCount }}</button>
+                <app-event-onetime-visits 
+                    [eventId]="initialEvent()!.id"
+                    [eventStyle]="initialEvent()?.group?.style"
+                    [eventType]="eventType.value"></app-event-onetime-visits>
             }
             
         </div>

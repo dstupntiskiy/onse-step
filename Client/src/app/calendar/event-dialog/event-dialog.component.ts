@@ -37,6 +37,7 @@ import { DynamicComponent } from '../../shared/dialog/base-dialog/base-dialog.co
 import { toSignal } from '@angular/core/rxjs-interop';
 import { UpdateOnlyThisDialogComponent } from './update-only-this-dialog/update-only-this-dialog.component';
 import { EventParticipantsComponent } from './event-participants/event-participants.component';
+import { EventOnetimeVisitsComponent } from './event-onetime-visits/event-onetime-visits.component';
 
 export interface EventDialogData{
   id: string
@@ -89,7 +90,8 @@ const WEEKDAYS: Weekday[] = [
     RentClientComponent,
     CoachSubstitutionComponent,
     AsyncPipe,
-    EventParticipantsComponent ],
+    EventParticipantsComponent,
+    EventOnetimeVisitsComponent ],
   templateUrl: './event-dialog.component.html',
   styleUrl: './event-dialog.component.scss',
   providers:[
@@ -155,7 +157,7 @@ export class EventDialogComponent implements DynamicComponent {
     var dateValue = this.initialEvent()?.startDateTime ?? new Date(this.data().startDateTime)
     var parsedDate = new Date(dateValue)
     return  isNaN(parsedDate.getTime()) ? new Date() : parsedDate;
-  }
+    }
   )
 
   eventSaved = output<EventModel[]>()
@@ -164,7 +166,6 @@ export class EventDialogComponent implements DynamicComponent {
   isLoading : boolean = true
 
   triggerUpdateGroupMembersCount = signal<{}>({})
-
 
   constructor(
     public dialogRef: MatDialogRef<EventDialogComponent>,
@@ -353,11 +354,6 @@ export class EventDialogComponent implements DynamicComponent {
       } )
   }
 
-  onOnetimeVisitorsClick(){
-    this.dialogService.showDialog(OnetimeVisitorDialogComponent, { eventId: this.initialEvent()?.id, style: this.initialEvent()?.group?.style })
-      .afterClosed().subscribe(() => this.refetchOnetimeVisitorsCount())
-  }
-
   onCoachChange(coachId: string){
     this.coachId.update(() => coachId)
   }
@@ -392,10 +388,5 @@ export class EventDialogComponent implements DynamicComponent {
       }
   }
 
-  private refetchOnetimeVisitorsCount(){
-    this.eventService.getOnetimeVisitorsCount(this.initialEvent()?.id as string)
-      .subscribe((result: number) =>{
-        this.onetimeVisitorsCount = result;
-      })
-  }
+  
 }
