@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, input, output, signal } from '@angular/core';
+import { Component, computed, inject, input, output, signal } from '@angular/core';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog'
 import { MatButtonModule } from '@angular/material/button'
 import { MatInputModule } from '@angular/material/input'
@@ -12,14 +12,14 @@ import { GroupService } from '../../groups/group.service';
 import { AsyncPipe, CommonModule, DatePipe } from '@angular/common';
 import { ConfirmationDialogComponent } from '../../shared/dialog/confirmation-dialog/confirmation-dialog.component';
 import { MatNativeDateModule, MAT_DATE_LOCALE, DateAdapter } from '@angular/material/core';
-import {provideNativeDateAdapter} from '@angular/material/core';
+import { provideNativeDateAdapter } from '@angular/material/core';
 import { CustomDateAdapter } from '../../shared/adapters/custom.date.adapter';
 import { DeleteDialogComponent, DeleteResult } from '../delete-dialog/delete-dialog.component';
 import { SpinnerService } from '../../shared/spinner/spinner.service';
 import { finalize, Observable, of } from 'rxjs';
 import { EventRequestModel, EventService } from '../event/event.service';
 import { Guid } from 'typescript-guid';
-import {OverlayModule} from '@angular/cdk/overlay';
+import { OverlayModule } from '@angular/cdk/overlay';
 import { PaletteComponent } from '../../shared/components/palette/palette.component';
 import { RecurrenceService } from '../recurrence/recurrence.service';
 import { MatIconModule } from '@angular/material/icon';
@@ -27,7 +27,6 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle'
 import { CoachModel } from '../../shared/models/coach-model';
 import { CoachService } from '../../coaches/coach.service';
 import { DialogService } from '../../services/dialog.service';
-import { ParticipantsDialogComponent } from '../participants-dialog/participants-dialog.component';
 import { GroupDialogComponent } from '../../groups/group-dialog/group-dialog.component';
 import { OnetimeVisitorDialogComponent } from '../onetime-visitor-dialog/onetime-visitor-dialog.component';
 import { EventCoachSubstitutionModel, EventModel, EventType } from '../event/event.model';
@@ -37,6 +36,7 @@ import { CoachSubstitutionComponent } from './coach-substitution/coach-substitut
 import { DynamicComponent } from '../../shared/dialog/base-dialog/base-dialog.component';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { UpdateOnlyThisDialogComponent } from './update-only-this-dialog/update-only-this-dialog.component';
+import { EventParticipantsComponent } from './event-participants/event-participants.component';
 
 export interface EventDialogData{
   id: string
@@ -78,7 +78,6 @@ const WEEKDAYS: Weekday[] = [
     FormsModule,
     ReactiveFormsModule,
     MatCheckboxModule,
-    ConfirmationDialogComponent,
     MatDatepickerModule,
     MatNativeDateModule,
     OverlayModule,
@@ -89,7 +88,8 @@ const WEEKDAYS: Weekday[] = [
     SpinnerComponent,
     RentClientComponent,
     CoachSubstitutionComponent,
-    AsyncPipe ],
+    AsyncPipe,
+    EventParticipantsComponent ],
   templateUrl: './event-dialog.component.html',
   styleUrl: './event-dialog.component.scss',
   providers:[
@@ -116,10 +116,7 @@ export class EventDialogComponent implements DynamicComponent {
   color: string;
   isColorSelectorOpen: boolean = false;
   coachId = signal<string | null>(null)
-  
 
-  groupParticipantsCount: number = 0;
-  participantsCount: number = 0;
   onetimeVisitorsCount: number = 0;
 
   initialEvent = signal<EventModel| null>(null);
@@ -166,6 +163,8 @@ export class EventDialogComponent implements DynamicComponent {
 
   isLoading : boolean = true
 
+  triggerUpdateGroupMembersCount = signal<{}>({})
+
 
   constructor(
     public dialogRef: MatDialogRef<EventDialogComponent>,
@@ -209,16 +208,8 @@ export class EventDialogComponent implements DynamicComponent {
       this.group.setValue(value as string)
       if(this.group.value){
         this.group.disable()
-        this.refetchGroupMembersCount()
       }
     })
-
-  if(this.initialEvent()?.id)
-  {
-    this.refetchOnetimeVisitorsCount()
-    this.refetchParticipantsCount()
-  }
-
 
   this.name.setValue(this.initialEvent()?.name as string)
   this.start?.setValue(getFormattedTime(this.initialEvent()?.startDateTime as Date ?? this.data().startDateTime))
@@ -350,15 +341,6 @@ export class EventDialogComponent implements DynamicComponent {
     }
   }
 
-  onParticipantsClick(){
-    this.dialogService.showDialog(ParticipantsDialogComponent, {
-      eventId: this.initialEvent()?.id,
-      eventDate: this.initialEvent()?.startDateTime,
-      group: this.groups.find(x => x.id == this.group.value)}
-    )
-      .afterClosed().subscribe(() => this.refetchParticipantsCount())
-  }
-
   colorSelected(color: string){
     this.color = color;
     this.isColorSelectorOpen = false;
@@ -366,7 +348,9 @@ export class EventDialogComponent implements DynamicComponent {
 
   onEditGroupClick(){
     this.dialogService.showDialog(GroupDialogComponent, { id: this.initialEvent()?.group?.id as string })
-      .afterClosed().subscribe(() => this.refetchGroupMembersCount())
+      .afterClosed().subscribe(() => {
+        this.triggerUpdateGroupMembersCount.set({})
+      } )
   }
 
   onOnetimeVisitorsClick(){
@@ -406,21 +390,6 @@ export class EventDialogComponent implements DynamicComponent {
       form.get('weekdays')?.setErrors(error);
       return error;
       }
-  }
-
-  private refetchParticipantsCount(){
-    this.eventService.getParticipantsCount(this.initialEvent()?.id as string).subscribe(
-      (result: number) =>{
-        this.participantsCount = result;
-      }
-    );
-  }
-
-  private refetchGroupMembersCount(){
-    this.groupService.getGroupMembersCount(this.group?.value as string)
-      .subscribe((result: number) =>{
-        this.groupParticipantsCount = result;
-      })
   }
 
   private refetchOnetimeVisitorsCount(){

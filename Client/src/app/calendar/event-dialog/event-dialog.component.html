@@ -130,7 +130,13 @@
         <div class="participants" >
             @if(eventType.value == eventTypes.Event)
             {
-                <button mat-stroked-button (click)="onParticipantsClick()">Группа: {{participantsCount}}/{{ groupParticipantsCount }}</button>
+                <!--<button mat-stroked-button (click)="onParticipantsClick()">Группа: {{participantsCount}}/{{ groupParticipantsCount }}</button>-->
+                <app-event-participants 
+                    [eventId]="initialEvent()!.id" 
+                    [groupId]="initialEvent()!.group!.id"
+                    [eventDate]="initialEvent()!.startDateTime"
+                    [group]="initialEvent()!.group!"
+                    [triggerUpdateGroupMembersCount]="triggerUpdateGroupMembersCount()"></app-event-participants>
             }
             @if(eventType.value != eventTypes.Rent)
             {
