@@ -11,7 +11,8 @@
         [borderColor]="arg.event.extendedProps['color'] ?? 'teal'"
         [groupName]="arg.event.extendedProps['groupName']"
         [coachName]="arg.event.extendedProps['coachName']"
-        [eventType]="arg.event.extendedProps['eventType']"></app-event>
+        [eventType]="arg.event.extendedProps['eventType']"
+        [isCompactView]="calendarModeView()"></app-event>
       </ng-template>
     </full-calendar>
   </div>

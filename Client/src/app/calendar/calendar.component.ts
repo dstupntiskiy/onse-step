@@ -1,6 +1,6 @@
-import { Component, OutputRefSubscription, ViewChild, inject } from '@angular/core';
+import { Component, OutputRefSubscription, ViewChild, inject, signal } from '@angular/core';
 import { FullCalendarComponent, FullCalendarModule } from '@fullcalendar/angular';
-import { CalendarApi, CalendarOptions, DateInput, DateRangeInput, EventClickArg, EventInput } from '@fullcalendar/core';
+import { CalendarApi, CalendarOptions, EventClickArg, EventInput } from '@fullcalendar/core';
 import interationPlugin, { DateClickArg } from '@fullcalendar/interaction'
 import timeGridWeek from '@fullcalendar/timegrid'
 import dayGridPlugin from '@fullcalendar/daygrid'
@@ -16,6 +16,7 @@ import { ResizeService } from '../shared/services/resize.service';
 import { DialogService } from '../services/dialog.service';
 import { EventModel } from './event/event.model';
 import { PageComponent } from '../shared/components/page/page.component';
+import { DutyDialogComponent } from './duty-dialog/duty-dialog.component';
 
 @Component({
   selector: 'app-calendar',
@@ -63,6 +64,15 @@ export class CalendarComponent {
       month: 'short',
       day: 'numeric'
     },
+    customButtons: {
+      toggleScheduleView:{
+        text: 'Toggle',
+        click: this.toggleCalendarMode.bind(this)
+      }
+    },
+    headerToolbar:{
+      center: 'toggleScheduleView'
+    },
     allDaySlot: false,
     initialView: 'timeGridWeek',
     eventStartEditable: false,
@@ -79,6 +89,7 @@ export class CalendarComponent {
   events: EventInput[]
 
   calendarApi: CalendarApi;
+  calendarModeView = signal<boolean>(false)
 
   constructor(
     private snackBarService: SnackBarService,
@@ -87,8 +98,14 @@ export class CalendarComponent {
     private spinnerService: SpinnerService 
   ){}
 
+  toggleCalendarMode(){
+    this.calendarModeView.update(() => !this.calendarModeView())
+  }
+
   handleDateClick(info: DateClickArg) {
-    this.openEventDialog(undefined, info.date)
+    this.calendarModeView()
+      ? this.openDutyDialog(info.date)
+      : this.openEventDialog(undefined, info.date)
   };
 
   handleDateSet(dateInfo: any){
@@ -116,6 +133,10 @@ export class CalendarComponent {
         this.calendarApi.changeView('timeGrid')
         : this.calendarApi.changeView('timeGridWeek')
     })
+  }
+
+  private openDutyDialog(stardDateTime: Date){
+    const dialogRef = this.dialogService.showDialog(DutyDialogComponent)
   }
 
   private openEventDialog(id?: string, startDateTime?: Date){

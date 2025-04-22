@@ -4,7 +4,7 @@
     display: inline-flex;
 }
 
-div{
+.event{
     border: solid 1px lightgray;
     border-right: 8px solid;
     background-color: white;
@@ -16,6 +16,7 @@ div{
     border-radius: 6px;
     padding: 2px 4px;
     position: relative;
+    transition: width 0.3s ease;
 
     p{
         margin:0;
@@ -33,4 +34,8 @@ div{
         right: 0;
         bottom: 0;
     }
+}
+
+.compact{
+    width: 15%;
 }

@@ -23,6 +23,7 @@ export class EventComponent {
   groupName = input('');
   coachName = input<string>('')
   eventType = input<EventType>()
+  isCompactView = input<boolean>(false)
 
   icon = computed(() =>{
     switch(this.eventType()){
