@@ -28,7 +28,6 @@ import { CoachModel } from '../../shared/models/coach-model';
 import { CoachService } from '../../coaches/coach.service';
 import { DialogService } from '../../services/dialog.service';
 import { GroupDialogComponent } from '../../groups/group-dialog/group-dialog.component';
-import { OnetimeVisitorDialogComponent } from '../onetime-visitor-dialog/onetime-visitor-dialog.component';
 import { EventCoachSubstitutionModel, EventModel, EventType } from '../event/event.model';
 import { RentClientComponent } from './rent-client/rent-client.component';
 import { SpinnerComponent } from '../../shared/spinner/spinner.component';
@@ -76,8 +75,6 @@ const WEEKDAYS: Weekday[] = [
     MatDialogModule, 
     MatInputModule,
     MatSelectModule,
-    FormsModule,
-    ReactiveFormsModule,
     MatCheckboxModule,
     MatDatepickerModule,
     MatNativeDateModule,
@@ -86,6 +83,8 @@ const WEEKDAYS: Weekday[] = [
     MatIconModule,
     DatePipe,
     MatButtonToggleModule,
+    FormsModule,
+    ReactiveFormsModule,
     SpinnerComponent,
     RentClientComponent,
     CoachSubstitutionComponent,
