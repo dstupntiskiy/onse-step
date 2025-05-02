@@ -1,4 +1,4 @@
-<div class="event" [class.compact]="isCompactView()" [style.border-right-color]="borderColor()">  
+<div class="event" [style.border-right-color]="borderColor()">  
     <p>{{title()}}</p>
     <p>{{start() | date:'HH:mm'}} - {{end() | date:'HH:mm'}}</p>
     @if(!isCompactView())

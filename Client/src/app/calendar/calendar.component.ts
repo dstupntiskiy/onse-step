@@ -255,7 +255,7 @@ export class CalendarComponent {
     event.color = 'transparent'
     event.start = eventData.startDateTime
     event.end = eventData.endDateTime,
-    event.className = 'event-base'
+    event.classNames = ['event-base', this.calendarModeView() == true ? 'event-short' : '']
     return event
   }
 

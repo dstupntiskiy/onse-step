@@ -11,5 +11,5 @@ export class DutyComponent {
   color = input<string>('yellow')
   start = input('')
   end = input('')
-  isCompactView = input<boolean>(true)
+  isCompactView = input<boolean>(false)
 }
