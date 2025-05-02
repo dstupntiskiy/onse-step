@@ -1,18 +1,41 @@
 <app-page>
   <div class="calendar-content">
+    <div class="calendar-header">
+      <button mat-raised-button (click)="toggleCalendarMode()">{{calendarModeView() == true ? 'Дежурства' : 'События'}}</button>
+      <div class="calendar-header-right">
+        <button mat-raised-button (click)="clickToday()">Сегодня</button>
+        <button mat-raised-button class="arrow-button" (click)="clickPrev()">
+          <mat-icon>navigate_before</mat-icon>
+        </button>
+        <button mat-raised-button class="arrow-button" (click)="clickNext()">
+          <mat-icon>navigate_next</mat-icon>
+        </button>
+      </div>
+    </div>
     <full-calendar #calendar
       [options]="calendarOptions"
-      [events]="events">
+      [events]="events()">
       <ng-template #eventContent let-arg>
-        <app-event
-        [title]="arg.event.title"
-        [start]="arg.event.start"
-        [end]="arg.event.end"
-        [borderColor]="arg.event.extendedProps['color'] ?? 'teal'"
-        [groupName]="arg.event.extendedProps['groupName']"
-        [coachName]="arg.event.extendedProps['coachName']"
-        [eventType]="arg.event.extendedProps['eventType']"
-        [isCompactView]="calendarModeView()"></app-event>
+        @if (arg.event.extendedProps['calendarEventType'] == 'event') {
+          <app-event
+          [title]="arg.event.title"
+          [start]="arg.event.start"
+          [end]="arg.event.end"
+          [borderColor]="arg.event.extendedProps['color'] ?? 'teal'"
+          [groupName]="arg.event.extendedProps['groupName']"
+          [coachName]="arg.event.extendedProps['coachName']"
+          [eventType]="arg.event.extendedProps['eventType']"
+          [isCompactView]="calendarModeView()"></app-event>
+        }
+        @else if (arg.event.extendedProps['calendarEventType'] == 'duty') {
+          <app-duty
+            [title]="arg.event.title"
+            [start]="arg.event.start"
+            [end]="arg.event.end"
+            [color]="arg.event.extendedProps['color'] ?? 'red'"
+            [isCompactView]="!calendarModeView()">
+          </app-duty>
+        }
       </ng-template>
     </full-calendar>
   </div>

@@ -26,4 +26,12 @@ export class EventCoachSubstitutionModel{
   id: string
   coach: CoachModel
 }
+
+export class EventDutyModel{
+  id: string
+  startDateTime: Date
+  endDateTime: Date
+  name: string
+  color: string
+}
   

@@ -40,6 +40,7 @@ public class OneStepContext: DbContext, IOneStepContext
     public DbSet<Coach> Coach { get; set; }
     public DbSet<User> User { get; set; }
     public DbSet<Style> Style { get; set; }
+    public DbSet<EventDuty> EventDuty { get; set; }
     public DbSet<Membership> Membership { get; set; }
     public DbSet<EventCoachSubstitution> EventCoachSubstitution { get; set; }
 }

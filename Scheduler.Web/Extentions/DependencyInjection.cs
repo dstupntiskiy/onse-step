@@ -30,6 +30,7 @@ public static class DependencyInjection
             .AddTransient<IRepository<Coach>, Repository<Coach>>()
             .AddTransient<IRepository<Membership>, Repository<Membership>>()
             .AddTransient<IRepository<Style>, Repository<Style>>()
+            .AddTransient<IRepository<EventDuty>, Repository<EventDuty>>()
             .AddTransient<IRepository<EventCoachSubstitution>, Repository<EventCoachSubstitution>>()
             .AddTransient<DatabaseInitializer>()
             .AddScoped<MembershipService>()

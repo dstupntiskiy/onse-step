@@ -1,0 +1,22 @@
+.duty-dialog-content{
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.field-row{
+    display: flex;
+    gap: 16px;
+}
+
+.actions{
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+
+    .actions-right{
+        display: flex;
+        justify-content: flex-end;
+        gap: 16px;
+    }
+}

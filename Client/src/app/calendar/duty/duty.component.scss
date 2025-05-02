@@ -4,7 +4,7 @@
     display: inline-flex;
 }
 
-.event{
+.duty{
     border: solid 1px lightgray;
     border-right: 8px solid;
     background-color: white;
@@ -24,13 +24,5 @@
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-    }
-
-    .icon{
-        color: black;
-        font-size: 16px;
-        position: absolute;
-        right: 0;
-        bottom: 0;
     }
 }

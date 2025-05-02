@@ -5,7 +5,7 @@ import { SnackBarService } from '../../services/snack-bar.service';
 import { Observable } from 'rxjs';
 import { Attendence } from '../../shared/models/attendence-model';
 import { OnetimeVisitorModel } from '../../shared/models/onetime-visitor-model';
-import { EventCoachSubstitutionModel, EventModel } from './event.model';
+import { EventCoachSubstitutionModel, EventDutyModel, EventModel } from './event.model';
 
 export interface EventRequestModel{
   id: string;
@@ -23,6 +23,14 @@ export interface EventRequestModel{
   recurrenceId?: string;
   eventType: number;
   updateOnlyThis: boolean;
+}
+
+export interface EventDutyRequestModel{
+  id: string
+  name: string
+  startDateTime: Date
+  endDateTime: Date
+  color?: string
 }
 
 export interface AddParticipantModel{
@@ -49,6 +57,27 @@ export class EventService extends BaseHttpService{
     return this.get<EventModel>('GetEventById/' + id)
    }
 
+   deleteEventDutyById(id: string): Observable<string>{
+    var options: IAngularHttpRequestOptions = {
+      params: {id: id}
+    }
+    return this.delete<string>('DeleteEventDuty', options)
+   }
+
+   GetEventDutyById(id: string) : Observable<EventDutyModel>{
+    return this.get<EventDutyModel>('GetEventDutyById/' + id)
+   }
+
+   getEventsDutyByPeriod(startDate: string, endDate: string): Observable<EventDutyModel[]>{
+    var options: IAngularHttpRequestOptions = {
+      params: {
+        startDate: startDate,
+        endDate: endDate
+      }
+    }
+    return this.get<EventDutyModel[]>('GetEventDutyByPeriod', options)
+   }
+
    getEventsByPeriod(startDate: string, endDate: string): Observable<EventModel[]>{
     var options: IAngularHttpRequestOptions = {
       params: {
@@ -57,6 +86,10 @@ export class EventService extends BaseHttpService{
       }
     }
     return this.get<EventModel[]>('GetEventsByPeriod', options)
+   }
+
+   saveEventDuty(eventDuty: EventDutyRequestModel): Observable<EventDutyModel>{
+    return this.post<EventDutyModel>('SaveEventDuty', eventDuty)
    }
 
    saveEvent(event: EventRequestModel):Observable<EventModel[]>{

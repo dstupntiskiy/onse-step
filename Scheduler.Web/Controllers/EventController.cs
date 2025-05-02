@@ -2,12 +2,17 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Scheduler.Application.Commands.Events;
+using Scheduler.Application.Commands.Events.EventDutyDelete;
+using Scheduler.Application.Commands.Events.EventDutySave;
 using Scheduler.Application.Commands.Events.EventSave;
 using Scheduler.Application.Commands.Events.RemoveCoachSubstitution;
 using Scheduler.Application.Common.Dtos;
+using Scheduler.Application.Entities;
 using Scheduler.Application.Entities.Projections;
 using Scheduler.Application.Queries.Events;
 using Scheduler.Application.Queries.Events.GetEventCoachSubstitution;
+using Scheduler.Application.Queries.Events.GetEventDutyById;
+using Scheduler.Application.Queries.Events.GetEventsDutyByPeriodQuery;
 
 namespace Scheduler.Controllers;
 
@@ -27,6 +32,31 @@ public class EventController(IMediator mediator) : ControllerBase
     {
         return await mediator.Send(new GetEventsByPeriodQuery(startDate, endDate));
     }
+
+    [HttpGet("GetEventDutyById/{id:guid}")]
+    public async Task<EventDuty> GetEventDutyById(Guid id)
+    {
+        return await mediator.Send(new GetEventDutyByIdQuery(id));
+    }
+    
+    [HttpGet("GetEventDutyByPeriod")]
+    public async Task<List<EventDuty>> GetEventDutyByPeriod(DateTime startDate, DateTime endDate)
+    {
+        return await mediator.Send(new GetEventsDutyByPeriodQuery(startDate, endDate));
+    }
+
+    [HttpPost("SaveEventDuty")]
+    public async Task<EventDuty> SaveEventDuty(EventDutySaveCommand cmd)
+    {
+        return await mediator.Send(cmd);
+    }
+
+    [HttpDelete("DeleteEventDuty")]
+    public async Task<Guid> DeleteEventDuty(Guid id)
+    {
+        return await mediator.Send(new EventDutyDeleteCommand(id));
+    }
+    
 
     [HttpGet("GetAll")]
     public async Task<EventDto[]> GetAll()

@@ -15,8 +15,9 @@ import { MatButtonModule } from '@angular/material/button';
   templateUrl: './event.component.html',
   styleUrl: './event.component.scss'
 })
+
 export class EventComponent {
-  @Input() title: string;
+  title = input<string>();
   borderColor = input('teal')
   start = input('');
   end = input('');

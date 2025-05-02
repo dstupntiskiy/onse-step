@@ -1,3 +1,37 @@
 <div class="duty-dialog-content">
-    
+    <h1>Дежурство</h1>
+    <div class="field-row">
+        <app-duty-list 
+            [(currentDuty)]="selectedDuty"></app-duty-list>
+    </div>
+    <div class="field-row">
+        <mat-form-field>
+            <mat-label>Начало</mat-label>
+            <input matInput [matTimepicker]="pickerStart" [formControl]="start">
+            <mat-timepicker-toggle matIconSuffix [for]="pickerStart">
+            <mat-icon matTimepickerToggleIcon>keyboard_arrow_down</mat-icon>
+            </mat-timepicker-toggle>
+            <mat-timepicker #pickerStart/>
+        </mat-form-field>
+        <mat-form-field>
+            <mat-label>Конец</mat-label>
+            <input matInput [matTimepicker]="pickerEnd" [formControl]="end">
+            <mat-timepicker-toggle matIconSuffix [for]="pickerEnd">
+            <mat-icon matTimepickerToggleIcon>keyboard_arrow_down</mat-icon>
+            </mat-timepicker-toggle>
+            <mat-timepicker #pickerEnd/>
+        </mat-form-field>
+    </div>
+    <div class="actions">
+        <div class="actions-left">
+            <button mat-raised-button color="warn"
+             (click)="onDelete()">Удалить</button>
+        </div>
+        <div class="actions-right">
+            <button mat-button (click)="onClose()">Закрыть</button>
+            <button mat-raised-button color="accent" 
+                (click)="onSave()"
+                [disabled]="!selectedDuty()">Сохранить</button>
+        </div>
+    </div>
 </div>

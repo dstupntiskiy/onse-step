@@ -6,3 +6,23 @@
     padding: 16px;
     box-sizing: border-box;
 }
+.calendar-header{
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 16px;
+
+    .calendar-header-right{
+        display: flex;
+        gap: 8px;
+
+        .arrow-button{
+            width: 48px;
+            padding: 8px;
+
+            mat-icon{
+                margin: 0;
+            }
+        }
+    }
+}
+

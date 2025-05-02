@@ -52,3 +52,51 @@ h5{
     margin-bottom: 2px !important;
     font-weight: 500 !important;
 }
+
+.fc-timegrid-event-harness{
+    transition: all 0.5s ease !important;
+}
+
+.fc-timegrid-event-harness:has(> .event-base){
+    left: 0% !important;            /* 90% from the left edge */
+    width: 90% !important;   
+    right: 10% !important; 
+}
+
+.fc-timegrid-event-harness:has(> .event-duty.event-short){
+left: 91% !important;            /* 90% from the left edge */
+width: 10% !important;   
+right: 0% !important;        /* fill the last 10% */
+}
+
+.fc-event{
+    width: 100% !important;
+    transition: width 1s ;
+}
+
+.fc-timegrid-event-harness:has(> .event-base.event-short ){
+    width: 50% !important;
+    right: 50% !important;
+}
+
+.fc-timegrid-event-harness:has(> .event-duty ){
+    width: 49% !important;
+    left: 51% !important;
+}
+
+
+.event-base{
+    right: auto !important;
+}
+
+.event-duty{
+    //left: auto !important;
+}
+
+.event-short{
+    //width: 18% !important;
+}
+
+.event-short.event-base{
+    //width: 50% !important;
+}

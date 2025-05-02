@@ -114,7 +114,7 @@ export class EventDialogComponent implements DynamicComponent {
   disableRecur: boolean;
   pickerStart: Date;
   pickerEnd: Date;
-  color: string;
+  color = signal<string>('');
   isColorSelectorOpen: boolean = false;
   coachId = signal<string | null>(null)
 
@@ -141,7 +141,9 @@ export class EventDialogComponent implements DynamicComponent {
                         || this.startSignal() != getHalfHourIntervalFromDate(this.initialEvent()?.startDateTime as Date)
                         || this.endSignal() != getHalfHourIntervalFromDate(this.initialEvent()?.endDateTime as Date)
                         || this.groupSignal() != this.initialEvent()?.group
-                        || this.coach?.id != this.initialEvent()?.coach?.id)
+                        || this.coach?.id != this.initialEvent()?.coach?.id
+                        || this.color() != this.initialEvent()?.color)
+
 
   eventTypes = EventType
 
@@ -196,7 +198,7 @@ export class EventDialogComponent implements DynamicComponent {
     this.substitution$ = this.eventService.getCoachSubstitution(this.initialEvent()?.id as string)
     this.coaches$ = this.coachService.getCoaches()
 
-    this.color = this.initialEvent()?.color ?? 'teal';
+    this.color.set(this.initialEvent()?.color ?? 'teal');
     this.eventType.setValue(this.initialEvent()?.eventType ?? EventType.Event)
     if(this.initialEvent()?.id){
       this.eventType.disable()
@@ -239,7 +241,7 @@ export class EventDialogComponent implements DynamicComponent {
         endDateTime: setTimeFromStringToDate(this.date(), this.end?.value as string),
         name: this.name.value as string,
         groupId: this.group.value as string,
-        color: this.color,
+        color: this.color(),
         coachId: this.coachId() ?? this.initialEvent()?.coach?.id,
         eventType: this.eventType.value as EventType,
         isRecurrent: this.isRecur.value as boolean,
@@ -342,7 +344,7 @@ export class EventDialogComponent implements DynamicComponent {
   }
 
   colorSelected(color: string){
-    this.color = color;
+    this.color.update(() => color);
     this.isColorSelectorOpen = false;
   }
 
