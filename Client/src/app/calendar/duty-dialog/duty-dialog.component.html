@@ -24,8 +24,10 @@
     </div>
     <div class="actions">
         <div class="actions-left">
-            <button mat-raised-button color="warn"
-             (click)="onDelete()">Удалить</button>
+            @if(data()?.id){
+                <button mat-raised-button color="warn"
+                (click)="onDelete()">Удалить</button>
+            }
         </div>
         <div class="actions-right">
             <button mat-button (click)="onClose()">Закрыть</button>

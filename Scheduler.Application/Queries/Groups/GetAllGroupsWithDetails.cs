@@ -3,4 +3,4 @@ using Scheduler.Application.Common.Dtos;
 
 namespace Scheduler.Application.Queries.Groups;
 
-public record GetAllGroupsWithDetails(bool OnlyActive) : IRequest<List<GroupDetailedDto>>;
+public record GetAllGroupsWithDetails(int Take, int Slip, bool OnlyActive) : IRequest<List<GroupDetailedDto>>;

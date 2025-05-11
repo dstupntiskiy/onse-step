@@ -4,7 +4,7 @@
             <button mat-stroked-button (click)="handleAddGroupClick()">Добавить</button>
             <mat-slide-toggle [formControl]="onlyActive">Только активные</mat-slide-toggle>
         </div>
-        <div class="groups-list">
+        <div class="groups-list" appScrollNearEnd (nearEnd)="loadGroups()">
             @for(group of groups(); track group){
                 <app-group-card [group]="group"></app-group-card>
             }

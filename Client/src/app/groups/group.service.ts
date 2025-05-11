@@ -1,10 +1,12 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { Group, GroupWithDetails } from '../shared/models/group-model';
-import { Observable } from 'rxjs';
+import { finalize, Observable, of, tap } from 'rxjs';
 import { BaseHttpService, IAngularHttpRequestOptions } from '../services/base-http.service';
 import { HttpClient } from '@angular/common/http';
 import { SnackBarService } from '../services/snack-bar.service';
 import { GroupMember } from '../shared/models/group-members';
+
+const TAKE = 20
 
 export interface GroupData{
   title: string
@@ -25,6 +27,10 @@ export interface IGroupSave{
 export class GroupService extends BaseHttpService{
 
   protected route: string = 'Group';
+
+  isLoading = signal(false)
+  skip = signal(0)
+  noMoreItems = signal(false)
 
   constructor(http: HttpClient, snackbarService: SnackBarService) 
     { super(http, snackbarService)}
@@ -52,6 +58,37 @@ export class GroupService extends BaseHttpService{
         params: { groupId: groupId }
       }
       return this.get<GroupWithDetails>('GetGroupWithDetails', options);
+    }
+
+    loadMoreGroupsWithDetails(onlyActive: boolean): Observable<GroupWithDetails[]>{
+      if(this.isLoading() || this.noMoreItems()){
+        return of([])
+      }
+      this.isLoading.set(true)
+      var options: IAngularHttpRequestOptions = {
+        params: {
+          take: TAKE.toString(),
+          skip: this.skip().toString(),
+          onlyActive: String(onlyActive)
+        }
+      }
+      return this.get<GroupWithDetails[]>('GetAllWithDetails',options)
+              .pipe(
+                tap((groups) => {
+                  if(groups.length < TAKE){
+                    this.noMoreItems.set(true)
+                  }
+                  if (groups.length > 0) {
+                    this.skip.set(this.skip() + TAKE);
+                  }
+                }),
+                finalize(() => this.isLoading.set(false))
+              )
+    }
+
+    reset(){
+      this.noMoreItems.set(false)
+      this.skip.set(0)
     }
 
     saveGroup(group: IGroupSave): Observable<Group>{

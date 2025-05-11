@@ -4,6 +4,7 @@ import { Group, GroupWithDetails } from '../../shared/models/group-model';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { DialogService } from '../../services/dialog.service';
 import { GroupDialogComponent } from '../group-dialog/group-dialog.component';
+import { MatSlideToggle } from '@angular/material/slide-toggle';
 
 @Component({
   selector: 'app-group-card',

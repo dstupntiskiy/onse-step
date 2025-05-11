@@ -18,6 +18,9 @@ public class GetAllGroupsWithDetailsHandler(IMapper mapper,
         CancellationToken cancellationToken)
     {
         var groupsWithMembers = groupRepository.Query().Where(x => x.Active == request.OnlyActive || !request.OnlyActive)
+            .OrderByDescending(x => x.CreateDate)
+            .Take(request.Take)
+            .Skip(request.Slip)
             .GroupJoin(groupMembersRepository.Query(),
                 gr => gr.Id,
                 member => member.Group.Id,

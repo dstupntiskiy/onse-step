@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Scheduler.Application.Commands.Groups.DeactivateFinishedGroups;
 using Scheduler.Application.Commands.Groups.GroupAddMember;
 using Scheduler.Application.Common.Dtos;
 using Scheduler.Application.Queries.Groups;
@@ -31,9 +32,9 @@ public class GroupController(IMediator mediator) : ControllerBase
     }
     
     [HttpGet("GetAllWithDetails")]
-    public async Task<List<GroupDetailedDto>> GetAllWithDetails(bool onlyActive = false)
+    public async Task<List<GroupDetailedDto>> GetAllWithDetails(int take, int skip, bool onlyActive = false)
     {
-        return await mediator.Send(new GetAllGroupsWithDetails(onlyActive));
+        return await mediator.Send(new GetAllGroupsWithDetails(take, skip, onlyActive));
     }
     
     [HttpGet("GetGroupWithDetails")]
@@ -52,6 +53,13 @@ public class GroupController(IMediator mediator) : ControllerBase
     public async Task<GroupDto> Add(Application.Commands.Groups.GroupSave.Command cmd)
     {
         return await mediator.Send(cmd);
+    }
+
+    [AllowAnonymous]
+    [HttpPost("DeactivateFinishedGroups")]
+    public async Task<List<Guid>> DeactivateFinishedGroups()
+    {
+        return await mediator.Send(new DeactivateFinishedGroups());
     }
 
     [HttpPost("AddClientToGroup")]

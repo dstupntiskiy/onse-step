@@ -12,6 +12,7 @@ import { SpinnerService } from '../shared/spinner/spinner.service';
 import { finalize } from 'rxjs';
 import { GroupCardComponent } from './group-card/group-card.component';
 import { PageComponent } from '../shared/components/page/page.component';
+import { ScrollNearEndDirective } from '../directives/scroll-near-end.directive';
 
 @Component({
   selector: 'app-groups',
@@ -23,7 +24,7 @@ import { PageComponent } from '../shared/components/page/page.component';
     ReactiveFormsModule,
     GroupCardComponent,
     PageComponent,
-    
+    ScrollNearEndDirective
   ],
   templateUrl: './groups.component.html',
   styleUrl: './groups.component.scss',
@@ -62,22 +63,28 @@ export class GroupsComponent {
   }
 
   ngOnInit(){
-    this.refetchGroups()
+    this.loadGroups()
 
     this.onlyActive.valueChanges.subscribe(() =>{
-      this.refetchGroups();
+      this.groupService.reset()
+      this.groups.set([])
+      this.loadGroups();
     })
   }
 
-  private refetchGroups(){
+  loadGroups(){
     this.spinnerService.loadingOn()
-    this.groupService.getGoupsWithDetails(this.onlyActive.value as boolean)
+    this.groupService.loadMoreGroupsWithDetails(this.onlyActive.value as boolean)
     .pipe(
       finalize(() => this.spinnerService.loadingOff())
     )
     .subscribe( (groups) => {
-      this.groups.set(groups)
+      this.groups.update(() => [...this.groups(), ...groups])
     });
+  }
+
+  private refetchGroups(){
+    
   }
 
 }
