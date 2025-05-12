@@ -1,19 +1,12 @@
 <app-page header="Тренеры">
     <div class="coaches-content">
-        <button mat-stroked-button (click)="handleAddCoachClick()">Добавить</button>
-        <table mat-table [dataSource]="dataSource">
-            <ng-container matColumnDef="name">
-                <th mat-header-cell *matHeaderCellDef>Имя</th>
-                <td mat-cell *matCellDef="let element">{{element.name}}</td>
-            </ng-container>
-            <ng-container matColumnDef="style">
-                <th mat-header-cell *matHeaderCellDef>Направление</th>
-                <td mat-cell *matCellDef="let element">{{element.style?.name}}</td>
-            </ng-container>
-    
-            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns;"
-                (click)="handleRowClick(row)"></tr>
-        </table>
+        <div class="coaches-header">
+            <button mat-stroked-button (click)="handleAddCoachClick()">Добавить</button>
+        </div>
+        <div class="coaches-list">
+            @for (coach of dataSource; track coach) {
+                <app-coach-card [coach]="coach"></app-coach-card>
+            }
+        </div>
     </div>
 </app-page>

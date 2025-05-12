@@ -1,14 +1,15 @@
-@import '../../styles/mixins.scss';
-
 .styles-content{
-    margin: 16px;
-    @include tr-hover;
+    padding: 16px 0 16px 16px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    height: 100%;
 
     .styles-list{
         display: flex;
         flex-direction: column;
         gap: 12px;
-
-        margin-top: 16px;
+        overflow-y: auto;
     }
 }

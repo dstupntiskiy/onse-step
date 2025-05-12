@@ -1,13 +1,13 @@
 @import '../../styles/mixins.scss';
 
 .groups-content{
-    margin: 16px;
+    padding: 16px;
+    box-sizing: border-box;
     display: flex;
     flex-direction: column;
     gap: 16px;
-    overflow-x: auto;
-    height: 100vh;
-    
+    height: 100%;
+
     .header-actions{
         display: flex;
         gap: 16px;
@@ -19,6 +19,6 @@
         display: flex;
         flex-direction: column;
         gap: 6px;
-        overflow-y: scroll;
+        overflow-y: auto;
     }
 }

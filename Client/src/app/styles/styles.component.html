@@ -1,6 +1,8 @@
 <app-page header="Направления">
     <div class="styles-content">
-        <button mat-stroked-button (click)="handleAddStyleClick()">Добавить</button>
+        <div class="styles-header">
+            <button mat-stroked-button (click)="handleAddStyleClick()">Добавить</button>
+        </div>
         <div class="styles-list">
             @for(style of styles(); track style){
                 <app-style-card [style]="style"></app-style-card>

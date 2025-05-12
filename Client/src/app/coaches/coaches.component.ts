@@ -6,6 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { DialogService } from '../services/dialog.service';
 import { CoachDialogComponent } from './coach-dialog/coach-dialog.component';
 import { PageComponent } from '../shared/components/page/page.component';
+import { CoachCardComponent } from './coach-card/coach-card.component';
 
 @Component({
   selector: 'app-coaches',
@@ -13,7 +14,8 @@ import { PageComponent } from '../shared/components/page/page.component';
   imports: [
     MatTableModule,
     MatButtonModule,
-    PageComponent
+    PageComponent,
+    CoachCardComponent
   ],
   providers:[
     CoachService
@@ -25,7 +27,6 @@ export class CoachesComponent {
   coachesService = inject(CoachService)
   dialogService = inject(DialogService)
   dataSource: CoachModel[]
-  displayedColumns: string[] = ['name', 'style']
 
   ngOnInit(){
     this.coachesService.getCoaches().subscribe((result: CoachModel[]) => {
@@ -44,18 +45,4 @@ export class CoachesComponent {
         }
       })
   }
-
-  handleRowClick(row: CoachModel){
-    this.dialogService.showDialog(CoachDialogComponent, { coach: row })
-      .afterClosed().subscribe((result: CoachModel) => {
-        if(result)
-        {
-          var index = this.dataSource.findIndex(x => x.id === row.id)
-          this.dataSource[index] = result
-          this.dataSource = Object.assign([], this.dataSource)
-        }
-      })
-  }
-
-
 }

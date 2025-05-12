@@ -51,6 +51,7 @@ export class CalendarComponent {
   calendarModeView = signal<boolean>(false)
 
   calendarOptions: CalendarOptions = {
+    viewHeight: 'parent',
     buttonText:{
       today: 'Сегодня',
       month: 'Месяц',
