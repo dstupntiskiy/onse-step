@@ -1,7 +1,7 @@
 <div class="duty" [style.border-right-color]="color()">
     @if (!isCompactView()) {    
         <p>{{title()}}</p>
-        <p>{{start() | date:'hh:mm'}} - {{end() | date:'hh:mm'}}<p>
+        <p>{{start() | date:'HH:mm'}} - {{end() | date:'HH:mm'}}<p>
         <p>{{diff()}} ч.</p>
     }
 </div>
