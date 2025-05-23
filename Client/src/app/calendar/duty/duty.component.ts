@@ -1,8 +1,11 @@
-import { Component, input } from '@angular/core';
+import { DatePipe } from '@angular/common';
+import { Component, computed, input } from '@angular/core';
 
 @Component({
   selector: 'app-duty',
-  imports: [],
+  imports: [
+    DatePipe
+  ],
   templateUrl: './duty.component.html',
   styleUrl: './duty.component.scss'
 })
@@ -12,4 +15,12 @@ export class DutyComponent {
   start = input('')
   end = input('')
   isCompactView = input<boolean>(false)
+
+  diff = computed(() => {
+    var start = new Date(this.start())
+    var end = new Date(this.end())
+
+    var diff = (end.getTime() - start.getTime()) / (1000 * 60 * 60)
+    return diff
+  })
 }
