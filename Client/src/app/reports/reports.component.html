@@ -34,6 +34,13 @@
                             </app-one-time-visits-report>
                         </ng-template>
                     </mat-tab>
+                    <mat-tab label="Дежурства">
+                        <ng-template matTabContent>
+                            <app-duty-report
+                                [dateRange]="{ startDate: periodStartDate(), endDate: periodEndDate() }">
+                            </app-duty-report>
+                        </ng-template>
+                    </mat-tab>
                     <mat-tab label="Тренеры">
                         <ng-template matTabContent>
                             <app-coach-report

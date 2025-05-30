@@ -6,6 +6,7 @@ import { Observable } from 'rxjs';
 import { MembershipStyle, OnetimeVisitStyle } from './models/style-report.model';
 import { CoachWithEventsDto } from './models/coaches-report.model';
 import { AmountByDate } from './models/amount-by-date.model';
+import { EventDutyReport } from './models/eventDutyReport.model';
 
 @Injectable({
   providedIn: 'root'
@@ -38,6 +39,17 @@ export class ReportService extends BaseHttpService {
     }
     
     return this.get<OnetimeVisitStyle[]>("GetOnetimeVisitsStylesByPeriod", options)
+   }
+
+   getEventDutiesReportByPeriod(startDate: Date, endDate: Date) : Observable<EventDutyReport[]>{ 
+    var options: IAngularHttpRequestOptions = {
+      params: {
+        startDate: startDate.toISOString(),
+        endDate: endDate.toISOString()
+      }
+    }
+    
+    return this.get<EventDutyReport[]>("GetEventDutiesReportByPeriod", options)
    }
 
    getAllCoachesEventsWithParticipantsByPeriod(startDate: Date, endDate: Date) : Observable<CoachWithEventsDto[]>{

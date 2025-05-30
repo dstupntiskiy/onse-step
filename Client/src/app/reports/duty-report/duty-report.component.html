@@ -1,0 +1,9 @@
+<div class="duty-report-content">
+    <div class="duties-list">
+        @for (item of eventDutys(); track item) {
+        <app-card [header]="item.name">
+            <p>Всего часов: {{item.totalHours}}</p>
+        </app-card>
+        }
+    </div>
+</div>
