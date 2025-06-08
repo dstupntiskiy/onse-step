@@ -184,9 +184,6 @@ export class CalendarComponent {
         this.calendarApi.changeView('timeGrid')
         : this.calendarApi.changeView('timeGridWeek')
     })
-
-    this.menuTrigger()?.openMenu()
-
   }
 
   clickNext(){
