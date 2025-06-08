@@ -1,4 +1,4 @@
-import { Component, OutputRefSubscription, ViewChild, computed, inject, signal } from '@angular/core';
+import { Component, OutputRefSubscription, ViewChild, computed, inject, signal, viewChild } from '@angular/core';
 import { FullCalendarComponent, FullCalendarModule } from '@fullcalendar/angular';
 import { CalendarApi, CalendarOptions, EventApi, EventClickArg, EventInput, EventSourceInput } from '@fullcalendar/core';
 import interationPlugin, { DateClickArg } from '@fullcalendar/interaction'
@@ -20,6 +20,15 @@ import { DutyDialogComponent } from './duty-dialog/duty-dialog.component';
 import { DutyComponent } from './duty/duty.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { ReactiveFormsModule } from '@angular/forms';
+import { MatInputModule } from '@angular/material/input';
+import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu'
+import { MAT_DATE_FORMATS, MAT_DATE_LOCALE, MatNativeDateModule } from '@angular/material/core';
+import { CUSTOM_DATE_FORMATS } from '../shared/date_formats/date_formats';
+import { MatMomentDateModule } from '@angular/material-moment-adapter';
+import * as moment from 'moment';
 
 export enum CalendarEventType {
    Event = 'event', 
@@ -36,8 +45,19 @@ export enum CalendarEventType {
       PageComponent,
       DutyComponent,
       MatButtonModule,
-      MatIconModule
+      MatIconModule,
+      MatFormFieldModule,
+      MatDatepickerModule,
+      ReactiveFormsModule,
+      MatIconModule,
+      MatInputModule,
+      MatMenuModule,
+      MatMomentDateModule
     ],
+  providers: [
+    { provide: MAT_DATE_FORMATS, useValue: CUSTOM_DATE_FORMATS},
+    { provide: MAT_DATE_LOCALE, useValue: 'ru' }
+  ],
   templateUrl: './calendar.component.html',
   styleUrl: './calendar.component.scss'
 })
@@ -81,7 +101,6 @@ export class CalendarComponent {
     eventResizableFromStart: false, 
     eventDurationEditable: false,
     eventOrder: (a, b) => {
-      // now a and b are EventApi
       const aFirst = (a as { classNames?: string[] }).classNames?.includes('event-base') ? 0 : 1;
       const bFirst = (b as { classNames?: string[] }).classNames?.includes('event-base') ? 0 : 1;
       return aFirst - bFirst;
@@ -104,12 +123,15 @@ export class CalendarComponent {
 
   calendarApi: CalendarApi;
 
+  menuTrigger = viewChild(MatMenuTrigger)
+
   constructor(
     private snackBarService: SnackBarService,
     public dialog: MatDialog,
     private eventService: EventService,
     private spinnerService: SpinnerService 
-  ){}
+  ){
+  }
 
   toggleCalendarMode(){
     this.calendarModeView.update(() => !this.calendarModeView())
@@ -162,6 +184,9 @@ export class CalendarComponent {
         this.calendarApi.changeView('timeGrid')
         : this.calendarApi.changeView('timeGridWeek')
     })
+
+    this.menuTrigger()?.openMenu()
+
   }
 
   clickNext(){
@@ -172,6 +197,12 @@ export class CalendarComponent {
   }
   clickToday(){
     this.calendarApi.today()
+  }
+
+  onDateSelect(momentDate: moment.Moment){
+    this.menuTrigger()?.closeMenu()
+    this.calendarApi.gotoDate(momentDate.toDate())
+
   }
 
   private openDutyDialog(eventId?: string, startDateTime?: Date){

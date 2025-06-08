@@ -3,6 +3,18 @@
     <div class="calendar-header">
       <button mat-raised-button (click)="toggleCalendarMode()">{{calendarModeView() == true ? 'Дежурства' : 'События'}}</button>
       <div class="calendar-header-right">
+        <button mat-icon-button class="small-icon-button" 
+          [matMenuTriggerFor]="appMenu"
+          #menuTrigger="matMenuTrigger">
+          <mat-icon>calendar_today</mat-icon>
+        </button>
+        <mat-menu #appMenu="matMenu">
+            <mat-calendar 
+              (click)="$event.stopPropagation()" 
+              (selectedChange)="onDateSelect($event)"
+              #calendarDate >
+      </mat-calendar>
+        </mat-menu>
         <button mat-raised-button (click)="clickToday()">Сегодня</button>
         <button mat-raised-button class="arrow-button" (click)="clickPrev()">
           <mat-icon>navigate_before</mat-icon>

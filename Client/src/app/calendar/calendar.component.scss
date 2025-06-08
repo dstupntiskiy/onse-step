@@ -26,3 +26,12 @@
     }
 }
 
+.small-icon-button {
+  width: 48px;
+  height: 36px;
+  line-height: 24px;
+  padding: 0; // remove default padding
+  mat-icon {
+    font-size: 24px; // optional: shrink icon size
+  }
+}

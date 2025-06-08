@@ -2,8 +2,8 @@
 @import "@angular/material/prebuilt-themes/deeppurple-amber.css";
 
 html, body { height: 100%; }
-body { 
-    margin: 0; 
+body {
+    margin: 0;
     padding: 0;
     font-family: Roboto, "Helvetica Neue", sans-serif; };
 
@@ -30,7 +30,7 @@ body {
     justify-content: center;
     align-items: center;
 
-    
+
 }
 
 .fc-button-group{
@@ -59,13 +59,13 @@ h5{
 
 .fc-timegrid-event-harness:has(> .event-base){
     left: 0% !important;            /* 90% from the left edge */
-    width: 90% !important;   
-    right: 10% !important; 
+    width: 90% !important;
+    right: 10% !important;
 }
 
 .fc-timegrid-event-harness:has(> .event-duty.event-short){
 left: 91% !important;            /* 90% from the left edge */
-width: 10% !important;   
+width: 10% !important;
 right: 0% !important;        /* fill the last 10% */
 }
 
@@ -87,16 +87,4 @@ right: 0% !important;        /* fill the last 10% */
 
 .event-base{
     right: auto !important;
-}
-
-.event-duty{
-    //left: auto !important;
-}
-
-.event-short{
-    //width: 18% !important;
-}
-
-.event-short.event-base{
-    //width: 50% !important;
 }
