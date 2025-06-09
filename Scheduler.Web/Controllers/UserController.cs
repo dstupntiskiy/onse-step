@@ -10,6 +10,7 @@ using Scheduler.Application.Services;
 namespace Scheduler.Controllers;
 
 [ApiController]
+[Authorize(Policy = "ActiveUser")]
 [Route("api/[controller]")]
 public class UserController(IMediator mediator, UserService userService) : ControllerBase
 {

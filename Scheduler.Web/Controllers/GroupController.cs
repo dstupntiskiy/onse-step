@@ -9,7 +9,7 @@ using Scheduler.Application.Queries.Groups;
 namespace Scheduler.Controllers;
 
 [ApiController]
-[Authorize]
+[Authorize(Policy = "ActiveUser")]
 [Route("api/[controller]")]
 public class GroupController(IMediator mediator) : ControllerBase
 {

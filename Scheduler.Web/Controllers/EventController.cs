@@ -17,7 +17,7 @@ using Scheduler.Application.Queries.Events.GetEventsDutyByPeriodQuery;
 namespace Scheduler.Controllers;
 
 [ApiController]
-[Authorize]
+[Authorize(Policy = "ActiveUser")]
 [Route("api/[controller]")]
 public class EventController(IMediator mediator) : ControllerBase
 {

@@ -30,6 +30,10 @@ public static class ConfigureAuthorization
 
         services.AddAuthorization(options =>
         {
+            options.AddPolicy("ActiveUser", policy =>
+            {
+                policy.Requirements.Add(new ActiveUserRequirement());
+            });
             options.AddPolicy("SuperAdminOnly", policy =>
             {
                 policy.Requirements.Add(new SuperAdminRequirement());

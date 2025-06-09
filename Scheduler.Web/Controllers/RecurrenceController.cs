@@ -6,7 +6,7 @@ using Scheduler.Application.Commands.Recurrences.RecurrenceDelete;
 namespace Scheduler.Controllers;
 
 [ApiController]
-[Authorize]
+[Authorize(Policy = "ActiveUser")]
 [Route("api/[controller]")]
 public class RecurrenceController(IMediator mediator) : ControllerBase
 {

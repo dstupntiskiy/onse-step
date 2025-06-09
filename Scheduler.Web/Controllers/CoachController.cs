@@ -8,7 +8,7 @@ using Scheduler.Application.Queries.Coaches;
 namespace Scheduler.Controllers;
 
 [ApiController]
-[Authorize]
+[Authorize(Policy = "ActiveUser")]
 [Route("api/[controller]")]
 public class CoachController(IMediator mediator) :ControllerBase
 {

@@ -37,7 +37,9 @@ public static class DependencyInjection
             .AddScoped<UserService>()
             .AddHttpContextAccessor()
             .AddScoped<ICurrentUserService, CurrentUserService>()
-            .AddTransient<IAuthorizationHandler, SuperAdminHandler>();
+            .AddTransient<IAuthorizationHandler, SuperAdminHandler>()
+            .AddTransient<IAuthorizationHandler, ActiveUserHandler>()
+            .AddMemoryCache();
 
     public static IServiceCollection AddWebApi(this IServiceCollection services)
     {

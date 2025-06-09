@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Scheduler.Application.Commands.Memberships.MembershipDelete;
 using Scheduler.Application.Commands.Memberships.MembershipSave;
@@ -8,6 +9,7 @@ using Scheduler.Application.Queries.Memberships;
 namespace Scheduler.Controllers;
 
 [ApiController]
+[Authorize(Policy = "ActiveUser")]
 [Route("api/[controller]")]
 public class MembershipController(IMediator mediator) : ControllerBase
 {

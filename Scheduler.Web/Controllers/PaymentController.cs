@@ -8,7 +8,7 @@ using Scheduler.Application.Entities;
 namespace Scheduler.Controllers;
 
 [ApiController]
-[Authorize]
+[Authorize(Policy = "ActiveUser")]
 [Route("api/[controller]")]
 public class PaymentController(IMediator mediator) : ControllerBase
 {
