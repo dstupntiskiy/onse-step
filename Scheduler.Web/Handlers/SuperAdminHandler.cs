@@ -1,11 +1,10 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
-using Scheduler.Application.Entities;
-using Scheduler.Application.Interfaces;
+using Scheduler.Application.Services;
 
 namespace Scheduler.Handlers;
 
-public class SuperAdminHandler(IRepository<User> userRepository) : AuthorizationHandler<SuperAdminRequirement>
+public class SuperAdminHandler(UserService userService) : AuthorizationHandler<SuperAdminRequirement>
 {
     protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context,
         SuperAdminRequirement requirement)
@@ -16,7 +15,7 @@ public class SuperAdminHandler(IRepository<User> userRepository) : Authorization
             return;
         }
         
-        var user = userRepository.Query().SingleOrDefault(x => x.Id.ToString() == userIdClaim.Value);
+        var user = await userService.TryGetUser(userIdClaim.Value);
         if (user == null)
         {
             return;

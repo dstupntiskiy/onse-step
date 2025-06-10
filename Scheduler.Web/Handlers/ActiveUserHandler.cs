@@ -1,12 +1,10 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.Extensions.Caching.Memory;
-using Scheduler.Application.Entities;
-using Scheduler.Application.Interfaces;
+using Scheduler.Application.Services;
 
 namespace Scheduler.Handlers;
 
-public class ActiveUserHandler(IRepository<User> userRepository, IMemoryCache cache) : AuthorizationHandler<ActiveUserRequirement>
+public class ActiveUserHandler(UserService userService) : AuthorizationHandler<ActiveUserRequirement>
 {
     protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context,
         ActiveUserRequirement requirement)
@@ -18,29 +16,12 @@ public class ActiveUserHandler(IRepository<User> userRepository, IMemoryCache ca
             return;
         }
 
-        var user = TryGetUser(userIdClaim.Value);
+        var user = await userService.TryGetUser(userIdClaim.Value);
         if (user == null || user.Active == false)
         {
             context.Fail();
             return;
         }
         context.Succeed(requirement);
-    }
-
-    private User? TryGetUser(string userId)
-    {
-        var cacheKey = $"user: {userId}";
-        if (cache.TryGetValue(cacheKey, out User? cachedUser))
-        {
-            return cachedUser;
-        }
-        
-        var user = userRepository.Query().SingleOrDefault(x => x.Id.ToString() == userId);
-        if (user != null)
-        {
-            cache.Set(cacheKey, user, TimeSpan.FromHours(1));
-        }
-        
-        return user;
     }
 }
