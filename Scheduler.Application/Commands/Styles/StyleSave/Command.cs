@@ -10,4 +10,5 @@ public record Command(
     decimal SecondaryPrice, 
     decimal OnetimeVisitPrice, 
     decimal BaseSalary, 
-    decimal BonusSalary) : IRequest<Style>;
+    decimal BonusSalary,
+    bool Active) : IRequest<Style>;

@@ -14,6 +14,7 @@ public class StyleMapping : Profile
             .ForMember(x => x.SecondaryPrice, y=> y.MapFrom(z => z.SecondaryPrice))
             .ForMember(x => x.OnetimeVisitPrice, y => y.MapFrom(z => z.OnetimeVisitPrice))
             .ForMember(x => x.BaseSalary, y => y.MapFrom(z => z.BaseSalary))
-            .ForMember(x => x.BonusSalary, y => y.MapFrom(z => z.BonusSalary));
+            .ForMember(x => x.BonusSalary, y => y.MapFrom(z => z.BonusSalary))
+            .ForMember(x => x.Active, y => y.MapFrom(z => z.Active));
     }
 }

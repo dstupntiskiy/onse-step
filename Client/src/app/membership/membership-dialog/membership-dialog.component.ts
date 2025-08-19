@@ -92,13 +92,16 @@ export class MembershipDialogComponent implements DynamicComponent  {
     effect(() => {
         forkJoin({
           membership: this.data()?.id != null ? this.membershipService.getMembershipById(this.data().id as string) : of(null),
-          styles: this.styleService.getAllStyles()
+          styles: this.styleService.getAllStyles(true)
         })
         .pipe(
           finalize(() => this.isLoading = false)
         )
         .subscribe(result => {
           this.styles = result.styles
+          if(!this.styles.find(x => x.id == result.membership?.style?.id) && result.membership?.style){
+            this.styles.push(result.membership?.style as StyleModel)
+          }
 
           if(result.membership){
             this.payedAmountSignal.set(result.membership.amount)

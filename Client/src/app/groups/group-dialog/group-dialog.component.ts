@@ -73,13 +73,17 @@ export class GroupDialogComponent implements DynamicComponent {
 
         forkJoin({
           group: this.data()?.id != null ? this.groupService.getGroupById(this.data().id) : of(null),
-          styles: this.styleService.getAllStyles()
+          styles: this.styleService.getAllStyles(true)
         })
         .pipe(
           finalize(() => this.isLoading = false)
         )
         .subscribe(result =>{
           this.styles = result.styles
+          if(!this.styles.find(x => x.id == result.group?.style.id) && result.group?.style){
+            this.styles.push(result.group?.style as StyleModel)
+          }
+
           if(result.group){
             this.group.set(result.group)
             this.name?.setValue(result.group.name);

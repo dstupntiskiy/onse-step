@@ -12,5 +12,6 @@ public class StyleMap : AuditableEntityMap<Style>
         Map(x => x.OnetimeVisitPrice).Column("`OnetimeVisitPrice`");
         Map(x => x.BaseSalary).Column("`BaseSalary`");
         Map(x => x.BonusSalary).Column("`BonusSalary`");
+        Map(x => x.Active).Column("`Active`");
     }
 }

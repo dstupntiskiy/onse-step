@@ -6,6 +6,13 @@
     gap: 16px;
     height: 100%;
 
+    .styles-header{
+        display: flex;
+        gap: 16px;
+        align-items: center;
+        flex-shrink: 0;
+    }
+
     .styles-list{
         display: flex;
         flex-direction: column;

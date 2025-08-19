@@ -19,9 +19,9 @@ public class StyleController(IMediator mediator) : ControllerBase
     }
 
     [HttpGet("GetAll")]
-    public async Task<List<Style>> GetAll()
+    public async Task<List<Style>> GetAll(bool onlyActive = false)
     {
-        var cmd = new GetAllStylesQuery();
+        var cmd = new GetAllStylesQuery(onlyActive);
         return await mediator.Send(cmd);
     }
 }

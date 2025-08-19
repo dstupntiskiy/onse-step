@@ -2,6 +2,7 @@
     <div class="styles-content">
         <div class="styles-header">
             <button mat-stroked-button (click)="handleAddStyleClick()">Добавить</button>
+            <mat-slide-toggle [formControl]="onlyActive">Только активные</mat-slide-toggle>
         </div>
         <div class="styles-list">
             @for(style of styles(); track style){

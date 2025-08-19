@@ -10,4 +10,5 @@ public class Style : AuditableEntity
     public virtual decimal OnetimeVisitPrice { get; set; }
     public virtual decimal BaseSalary { get; set; }
     public virtual decimal BonusSalary { get; set; }
+    public virtual bool Active { get; set; }
 }

@@ -6,6 +6,7 @@ export class StyleModel{
     onetimeVisitPrice: number
     baseSalary: number
     bonusSalary: number
+    active: boolean
 
     constructor(){}
 }

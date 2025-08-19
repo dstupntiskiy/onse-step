@@ -8,6 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { finalize } from 'rxjs';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 export interface StyleDialogData{
   style: StyleModel
@@ -19,7 +20,8 @@ export interface StyleDialogData{
   imports: [
     MatInputModule,
     MatButtonModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    MatSlideToggleModule
   ],
   providers:[
   ],
@@ -40,6 +42,7 @@ export class StyleDialogComponent implements DynamicComponent {
   onetimeVisitPrice = new FormControl<number>(0, [Validators.required])
   baseSalary = new FormControl<number>(0, [Validators.required])
   bonusSalary = new FormControl<number>(0, [Validators.required])
+  active = new FormControl<boolean>(true)
 
   constructor(private dialogRef: MatDialogRef<StyleDialogComponent>){
     effect(() =>{
@@ -51,6 +54,7 @@ export class StyleDialogComponent implements DynamicComponent {
           this.onetimeVisitPrice.setValue(this.data()?.style.onetimeVisitPrice as number)
           this.baseSalary.setValue(this.data()?.style.baseSalary as number)
           this.bonusSalary.setValue(this.data()?.style.bonusSalary as number)
+          this.active.setValue(this.data()?.style.active as boolean)
         }
       }
     })
@@ -69,7 +73,8 @@ export class StyleDialogComponent implements DynamicComponent {
         secondaryPrice: this.secondaryPrice.value as number,
         onetimeVisitPrice: this.onetimeVisitPrice.value as number,
         baseSalary: this.baseSalary.value as number,
-        bonusSalary: this.bonusSalary.value as number
+        bonusSalary: this.bonusSalary.value as number,
+        active: this.active.value as boolean
       }
 
       this.spinnerService.loadingOn()

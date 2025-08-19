@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BaseHttpService } from '../services/base-http.service';
+import { BaseHttpService, IAngularHttpRequestOptions } from '../services/base-http.service';
 import { HttpClient } from '@angular/common/http';
 import { SnackBarService } from '../services/snack-bar.service';
 import { Observable } from 'rxjs';
@@ -15,8 +15,13 @@ export class StyleService extends BaseHttpService {
     super(http, snackbarService)
   }
 
-  getAllStyles(): Observable<StyleModel[]>{
-    return this.get<StyleModel[]>('GetAll')
+  getAllStyles(onlyActive: boolean): Observable<StyleModel[]>{
+    var options: IAngularHttpRequestOptions = {
+      params:{
+        onlyActive: String(onlyActive)
+      }
+    }
+    return this.get<StyleModel[]>('GetAll', options)
   }
 
   saveStyle(style: StyleModel) : Observable<StyleModel>{

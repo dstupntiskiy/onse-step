@@ -516,6 +516,9 @@ namespace Scheduler.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<bool>("Active")
+                        .HasColumnType("boolean");
+
                     b.Property<decimal>("BasePrice")
                         .HasColumnType("numeric");
 
