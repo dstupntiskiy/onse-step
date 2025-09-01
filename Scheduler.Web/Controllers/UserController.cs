@@ -21,6 +21,7 @@ public class UserController(IMediator mediator, UserService userService) : Contr
         return Ok();
     }
 
+    [AllowAnonymous]
     [HttpPost("Login")]
     public async Task<LoginDto> Login(LoginQuery query)
     {
