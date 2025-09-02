@@ -33,7 +33,7 @@ export class PaymentComponent {
   onEditClick(){
     this.dialogService.showDialog(PaymentDialogComponent, {
         payment: this.payment(),
-        memberId: this.memberId(), 
+        memberId: this.memberId(),
         paymentType: this.paymentType()
        })
       .afterClosed().subscribe((result) =>{
@@ -45,7 +45,7 @@ export class PaymentComponent {
 
   onAddPaymentClick(){
     this.dialogService.showDialog(PaymentDialogComponent, {
-      memberId: this.memberId(), 
+      memberId: this.memberId(),
       paymentType: this.paymentType(),
       onetimeVisitPrice: this.onetimeVisitPrice()
     })

@@ -34,11 +34,11 @@ export class EventOnetimeVisitsComponent {
   constructor(){
     effect(() =>{
       this.refetchOnetimeVisitorsCount()
-    }, {allowSignalWrites: true})
+    })
   }
 
   onClick(){
-    this.dialogService.showDialog(OnetimeVisitorDialogComponent, { eventId: this.eventId(), style: this.eventStyle })
+    this.dialogService.showDialog(OnetimeVisitorDialogComponent, { eventId: this.eventId(), style: this.eventStyle() })
       .afterClosed().subscribe(() => this.refetchOnetimeVisitorsCount())
   }
 

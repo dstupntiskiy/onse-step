@@ -40,11 +40,11 @@ export class EventParticipantsComponent {
   constructor() {
     effect(() => {
       this.refetchParticipantsCount()
-    }, {allowSignalWrites: true})
+    })
     effect(() =>{
       const _ = this.triggerUpdateGroupMembersCount();
       this.refetchGroupMembersCount()
-    }, {allowSignalWrites: true})
+    })
   }
 
   onClick(){

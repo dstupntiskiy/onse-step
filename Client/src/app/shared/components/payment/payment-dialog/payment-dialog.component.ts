@@ -14,7 +14,7 @@ import { DialogService } from '../../../../services/dialog.service';
 
 export interface PaymentDialogData{
   payment: PaymentModel,
-  memberId: string, 
+  memberId: string,
   title: string,
   paymentType: PaymentType
   onetimeVisitPrice: number
@@ -33,11 +33,11 @@ export interface PaymentDialogData{
 })
 export class PaymentDialogComponent implements DynamicComponent {
   title = signal<string>('Оплата')
-  
-  amount = new FormControl<number>(0, 
-    [Validators.required, 
+
+  amount = new FormControl<number>(0,
+    [Validators.required,
       Validators.min(0),
-      Validators.max(100000), 
+      Validators.max(100000),
       Validators.nullValidator])
   comment = new FormControl<string>('')
 
@@ -67,7 +67,7 @@ export class PaymentDialogComponent implements DynamicComponent {
       }
       payment.amount = this.amount.value as number
       payment.comment = this.comment.value as string
-      
+
       this.spinnerService.loadingOn()
       this.paymentService.savePayment(payment, this.data().memberId, this.data().paymentType)
         .pipe(

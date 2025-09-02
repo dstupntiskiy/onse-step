@@ -32,7 +32,7 @@ export class ClientMembershipsListComponent {
   constructor(){
     effect(() =>{
       this.updateMemberships()
-    }, { allowSignalWrites: true })
+    })
   }
 
   onAddMembershipClick(){
