@@ -49,7 +49,7 @@ export class MembershipDialogComponent implements DynamicComponent  {
   title = signal<string>('Абонемент')
   isLoading : boolean = true
 
-  private readonly UNLIMITED_PRICE = 18000
+  private readonly UNLIMITED_PRICE = 20500
 
   visitsCount = signal<VisitsCount>(8)
 
