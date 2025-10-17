@@ -18,6 +18,7 @@ export class EventModel{
     recurrence?: Recurrence
     coach?: CoachModel
     eventType: EventType
+    eventCoachSubstitution?: EventCoachSubstitutionModel
 
     constructor(){}
   }

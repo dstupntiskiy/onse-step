@@ -253,8 +253,7 @@ export class CalendarComponent {
   }
 
   private saveEvent(event: EventModel){
-    var ev = this.calendarApi.getEventById(event.id)
-    ev?.remove()
+    this.deleteEvent(event.id)
     this.calendarApi.addEvent(this.getEvent(event))
   }
 
@@ -270,7 +269,8 @@ export class CalendarComponent {
       groupId: eventData.group?.id,
       groupName: eventData.group?.name,
       coachId: eventData.coach?.id,
-      coachName: eventData.coach?.name,
+      coachName: eventData.eventCoachSubstitution ? eventData.eventCoachSubstitution?.coach?.name + " \u{1F5D8}" : eventData.coach?.name,
+      isSubstituted: eventData.eventCoachSubstitution != null,
       exceptDates: eventData.recurrence?.exceptdates,
       recurrencyStartDate: eventData.recurrence?.startDate,
       recurrencyEndDate: eventData.recurrence?.endDate,

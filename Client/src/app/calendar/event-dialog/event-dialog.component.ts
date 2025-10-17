@@ -204,14 +204,24 @@ export class EventDialogComponent implements DynamicComponent {
       this.eventType.disable()
     }    
 
-    this.groupService.getGoups(true).subscribe((options) => {
-      this.groups = options
-      const value = options.find(o => o.id == this.initialEvent()?.group?.id)?.id
-      this.group.setValue(value as string)
-      if(this.group.value){
-        this.group.disable()
+    this.groupService.getGroups(true).subscribe((groups) => {
+      this.groups = groups;
+
+      const initialGroupId = this.initialEvent()?.group?.id;
+      let selectedGroup = groups.find(g => g.id === initialGroupId);
+
+      // Если группы нет в списке, используем из initialEvent и добавляем в список
+      if (!selectedGroup && this.initialEvent()?.group) {
+        selectedGroup = this.initialEvent()?.group!;
+        this.groups.push(selectedGroup);
       }
-    })
+
+      // Устанавливаем значение и блокируем поле при необходимости
+      this.group.setValue(selectedGroup?.id ?? '');
+      if (this.group.value) {
+        this.group.disable();
+      }
+    });
 
   this.name.setValue(this.initialEvent()?.name as string)
   this.start?.setValue(getFormattedTime(this.initialEvent()?.startDateTime as Date ?? this.data().startDateTime))
