@@ -217,7 +217,7 @@ export class EventDialogComponent implements DynamicComponent {
       }
 
       // Устанавливаем значение и блокируем поле при необходимости
-      this.group.setValue(selectedGroup?.id ?? '');
+      this.group.setValue(selectedGroup?.id as string);
       if (this.group.value) {
         this.group.disable();
       }
