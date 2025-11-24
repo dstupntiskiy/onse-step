@@ -3,10 +3,14 @@ import { CardComponent } from '../../shared/components/card/card.component';
 import { CoachModel } from '../../shared/models/coach-model';
 import { DialogService } from '../../services/dialog.service';
 import { CoachDialogComponent } from '../coach-dialog/coach-dialog.component';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 @Component({
   selector: 'app-coach-card',
-  imports: [CardComponent],
+  imports: [
+    CardComponent,
+    MatCheckboxModule
+  ],
   templateUrl: './coach-card.component.html',
   styleUrl: './coach-card.component.scss'
 })

@@ -100,7 +100,7 @@
         <div class="fields-row">
             <app-coach-substitution 
             [eventId]="initialEvent()?.id ?? ''"
-            [coach]="initialEvent()?.coach?.id"
+            [coach]="initialEvent()?.coach"
             (coachChange)="onCoachChange($event)"
             [substitution]="substitution$ | async"
             [coaches]="coaches$ | async"></app-coach-substitution>

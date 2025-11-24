@@ -141,7 +141,7 @@ export class EventDialogComponent implements DynamicComponent {
                         || this.startSignal() != getHalfHourIntervalFromDate(this.initialEvent()?.startDateTime as Date)
                         || this.endSignal() != getHalfHourIntervalFromDate(this.initialEvent()?.endDateTime as Date)
                         || this.groupSignal() != this.initialEvent()?.group
-                        || this.coach?.id != this.initialEvent()?.coach?.id
+                        || this.coachId() != this.initialEvent()?.coach?.id
                         || this.color() != this.initialEvent()?.color)
 
 
@@ -196,7 +196,7 @@ export class EventDialogComponent implements DynamicComponent {
   init(){
     this.coach = this.initialEvent()?.coach
     this.substitution$ = this.eventService.getCoachSubstitution(this.initialEvent()?.id as string)
-    this.coaches$ = this.coachService.getCoaches()
+    this.coaches$ = this.coachService.getCoaches(true)
 
     this.color.set(this.initialEvent()?.color ?? 'teal');
     this.eventType.setValue(this.initialEvent()?.eventType ?? EventType.Event)

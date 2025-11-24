@@ -25,7 +25,7 @@ import { MatButtonModule } from '@angular/material/button';
 })
 export class CoachSubstitutionComponent {
   eventId = input.required<string>()
-  coach = input<string>()
+  coach = input<CoachModel>()
   substitution = model<EventCoachSubstitutionModel | null>()
   coaches = input.required<CoachModel[] | null>()
   coachChange = output<string>()
@@ -34,7 +34,7 @@ export class CoachSubstitutionComponent {
   substitutionControl = new FormControl<String>('')
 
   coachService = inject(CoachService)
-  
+
   isEditing : boolean = false
 
   eventService = inject(EventService)
@@ -43,7 +43,10 @@ export class CoachSubstitutionComponent {
   constructor(){
     effect(() =>{
       if(this.coaches() && this.coach()){
-        this.coachControl.setValue(this.coach() as string)
+        if(!this.coaches()?.find(x => x.id == this.coach()?.id)){
+          this.coaches()?.push(this.coach() as CoachModel)
+        }
+        this.coachControl.setValue(this.coach()?.id as string)
         this.coachControl.disable()
       }
       if(this.coaches() && this.substitution()){
@@ -67,7 +70,7 @@ export class CoachSubstitutionComponent {
   }
 
   onSubstitutionChange(){
-    if(this.substitutionControl.value != this.coach()){
+    if(this.substitutionControl.value != this.coach()?.id){
       this.eventService.addCoachSubstitution(this.eventId(), this.substitutionControl.value as string)
         .subscribe((result: EventCoachSubstitutionModel) =>{
           if(result){

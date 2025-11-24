@@ -2,6 +2,7 @@
     <div class="coaches-content">
         <div class="coaches-header">
             <button mat-stroked-button (click)="handleAddCoachClick()">Добавить</button>
+            <mat-slide-toggle [formControl]="onlyActive">Только активные</mat-slide-toggle>
         </div>
         <div class="coaches-list">
             @for (coach of dataSource; track coach) {

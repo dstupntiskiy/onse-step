@@ -10,9 +10,8 @@ public class GetAllCoachesQueryHandler(IMapper mapper, IRepository<Coach> coachR
 {
     public async Task<List<CoachDto>> Handle(GetAllCoachesQuery request, CancellationToken cancellationToken)
     {
-        var coaches =  request.OnlyActive
-            ? mapper.Map<List<CoachDto>>(coachRepository.Query().Where(x => x.Active == true).ToList())
-            : mapper.Map<List<CoachDto>>(await coachRepository.GetAll());
+        var coaches = mapper.Map<List<CoachDto>>(coachRepository.Query()
+            .Where(x => x.Active == request.OnlyActive || !request.OnlyActive));
         return coaches.OrderBy(x => x.Name).ToList();
     }
 }

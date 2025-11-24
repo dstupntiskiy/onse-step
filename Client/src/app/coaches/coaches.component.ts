@@ -7,6 +7,8 @@ import { DialogService } from '../services/dialog.service';
 import { CoachDialogComponent } from './coach-dialog/coach-dialog.component';
 import { PageComponent } from '../shared/components/page/page.component';
 import { CoachCardComponent } from './coach-card/coach-card.component';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-coaches',
@@ -15,7 +17,9 @@ import { CoachCardComponent } from './coach-card/coach-card.component';
     MatTableModule,
     MatButtonModule,
     PageComponent,
-    CoachCardComponent
+    CoachCardComponent,
+    MatSlideToggleModule,
+    ReactiveFormsModule
   ],
   providers:[
     CoachService
@@ -28,8 +32,19 @@ export class CoachesComponent {
   dialogService = inject(DialogService)
   dataSource: CoachModel[]
 
+  onlyActive = new FormControl<boolean>(true)
+
   ngOnInit(){
-    this.coachesService.getCoaches().subscribe((result: CoachModel[]) => {
+    this.loadCoaches()
+
+    this.onlyActive.valueChanges.subscribe(() => {
+      this.dataSource = []
+      this.loadCoaches()
+    })
+  }
+
+  loadCoaches(){
+    this.coachesService.getCoaches(this.onlyActive.value as boolean).subscribe((result: CoachModel[]) => {
       this.dataSource = result
     })
   }

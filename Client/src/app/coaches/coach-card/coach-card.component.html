@@ -1,5 +1,6 @@
 <div class="coach-card" (click)="handleClick()">
     <app-card [header]="coach()?.name">
-        <p>{{coach()?.style?.name}}</p>
+        <p>{{coach()?.style?.name}}
+        <mat-checkbox [checked]="coach()?.active" [disabled]="true"></mat-checkbox> </p>
     </app-card>
 </div>

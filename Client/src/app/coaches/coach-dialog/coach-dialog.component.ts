@@ -12,6 +12,7 @@ import { DynamicComponent } from '../../shared/dialog/base-dialog/base-dialog.co
 import { StyleService } from '../../styles/style.service';
 import { StyleModel } from '../../shared/models/style-model';
 import { MatSelectModule } from '@angular/material/select';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 export interface CoachDialogData{
   coach: CoachModel
@@ -25,7 +26,8 @@ export interface CoachDialogData{
     MatInputModule,
     MatButtonModule,
     ReactiveFormsModule,
-    MatSelectModule
+    MatSelectModule,
+    MatSlideToggleModule
   ],
   providers:[
     SpinnerService

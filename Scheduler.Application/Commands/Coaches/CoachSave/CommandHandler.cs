@@ -20,7 +20,7 @@ public class CommandHandler(
 
         coach.Name = request.Name;
         coach.Style = style;
-        coach.Active = true;
+        coach.Active = request.Active;
 
         return mapper.Map<CoachDto>(await coachRepository.AddAsync(coach));
     }
