@@ -1,16 +1,16 @@
-.scroll-wrapper{
+.scroll-wrapper {
     width: 100%;
-    height: 100vh;
+    height: 100%;
     display: flex;
     flex-direction: column;
 
-    .page-content{
+    .page-content {
         width: auto;
         flex: 1;
         overflow-y: hidden;
     }
 }
 
-.scroll{
+.scroll {
     overflow-y: scroll;
 }

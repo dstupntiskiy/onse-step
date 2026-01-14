@@ -112,7 +112,7 @@ export class CalendarComponent {
     selectable: true,
     editable: true,
     firstDay: 1,
-    height: 'calc(100vh - 32px)',
+    height: '100%',
     datesSet: this.handleDateSet.bind(this),
     dateClick: this.handleDateClick.bind(this),
     eventClick: this.handleEventClick.bind(this)
