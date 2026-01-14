@@ -10,17 +10,16 @@ export abstract class DialogService {
   constructor(
     public dialog: MatDialog
   ) {
-    }
+  }
 
-  public showDialog(component: Type<any>, data?: any): MatDialogRef<BaseDialogComponent, any>{
-    return this.dialog.open(BaseDialogComponent, { 
+  public showDialog(component: Type<any>, data?: any): MatDialogRef<BaseDialogComponent, any> {
+    return this.dialog.open(BaseDialogComponent, {
       data: {
         component: component,
         customData: data
       },
       maxWidth: '95vw',
-      maxHeight: '95vh',
       autoFocus: false
     })
-  } 
+  }
 }

@@ -4,8 +4,8 @@ import { MatButtonModule } from '@angular/material/button'
 import { MatInputModule } from '@angular/material/input'
 import { MatSelectModule } from '@angular/material/select'
 import { MatCheckboxModule } from '@angular/material/checkbox'
-import { MatDatepickerModule} from '@angular/material/datepicker'
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatDatepickerModule } from '@angular/material/datepicker'
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators, AbstractControl, ValidatorFn } from '@angular/forms';
 import { addHours, getFormattedTime, getHalfHourIntervalFromDate, getHalfHourIntervals, setTimeFromStringToDate } from '../../shared/helpers/time-helper';
 import { Group } from '../../shared/models/group-model';
 import { GroupService } from '../../groups/group.service';
@@ -38,32 +38,32 @@ import { UpdateOnlyThisDialogComponent } from './update-only-this-dialog/update-
 import { EventParticipantsComponent } from './event-participants/event-participants.component';
 import { EventOnetimeVisitsComponent } from './event-onetime-visits/event-onetime-visits.component';
 
-export interface EventDialogData{
+export interface EventDialogData {
   id: string
   startDateTime: string
 }
 
-export interface Recurrence{
+export interface Recurrence {
   exceptdates?: string[];
   startDate: Date;
   endDate: Date;
   daysOfWeek: number[];
-  id: string; 
+  id: string;
 }
 
-export interface Weekday{
+export interface Weekday {
   number: number;
   name: string;
 }
 
 const WEEKDAYS: Weekday[] = [
-  { number: 1, name: 'Понедельник'},
-  { number: 2, name: 'Вторник'},
-  { number: 3, name: 'Среда'},
-  { number: 4, name: 'Четверг'},
-  { number: 5, name: 'Пятница'},
-  { number: 6, name: 'Суббота'},
-  { number: 0, name: 'Воскресенье'},
+  { number: 1, name: 'Понедельник' },
+  { number: 2, name: 'Вторник' },
+  { number: 3, name: 'Среда' },
+  { number: 4, name: 'Четверг' },
+  { number: 5, name: 'Пятница' },
+  { number: 6, name: 'Суббота' },
+  { number: 0, name: 'Воскресенье' },
 ]
 
 @Component({
@@ -71,8 +71,8 @@ const WEEKDAYS: Weekday[] = [
   standalone: true,
   imports: [
     CommonModule,
-    MatButtonModule, 
-    MatDialogModule, 
+    MatButtonModule,
+    MatDialogModule,
     MatInputModule,
     MatSelectModule,
     MatCheckboxModule,
@@ -90,22 +90,22 @@ const WEEKDAYS: Weekday[] = [
     CoachSubstitutionComponent,
     AsyncPipe,
     EventParticipantsComponent,
-    EventOnetimeVisitsComponent ],
+    EventOnetimeVisitsComponent],
   templateUrl: './event-dialog.component.html',
   styleUrl: './event-dialog.component.scss',
-  providers:[
+  providers: [
     GroupService,
     CoachService,
     provideNativeDateAdapter(),
     { provide: MAT_DATE_LOCALE, useValue: 'ru-RU' },
-    { provide: DateAdapter, useClass: CustomDateAdapter}
+    { provide: DateAdapter, useClass: CustomDateAdapter }
   ]
 })
 export class EventDialogComponent implements DynamicComponent {
   data = input.required<EventDialogData>()
   title = computed(() => this.initialEvent()?.name ?? 'Новое событие')
 
-  coach : CoachModel | undefined
+  coach: CoachModel | undefined
 
   timeOptions: string[] = getHalfHourIntervals();
   weekDaysList: Weekday[] = WEEKDAYS;
@@ -120,17 +120,29 @@ export class EventDialogComponent implements DynamicComponent {
 
   onetimeVisitorsCount: number = 0;
 
-  initialEvent = signal<EventModel| null>(null);
+  initialEvent = signal<EventModel | null>(null);
 
-  name = new FormControl<string>('', [Validators.required])
-  start =  new FormControl<string>('', [Validators.required])
-  end = new FormControl<string>('', [Validators.required])
-  group = new FormControl<string | null>(null)
-  weekdays = new FormControl<Weekday[]>([])
-  isRecur = new FormControl<boolean>(false)
-  recurStart = new FormControl<Date | null>(null)
-  recurEnd = new FormControl<Date | null>(null)
-  eventType = new FormControl<EventType>(EventType.Event)
+  form = new FormGroup({
+    name: new FormControl<string>('', [Validators.required]),
+    start: new FormControl<string>('', [Validators.required]),
+    end: new FormControl<string>('', [Validators.required]),
+    group: new FormControl<string | null>(null),
+    weekdays: new FormControl<Weekday[]>([]),
+    isRecur: new FormControl<boolean>(false),
+    recurStart: new FormControl<Date | null>(null),
+    recurEnd: new FormControl<Date | null>(null),
+    eventType: new FormControl<EventType>(EventType.Event)
+  }, { validators: [this.validateDates(), this.validateWeekdaysNotEmpty()] })
+
+  get name() { return this.form.controls.name as FormControl }
+  get start() { return this.form.controls.start as FormControl }
+  get end() { return this.form.controls.end as FormControl }
+  get group() { return this.form.controls.group as FormControl }
+  get weekdays() { return this.form.controls.weekdays as FormControl }
+  get isRecur() { return this.form.controls.isRecur as FormControl }
+  get recurStart() { return this.form.controls.recurStart as FormControl }
+  get recurEnd() { return this.form.controls.recurEnd as FormControl }
+  get eventType() { return this.form.controls.eventType as FormControl }
 
   nameSignal = toSignal(this.name.valueChanges)
   startSignal = toSignal(this.start.valueChanges)
@@ -138,33 +150,33 @@ export class EventDialogComponent implements DynamicComponent {
   groupSignal = toSignal(this.group.valueChanges)
 
   dirty = computed(() => this.nameSignal() != this.initialEvent()?.name
-                        || this.startSignal() != getHalfHourIntervalFromDate(this.initialEvent()?.startDateTime as Date)
-                        || this.endSignal() != getHalfHourIntervalFromDate(this.initialEvent()?.endDateTime as Date)
-                        || this.groupSignal() != this.initialEvent()?.group
-                        || this.coachId() != this.initialEvent()?.coach?.id
-                        || this.color() != this.initialEvent()?.color)
+    || this.startSignal() != getHalfHourIntervalFromDate(this.initialEvent()?.startDateTime as Date)
+    || this.endSignal() != getHalfHourIntervalFromDate(this.initialEvent()?.endDateTime as Date)
+    || this.groupSignal() != this.initialEvent()?.group
+    || this.coachId() != this.initialEvent()?.coach?.id
+    || this.color() != this.initialEvent()?.color)
 
 
   eventTypes = EventType
 
-  substitution$ : Observable<EventCoachSubstitutionModel> 
+  substitution$: Observable<EventCoachSubstitutionModel>
   coaches$: Observable<CoachModel[]>
 
   dialogService = inject(DialogService)
   eventService = inject(EventService)
   coachService = inject(CoachService)
 
-  date = computed(() =>  {
+  date = computed(() => {
     var dateValue = this.initialEvent()?.startDateTime ?? new Date(this.data().startDateTime)
     var parsedDate = new Date(dateValue)
-    return  isNaN(parsedDate.getTime()) ? new Date() : parsedDate;
-    }
+    return isNaN(parsedDate.getTime()) ? new Date() : parsedDate;
+  }
   )
 
   eventSaved = output<EventModel[]>()
   eventDeleted = output<string[]>()
 
-  isLoading : boolean = true
+  isLoading: boolean = true
 
   triggerUpdateGroupMembersCount = signal<{}>({})
 
@@ -173,36 +185,37 @@ export class EventDialogComponent implements DynamicComponent {
     private groupService: GroupService,
     private spinnerService: SpinnerService,
     private recurrenceService: RecurrenceService,
-  ){}
+  ) { }
 
-  public ngOnInit(){
+  public ngOnInit() {
     this.loadData()
   }
 
-  private loadData(){
+  private loadData() {
     var request = this.data()?.id ? this.eventService.getEventById(this.data()?.id) : of(new EventModel)
-      request
-        .pipe(
-          finalize(() => {
-            this.init()
-            this.isLoading = false
+    request
+      .pipe(
+        finalize(() => {
+          this.init()
+          this.isLoading = false
         }))
-        .subscribe(result => {
-          if(result){
-            this.initialEvent.update(() => result)
-        }})
+      .subscribe(result => {
+        if (result) {
+          this.initialEvent.update(() => result)
+        }
+      })
   }
 
-  init(){
+  init() {
     this.coach = this.initialEvent()?.coach
     this.substitution$ = this.eventService.getCoachSubstitution(this.initialEvent()?.id as string)
     this.coaches$ = this.coachService.getCoaches(true)
 
     this.color.set(this.initialEvent()?.color ?? 'teal');
     this.eventType.setValue(this.initialEvent()?.eventType ?? EventType.Event)
-    if(this.initialEvent()?.id){
+    if (this.initialEvent()?.id) {
       this.eventType.disable()
-    }    
+    }
 
     this.groupService.getGroups(true).subscribe((groups) => {
       this.groups = groups;
@@ -223,28 +236,27 @@ export class EventDialogComponent implements DynamicComponent {
       }
     });
 
-  this.name.setValue(this.initialEvent()?.name as string)
-  this.start?.setValue(getFormattedTime(this.initialEvent()?.startDateTime as Date ?? this.data().startDateTime))
-  this.initialEvent()?.endDateTime
-    ? this.end?.setValue(getFormattedTime(this.initialEvent()?.endDateTime as Date))
-    :  this.end?.setValue(getFormattedTime(addHours(this.date(), 1)))
+    this.name.setValue(this.initialEvent()?.name as string)
+    this.start?.setValue(getFormattedTime(this.initialEvent()?.startDateTime as Date ?? this.data().startDateTime))
+    this.initialEvent()?.endDateTime
+      ? this.end?.setValue(getFormattedTime(this.initialEvent()?.endDateTime as Date))
+      : this.end?.setValue(getFormattedTime(addHours(this.date(), 1)))
 
-  this.isRecur?.setValue(!!(this.initialEvent()?.recurrence?.startDate));
-  if (this.isRecur?.value || this.initialEvent()?.id){
-    this.isRecur?.disable();
+    this.isRecur?.setValue(!!(this.initialEvent()?.recurrence?.startDate));
+    if (this.isRecur?.value || this.initialEvent()?.id) {
+      this.isRecur?.disable();
 
-    this.recurStart?.disable();
-    this.recurEnd?.disable();
-    this.weekdays?.disable();
-    this.recurStart?.setValue(this.initialEvent()?.recurrence?.startDate as Date)
-    this.recurEnd?.setValue(this.initialEvent()?.recurrence?.endDate as Date)
-    this.weekdays?.setValue(this.initialEvent()?.recurrence?.daysOfWeek?.map(x => WEEKDAYS.find(y => y.number == x)) as Weekday[])
+      this.recurStart?.disable();
+      this.recurEnd?.disable();
+      this.weekdays?.disable();
+      this.recurStart?.setValue(this.initialEvent()?.recurrence?.startDate as Date)
+      this.recurEnd?.setValue(this.initialEvent()?.recurrence?.endDate as Date)
+      this.weekdays?.setValue(this.initialEvent()?.recurrence?.daysOfWeek?.map(x => WEEKDAYS.find(y => y.number == x)) as Weekday[])
     }
   }
 
-  submit(): void{
-    if (this.validateDates() && this.validateWeekdaysNotEmpty() && this.name.valid)
-    {
+  submit(): void {
+    if (this.form.valid) {
       const data: EventRequestModel = {
         id: this.initialEvent()?.id as string,
         startDateTime: setTimeFromStringToDate(this.date(), this.start?.value as string),
@@ -257,94 +269,94 @@ export class EventDialogComponent implements DynamicComponent {
         isRecurrent: this.isRecur.value as boolean,
         updateOnlyThis: true
       }
-      if (this.isRecur?.value){
-          data.daysOfWeek = (this.weekdays?.value as Weekday[]).map((x : Weekday) => x.number),
+      if (this.isRecur?.value) {
+        data.daysOfWeek = (this.weekdays?.value as Weekday[]).map((x: Weekday) => x.number),
           data.exceptDates = this.initialEvent()?.recurrence?.exceptdates,
           data.recurrencyStartDate = this.recurStart?.value as Date,
           data.recurrencyEndDate = this.recurEnd?.value as Date,
           data.recurrenceId = this.initialEvent()?.recurrence?.id ?? Guid.EMPTY.toString()
       }
 
-      if(this.isRecur?.value && this.dirty()){
+      if (this.isRecur?.value && this.dirty()) {
         var dialog = this.dialogService.showDialog(UpdateOnlyThisDialogComponent, {})
         dialog.afterClosed().subscribe((result) => {
-          if(result == 'all'){
+          if (result == 'all') {
             data.updateOnlyThis = false
           }
-          if(!result){
+          if (!result) {
             return;
           }
           this.saveEvent(data)
         })
       }
-      else{
+      else {
         this.saveEvent(data)
       }
-      
+
     }
   }
 
-  private saveEvent(event: EventRequestModel){
+  private saveEvent(event: EventRequestModel) {
     this.spinnerService.loadingOn();
-      this.eventService.saveEvent(event)
-        .pipe(
-          finalize(() => this.spinnerService.loadingOff())
-        )
-        .subscribe((events: EventModel[]) => {
-          if(events){
-            this.eventSaved.emit(events)
-            if(events.length == 1){
-              this.initialEvent.update(() => events[0])
-              this.init()
-            }
-            else {
-              this.dialogRef.close()
-            }
+    this.eventService.saveEvent(event)
+      .pipe(
+        finalize(() => this.spinnerService.loadingOff())
+      )
+      .subscribe((events: EventModel[]) => {
+        if (events) {
+          this.eventSaved.emit(events)
+          if (events.length == 1) {
+            this.initialEvent.update(() => events[0])
+            this.init()
           }
-        })
+          else {
+            this.dialogRef.close()
+          }
+        }
+      })
   }
 
-  changeIsRecur(isRecur: boolean){
+  changeIsRecur(isRecur: boolean) {
     this.isRecur?.setValue(isRecur);
   }
 
-  onCloseClick(): void{
+  onCloseClick(): void {
     this.dialogRef.close()
   }
 
-  onDelete(): void{
-    if (this.isRecur?.value){
-      var deleteDialog = this.dialogService.showDialog(DeleteDialogComponent, 
-        { 
-          message: 'Удалить все повторения или экземпляр?', 
+  onDelete(): void {
+    if (this.isRecur?.value) {
+      var deleteDialog = this.dialogService.showDialog(DeleteDialogComponent,
+        {
+          message: 'Удалить все повторения или экземпляр?',
           eventName: this.initialEvent()?.name
         })
-      deleteDialog.afterClosed().subscribe((result: DeleteResult) =>{
-          if (result?.delete == 'all'){
-            var recurrToDelete = this.initialEvent()?.recurrence?.id ?? '';
-            this.recurrenceService.deleteRecurrence(recurrToDelete).subscribe((eventIdsToDelete: string[]) => {
-              this.eventDeleted.emit(eventIdsToDelete)
-              this.dialogRef.close()
-            })
-          }
-          if (result?.delete == 'one'){
-            var event = this.initialEvent() as EventModel
-            this.eventService.deleteEvent(event).subscribe(() => {
-              this.eventDeleted.emit([event.id])
-              this.dialogRef.close()
-            })
-            
-          }
+      deleteDialog.afterClosed().subscribe((result: DeleteResult) => {
+        if (result?.delete == 'all') {
+          var recurrToDelete = this.initialEvent()?.recurrence?.id ?? '';
+          this.recurrenceService.deleteRecurrence(recurrToDelete).subscribe((eventIdsToDelete: string[]) => {
+            this.eventDeleted.emit(eventIdsToDelete)
+            this.dialogRef.close()
+          })
+        }
+        if (result?.delete == 'one') {
+          var event = this.initialEvent() as EventModel
+          this.eventService.deleteEvent(event).subscribe(() => {
+            this.eventDeleted.emit([event.id])
+            this.dialogRef.close()
+          })
+
+        }
       })
     }
-    else{
+    else {
       var confDialogRef = this.dialogService.showDialog(ConfirmationDialogComponent,
         {
           message: 'Вы уверены что хотите удалить событие: ' + this.initialEvent?.name
         })
       confDialogRef.afterClosed().subscribe((result) => {
-        if (result == true){
-          this.eventService.deleteEvent(this.initialEvent() as EventModel).subscribe(() =>{
+        if (result == true) {
+          this.eventService.deleteEvent(this.initialEvent() as EventModel).subscribe(() => {
             this.eventDeleted.emit([this.initialEvent()?.id as string])
             this.dialogRef.close()
           })
@@ -353,51 +365,51 @@ export class EventDialogComponent implements DynamicComponent {
     }
   }
 
-  colorSelected(color: string){
+  colorSelected(color: string) {
     this.color.update(() => color);
     this.isColorSelectorOpen = false;
   }
 
-  onEditGroupClick(){
+  onEditGroupClick() {
     this.dialogService.showDialog(GroupDialogComponent, { id: this.initialEvent()?.group?.id as string })
       .afterClosed().subscribe(() => {
         this.triggerUpdateGroupMembersCount.set({})
-      } )
+      })
   }
 
-  onCoachChange(coachId: string){
+  onCoachChange(coachId: string) {
     this.coachId.update(() => coachId)
   }
 
-  private validateDates(){
-    return (form: FormGroup) => {
-        const start = form.get('start')?.value;
-        const end = form.get('end')?.value;
+  private validateDates(): ValidatorFn {
+    return (form: AbstractControl) => {
+      const start = form.get('start')?.value;
+      const end = form.get('end')?.value;
 
-        var timeArray: string[] = getHalfHourIntervals();
+      var timeArray: string[] = getHalfHourIntervals();
 
-        const startIndex = timeArray.indexOf(start);
-        const endIndex = timeArray.indexOf(end);
-        
-        const error = 
-          endIndex > startIndex ? null : { InvalidInput: true }
-        
-        form.get('end')?.setErrors(error);
-        return error;
-      }
+      const startIndex = timeArray.indexOf(start);
+      const endIndex = timeArray.indexOf(end);
+
+      const error =
+        endIndex > startIndex ? null : { InvalidInput: true }
+
+      form.get('end')?.setErrors(error);
+      return error;
+    }
   }
 
-  private validateWeekdaysNotEmpty(){
-    return (form: FormGroup) => {
-      const isRecur = form.get('isRecur')?.value  
+  private validateWeekdaysNotEmpty(): ValidatorFn {
+    return (form: AbstractControl) => {
+      const isRecur = form.get('isRecur')?.value
       const weekdays = form.get('weekdays')?.value
 
-      const error = 
-           !isRecur || weekdays?.length > 0 ? null : { InvalidInput: true }
+      const error =
+        !isRecur || weekdays?.length > 0 ? null : { InvalidInput: true }
       form.get('weekdays')?.setErrors(error);
       return error;
-      }
+    }
   }
 
-  
+
 }

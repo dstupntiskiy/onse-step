@@ -1,5 +1,9 @@
-.base-dialog{
+.base-dialog {
     margin: 16px;
     min-width: 300px;
     max-height: 95%;
+}
+
+::ng-deep .mat-mdc-dialog-container {
+    max-height: 95vh !important;
 }
