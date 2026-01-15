@@ -13,7 +13,7 @@
             <input matInput placeholder="Название" formControlName="name">
         </mat-form-field>
         <div class="color-wrapper">
-            <button (click)="isColorSelectorOpen = !isColorSelectorOpen" class="color-selector"
+            <button type="button" (click)="isColorSelectorOpen = !isColorSelectorOpen" class="color-selector"
                 [style.background-color]="color()" cdkOverlayOrigin #trigger="cdkOverlayOrigin"></button>
             <ng-template cdkConnectedOverlay [cdkConnectedOverlayOrigin]="trigger"
                 [cdkConnectedOverlayOpen]="isColorSelectorOpen">

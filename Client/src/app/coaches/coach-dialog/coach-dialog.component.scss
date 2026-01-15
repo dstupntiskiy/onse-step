@@ -1,15 +1,15 @@
-.coach-dialog-content{
+.coach-dialog-content {
     display: flex;
     flex-direction: column;
     gap: 16px;
 
-    .fields{
+    .fields {
         display: flex;
         flex-direction: column;
         gap: 16px;
     }
 
-    .actions{
+    .actions {
         display: flex;
         justify-content: flex-end;
         gap: 16px;

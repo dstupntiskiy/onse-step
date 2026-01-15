@@ -1,16 +1,17 @@
-.dialog{
+.dialog {
     display: flex;
     flex-direction: column;
     gap: 12px;
 
-    .event-dialog-header{
+    .event-dialog-header {
         display: flex;
         justify-content: flex-end;
 
-        div{
-            width:150px;
+        div {
+            width: 150px;
             position: relative;
-            span{
+
+            span {
                 position: absolute;
                 bottom: 0;
                 right: 0;
@@ -20,67 +21,68 @@
 
     }
 
-    .fields-row{
+    .fields-row {
         display: flex;
         justify-content: space-between;
         gap: 16px;
 
-        .mdc-checkbox{
+        .mdc-checkbox {
             padding: 0;
         }
     }
 
-    .recur{
-        > .event-start,
-        > .recur-checkbox{
+    .recur {
+
+        >.event-start,
+        >.recur-checkbox {
             flex: 1
         }
     }
 
-    .period{
+    .period {
         display: flex;
         gap: 16px;
 
-        > .event-start,
-        > .event-end {
+        >.event-start,
+        >.event-end {
             flex: 1;
         }
     }
 
 
 
-    .input{
+    .input {
         width: 100%;
     }
 
-    .actions{
+    .actions {
         display: flex;
         justify-content: space-between;
     }
 
-    .fields-row.group{
+    .fields-row.group {
         align-items: center;
     }
 
-    .event-group{
+    .event-group {
         width: 100%;
         position: relative;
     }
 
-    .participants{
+    .participants {
         width: 100%;
         display: flex;
         gap: 16px;
         justify-content: center;
     }
 
-    .rent-client{
+    .rent-client {
         position: relative;
         min-height: 60px;
     }
 
-    .color-wrapper{
-        .color-selector{
+    .color-wrapper {
+        .color-selector {
             width: 56px;
             height: 56px;
             border-radius: 4px;
@@ -88,4 +90,11 @@
             cursor: pointer;
         }
     }
+}
+
+::ng-deep .actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
 }

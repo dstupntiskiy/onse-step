@@ -14,27 +14,27 @@
             <input matInput formControlName="socialMediaLink">
         </mat-form-field>
         @if(client()?.id){
-            <mat-tab-group>
-                <mat-tab label="Абонементы">
-                    <div class="memberships tab-content">
-                        <app-client-memberships-list [client]="client()!">
-                        </app-client-memberships-list>
-                    </div>
-                </mat-tab>
-                <mat-tab label="Разовые">
-                    <div class="onetme-visits tab-content">
-                        @for(onetimeVisit of onetimeVisits() | async; track onetimeVisit){
-                            <p>{{ onetimeVisit.date | date : "dd-MM-yy"}} {{ onetimeVisit.name }}</p>
-                        }
-                    </div>
-                </mat-tab>
-            </mat-tab-group>
-           
+        <mat-tab-group>
+            <mat-tab label="Абонементы">
+                <div class="memberships tab-content">
+                    <app-client-memberships-list [client]="client()!">
+                    </app-client-memberships-list>
+                </div>
+            </mat-tab>
+            <mat-tab label="Разовые">
+                <div class="onetme-visits tab-content">
+                    @for(onetimeVisit of onetimeVisits() | async; track onetimeVisit){
+                    <p>{{ onetimeVisit.date | date : "dd-MM-yy"}} {{ onetimeVisit.name }}</p>
+                    }
+                </div>
+            </mat-tab>
+        </mat-tab-group>
+
         }
         <div class="actions">
             <div class="left-actions">
                 @if(client()?.id){
-                    <button mat-raised-button color="warn" (click)="onDeleteClick()">Удалить</button>
+                <button mat-raised-button color="warn" (click)="onDeleteClick()">Удалить</button>
                 }
             </div>
             <div class="right-actions">

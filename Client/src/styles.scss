@@ -1,90 +1,99 @@
 /* You can add global styles to this file, and also import other style files */
 @import "@angular/material/prebuilt-themes/deeppurple-amber.css";
 
-html, body { height: 100%; }
+html,
+body {
+    height: 100%;
+}
+
 body {
     margin: 0;
     padding: 0;
-    font-family: Roboto, "Helvetica Neue", sans-serif; };
+    font-family: Roboto, "Helvetica Neue", sans-serif;
+};
 
 .fc-timegrid-slot {
     height: 3em !important; // 1.5em by default
     border-bottom: 0 !important;
 }
-.fc-event{
+
+.fc-event {
     border: 0 !important;
 }
 
-.fc-event-main{
+.fc-event-main {
     padding: 0 !important;
 }
+
 .fc-day-today {
     background: #2BB3BA !important;
 }
 
 
-.fc-toolbar-chunk{
+.fc-toolbar-chunk {
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
     justify-content: center;
     align-items: center;
-
-
 }
 
-.fc-button-group{
+.fc-button-group {
     margin: 0 !important;
 }
 
-::-webkit-scrollbar{
+::-webkit-scrollbar {
     background-color: transparent;
     width: 6px;
 }
-::-webkit-scrollbar-thumb{
+
+::-webkit-scrollbar-thumb {
     width: 6px;
     background-color: darkgray;
     border-radius: 6px;
 }
 
-h5{
+h5 {
     font-size: 14px !important;
     margin-bottom: 2px !important;
     font-weight: 500 !important;
 }
 
-.fc-timegrid-event-harness{
+.fc-timegrid-event-harness {
     transition: all 0.5s ease !important;
 }
 
-.fc-timegrid-event-harness:has(> .event-base){
-    left: 0% !important;            /* 90% from the left edge */
+.fc-timegrid-event-harness:has(> .event-base) {
+    left: 0% !important;
+    /* 90% from the left edge */
     width: 90% !important;
     right: 10% !important;
 }
 
-.fc-timegrid-event-harness:has(> .event-duty.event-short){
-left: 91% !important;            /* 90% from the left edge */
-width: 10% !important;
-right: 0% !important;        /* fill the last 10% */
+.fc-timegrid-event-harness:has(> .event-duty.event-short) {
+    left: 91% !important;
+    /* 90% from the left edge */
+    width: 10% !important;
+    right: 0% !important;
+    /* fill the last 10% */
 }
 
-.fc-event{
+.fc-event {
     width: 100% !important;
-    transition: width 1s ;
+    transition: width 1s;
 }
 
-.fc-timegrid-event-harness:has(> .event-base.event-short ){
+.fc-timegrid-event-harness:has(> .event-base.event-short) {
     width: 50% !important;
     right: 50% !important;
 }
 
-.fc-timegrid-event-harness:has(> .event-duty ){
+.fc-timegrid-event-harness:has(> .event-duty) {
     width: 49% !important;
     left: 51% !important;
 }
 
 
-.event-base{
+.event-base {
     right: auto !important;
 }

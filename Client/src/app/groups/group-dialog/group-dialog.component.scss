@@ -1,25 +1,25 @@
-.group-dialog-content{
+.group-dialog-content {
     display: flex;
     flex-direction: column;
     gap: 16px;
-    
-    .field-row{
+
+    .field-row {
         display: flex;
         flex-direction: row;
         gap: 16px;
         justify-content: space-between;
         width: 100%;
 
-        mat-form-field{
+        mat-form-field {
             flex-grow: 1;
         }
     }
 
-    h3{
+    h3 {
         margin: 0;
     }
 
-    .actions{
+    .actions {
         display: flex;
         justify-content: flex-end;
         gap: 16px

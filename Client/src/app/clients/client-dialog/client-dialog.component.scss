@@ -1,18 +1,18 @@
-.client-dialog-content{
+.client-dialog-content {
     display: flex;
     flex-direction: column;
     gap: 16px;
 
-    .tab-content{
+    .tab-content {
         margin-top: 8px;
     }
 
-    .actions{
+    .actions {
         display: flex;
         justify-content: space-between;
         gap: 24px;
 
-        .right-actions{
+        .right-actions {
             display: flex;
             gap: 8px;
         }

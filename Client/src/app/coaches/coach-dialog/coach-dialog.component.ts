@@ -14,7 +14,7 @@ import { StyleModel } from '../../shared/models/style-model';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
-export interface CoachDialogData{
+export interface CoachDialogData {
   coach: CoachModel
 }
 
@@ -29,7 +29,7 @@ export interface CoachDialogData{
     MatSelectModule,
     MatSlideToggleModule
   ],
-  providers:[
+  providers: [
     SpinnerService
   ],
   templateUrl: './coach-dialog.component.html',
@@ -40,18 +40,18 @@ export class CoachDialogComponent implements DynamicComponent {
 
   data = input<CoachDialogData>()
   styles: StyleModel[] = [];
-  
+
   coachService = inject(CoachService)
   styleService = inject(StyleService)
   spinnerService = inject(SpinnerService)
 
   constructor(private dialogRef: MatDialogRef<CoachDialogComponent>,
-  ){
+  ) {
     effect(() => {
       this.styleService.getAllStyles(true)
-        .subscribe((styles: StyleModel[]) =>{
+        .subscribe((styles: StyleModel[]) => {
           this.styles = styles
-          if(!this.styles.find(x => x.id == this.data()?.coach.style?.id) && this.data()?.coach.style){
+          if (!this.styles.find(x => x.id == this.data()?.coach.style?.id) && this.data()?.coach.style) {
             this.styles.push(this.data()?.coach.style as StyleModel)
           }
           this.style.setValue(this.styles.find(x => x.id === this.data()?.coach.style?.id) as StyleModel)
@@ -60,23 +60,23 @@ export class CoachDialogComponent implements DynamicComponent {
       this.name.setValue(this.data()?.coach?.name as string)
       this.active.setValue(this.data()?.coach?.active as boolean)
     })
-   }
+  }
 
 
   name = new FormControl<string>('', [Validators.required, Validators.maxLength(50)])
   style = new FormControl<StyleModel | null>(null, [Validators.maxLength(50)])
   active = new FormControl<boolean>(true)
 
-  ngOnInit(){
-    
+  ngOnInit() {
+
   }
 
-  onCloseClick(){
+  onCloseClick() {
     this.dialogRef.close()
   }
 
-  onSaveClick(){
-    if(this.name.valid && this.style.valid){
+  onSaveClick() {
+    if (this.name.valid && this.style.valid) {
       const coach: CoachModel = {
         id: this.data()?.coach?.id as string,
         name: this.name?.value as string,

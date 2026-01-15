@@ -1,10 +1,11 @@
 <div class="payment" matTooltip="{{payment()?.comment}}">
     @if(payment()){
-        <button mat-raised-button class="payment-details" (click)="onEditClick()">
-            <span >{{payment()?.amount}} RSD</span>
-        </button>
+    <button mat-raised-button class="payment-details" type="button" (click)="onEditClick()">
+        <span>{{payment()?.amount}} RSD</span>
+    </button>
     }
     @else{
-        <button class="add-payment-button" (click)="onAddPaymentClick()" mat-raised-button color="primary">+ Оплата</button>
+    <button class="add-payment-button" (click)="onAddPaymentClick()" type="button" mat-raised-button color="primary">+
+        Оплата</button>
     }
 </div>

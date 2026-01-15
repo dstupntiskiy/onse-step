@@ -1,7 +1,7 @@
 import { Component, ComponentRef, Inject, OnInit, Signal, ViewChild, ViewContainerRef, signal } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
-export interface DynamicComponent{
+export interface DynamicComponent {
   data: Signal<any>
   title?: Signal<string>
 }
@@ -29,6 +29,6 @@ export class BaseDialogComponent implements OnInit {
     instance.data = signal(this.data.customData)
 
     instance.title ? this.title = instance.title : this.title = signal(undefined)
-    
+
   }
 }

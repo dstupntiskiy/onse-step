@@ -144,17 +144,28 @@ export class EventDialogComponent implements DynamicComponent {
   get recurEnd() { return this.form.controls.recurEnd as FormControl }
   get eventType() { return this.form.controls.eventType as FormControl }
 
-  nameSignal = toSignal(this.name.valueChanges)
-  startSignal = toSignal(this.start.valueChanges)
-  endSignal = toSignal(this.end.valueChanges)
-  groupSignal = toSignal(this.group.valueChanges)
+  formValues = toSignal(this.form.valueChanges)
 
-  dirty = computed(() => this.nameSignal() != this.initialEvent()?.name
-    || this.startSignal() != getHalfHourIntervalFromDate(this.initialEvent()?.startDateTime as Date)
-    || this.endSignal() != getHalfHourIntervalFromDate(this.initialEvent()?.endDateTime as Date)
-    || this.groupSignal() != this.initialEvent()?.group
-    || this.coachId() != this.initialEvent()?.coach?.id
-    || this.color() != this.initialEvent()?.color)
+  private initialFormValues: any;
+  private initialColor: string;
+
+  dirty = computed(() => {
+    this.formValues(); // subscribe to form changes
+
+    if (!this.initialFormValues) return false;
+
+    const currentFormValues = this.form.getRawValue();
+    const headersDirty = JSON.stringify(currentFormValues) !== JSON.stringify(this.initialFormValues);
+
+    const currentColor = this.color();
+    const colorDirty = currentColor !== this.initialColor;
+
+    const currentCoachId = this.coachId() ?? this.initialEvent()?.coach?.id;
+    const initialCoachId = this.initialEvent()?.coach?.id;
+    const coachDirty = currentCoachId != initialCoachId;
+
+    return headersDirty || colorDirty || coachDirty;
+  })
 
 
   eventTypes = EventType
@@ -234,6 +245,7 @@ export class EventDialogComponent implements DynamicComponent {
       if (this.group.value) {
         this.group.disable();
       }
+      this.updateSnapshot();
     });
 
     this.name.setValue(this.initialEvent()?.name as string)
@@ -253,6 +265,12 @@ export class EventDialogComponent implements DynamicComponent {
       this.recurEnd?.setValue(this.initialEvent()?.recurrence?.endDate as Date)
       this.weekdays?.setValue(this.initialEvent()?.recurrence?.daysOfWeek?.map(x => WEEKDAYS.find(y => y.number == x)) as Weekday[])
     }
+    this.updateSnapshot();
+  }
+
+  private updateSnapshot() {
+    this.initialFormValues = this.form.getRawValue();
+    this.initialColor = this.color();
   }
 
   submit(): void {
@@ -352,7 +370,7 @@ export class EventDialogComponent implements DynamicComponent {
     else {
       var confDialogRef = this.dialogService.showDialog(ConfirmationDialogComponent,
         {
-          message: 'Вы уверены что хотите удалить событие: ' + this.initialEvent?.name
+          message: 'Вы уверены что хотите удалить событие: ' + this.initialEvent()?.name
         })
       confDialogRef.afterClosed().subscribe((result) => {
         if (result == true) {

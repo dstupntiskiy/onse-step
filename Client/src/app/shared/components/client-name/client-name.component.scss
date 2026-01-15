@@ -1,3 +1,8 @@
-.client-name{
+.client-name {
     cursor: pointer;
+
+    h5,
+    span {
+        word-break: break-word;
+    }
 }

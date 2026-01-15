@@ -20,7 +20,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
 
-export interface GroupDialogData{
+export interface GroupDialogData {
   id: string
 }
 
@@ -40,7 +40,7 @@ export interface GroupDialogData{
     MatNativeDateModule,
     MatIconModule,
   ],
-  providers:[
+  providers: [
     GroupService,
     SnackBarService
   ],
@@ -48,10 +48,10 @@ export interface GroupDialogData{
   styleUrl: './group-dialog.component.scss'
 })
 export class GroupDialogComponent implements DynamicComponent {
-  isLoading : boolean = false
+  isLoading: boolean = false
 
   name = new FormControl<string>('', [Validators.required])
-  style = new FormControl<StyleModel| null>(null, [Validators.required])
+  style = new FormControl<StyleModel | null>(null, [Validators.required])
   active = new FormControl<boolean>(true)
   startDate = new FormControl<string | null>(null, [Validators.required]);
   endDate = new FormControl<string | null>(null)
@@ -62,29 +62,29 @@ export class GroupDialogComponent implements DynamicComponent {
   public isNew: boolean = false;
   styles: StyleModel[] = []
 
-  data = input.required<GroupDialogData>() 
+  data = input.required<GroupDialogData>()
   groupService = inject(GroupService)
   spinnerService = inject(SpinnerService)
   styleService = inject(StyleService)
   constructor(private dialogRef: MatDialogRef<GroupDialogComponent>,
-  ){
-    effect(()=>{
-        this.isLoading = true
+  ) {
+    effect(() => {
+      this.isLoading = true
 
-        forkJoin({
-          group: this.data()?.id != null ? this.groupService.getGroupById(this.data().id) : of(null),
-          styles: this.styleService.getAllStyles(true)
-        })
+      forkJoin({
+        group: this.data()?.id != null ? this.groupService.getGroupById(this.data().id) : of(null),
+        styles: this.styleService.getAllStyles(true)
+      })
         .pipe(
           finalize(() => this.isLoading = false)
         )
-        .subscribe(result =>{
+        .subscribe(result => {
           this.styles = result.styles
-          if(!this.styles.find(x => x.id == result.group?.style.id) && result.group?.style){
+          if (!this.styles.find(x => x.id == result.group?.style.id) && result.group?.style) {
             this.styles.push(result.group?.style as StyleModel)
           }
 
-          if(result.group){
+          if (result.group) {
             this.group.set(result.group)
             this.name?.setValue(result.group.name);
             this.active?.setValue(result.group.active);
@@ -95,26 +95,26 @@ export class GroupDialogComponent implements DynamicComponent {
           var date = new Date()
           var firstDay = new Date(date.getFullYear(), date.getMonth(), 1)
           var lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0)
-          
-          if(!this.group){
+
+          if (!this.group) {
             this.startDate.setValue(firstDay.toISOString())
             this.endDate.setValue(lastDay.toISOString())
           }
 
           const style = result.group?.style
-          if(style){
+          if (style) {
             this.style.setValue(this.styles.find(x => x.id === style.id) as StyleModel)
           }
         })
     })
   }
 
-  onCloseClick(){
+  onCloseClick() {
     this.dialogRef.close();
   }
 
-  submit(){
-    if(this.validateForm()){
+  submit() {
+    if (this.validateForm()) {
       this.spinnerService.loadingOn();
 
       var group: IGroupSave = {
@@ -126,26 +126,26 @@ export class GroupDialogComponent implements DynamicComponent {
         endDate: this.endDate.value ? this.endDate?.value as string : undefined
       }
       this.groupService.saveGroup(group)
-      .pipe(
-        finalize(() => this.spinnerService.loadingOff()),
-      )
-      .subscribe(
-        (result: Group) =>{
-          this.dialogRef.close(result);
-        });
-      
+        .pipe(
+          finalize(() => this.spinnerService.loadingOff()),
+        )
+        .subscribe(
+          (result: Group) => {
+            this.dialogRef.close(result);
+          });
+
     }
   }
 
-  private validateForm(): boolean{
-    if (this.name.invalid || this.style.invalid || this.startDate.invalid){
+  private validateForm(): boolean {
+    if (this.name.invalid || this.style.invalid || this.startDate.invalid) {
       return false
     }
 
     var start = new Date(this.startDate.value as string)
     var end = new Date(this.endDate.value as string)
-    if (end < start){
-      this.endDate.setErrors({invalidEndDate: true})
+    if (end < start) {
+      this.endDate.setErrors({ invalidEndDate: true })
       return false
     }
 

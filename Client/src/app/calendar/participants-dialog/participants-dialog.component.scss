@@ -1,18 +1,21 @@
-.participants-dialog-content{
+.participants-dialog-content {
     gap: 16px;
     display: flex;
     flex-direction: column;
 
-    min-width: 350px;
-    .attendies-list{
+    min-width: 300px;
+
+    .attendies-list {
         display: flex;
         flex-direction: column;
         gap: 8px;
         max-height: 600px;
         overflow-y: scroll;
+        overflow-x: hidden;
     }
 }
-.actions{
+
+.actions {
     display: flex;
     justify-content: flex-end;
 }

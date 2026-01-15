@@ -1,18 +1,17 @@
 <app-spinner [isLoading$$]="isLoading"></app-spinner>
 <div class="rent-client">
     @if(!isLoading){
-        @if(!oneTimeVisitor()){
-            <app-add-client (selectedClient$$)="onClientSelect($event)"></app-add-client>
-        }
-        @else{
-            <app-client-name [client]="oneTimeVisitor()!.client"></app-client-name>
-            <app-payment [memberId]="oneTimeVisitor()!.id"
-                [paymentType]="paymentTypes.Onetime" 
-                [(payment)]="oneTimeVisitor()!.payment">
-            </app-payment>
-            <button mat-button (click)="onDeleteClick()">
-                <mat-icon>clear</mat-icon>
-            </button>
-        }
+    @if(!oneTimeVisitor()){
+    <app-add-client (selectedClient$$)="onClientSelect($event)"></app-add-client>
+    }
+    @else{
+    <app-client-name [client]="oneTimeVisitor()!.client"></app-client-name>
+    <app-payment [memberId]="oneTimeVisitor()!.id" [paymentType]="paymentTypes.Onetime"
+        [(payment)]="oneTimeVisitor()!.payment">
+    </app-payment>
+    <button mat-button type="button" (click)="onDeleteClick()">
+        <mat-icon>clear</mat-icon>
+    </button>
+    }
     }
 </div>

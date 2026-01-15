@@ -1,34 +1,34 @@
 <div class="coach-control">
     @if(substitution() || isEditing){
-        <mat-form-field class="input substitution">
-            <mat-label>Тренер (Замена)</mat-label>
-            <mat-select  [formControl]="substitutionControl" >
-                @for (option of coaches(); track option.id){
-                    <mat-option [value]="option.id">{{option.name}}</mat-option>
-                }
-            </mat-select>
-        </mat-form-field>
+    <mat-form-field class="input substitution">
+        <mat-label>Тренер (Замена)</mat-label>
+        <mat-select [formControl]="substitutionControl">
+            @for (option of coaches(); track option.id){
+            <mat-option [value]="option.id">{{option.name}}</mat-option>
+            }
+        </mat-select>
+    </mat-form-field>
     }
     @else{
-        <mat-form-field class="input coach">
-            <mat-label>Тренер</mat-label>
-            <mat-select  [formControl]="coachControl" >
-                @for (option of coaches(); track option.id){
-                    <mat-option [value]="option.id">{{option.name}}</mat-option>
-                }
-            </mat-select>
-        </mat-form-field>
+    <mat-form-field class="input coach">
+        <mat-label>Тренер</mat-label>
+        <mat-select [formControl]="coachControl">
+            @for (option of coaches(); track option.id){
+            <mat-option [value]="option.id">{{option.name}}</mat-option>
+            }
+        </mat-select>
+    </mat-form-field>
     }
     @if(coach()){
-        @if(isEditing){
-            <button mat-icon-button [disabled]="!substitutionControl.value" (click)="onSubstitutionChange()">
-                <mat-icon class="icon-button">done</mat-icon>
-            </button>
-        }
-        @else{
-            <button mat-icon-button (click)="substitution() ? onSubstitutionDelete() : onCoachEdit()">
-                <mat-icon class="icon-button" >{{ substitution() ? 'close' : 'loop'}}</mat-icon>
-            </button>
-        }
+    @if(isEditing){
+    <button mat-icon-button type="button" [disabled]="!substitutionControl.value" (click)="onSubstitutionChange()">
+        <mat-icon class="icon-button">done</mat-icon>
+    </button>
+    }
+    @else{
+    <button mat-icon-button type="button" (click)="substitution() ? onSubstitutionDelete() : onCoachEdit()">
+        <mat-icon class="icon-button">{{ substitution() ? 'close' : 'loop'}}</mat-icon>
+    </button>
+    }
     }
 </div>
