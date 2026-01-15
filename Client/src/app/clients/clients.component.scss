@@ -1,6 +1,4 @@
-@import '../../styles/mixins.scss';
-
-.clients-content{
+.clients-content {
     padding: 16px 0 16px 16px;
     box-sizing: border-box;
     display: flex;
@@ -8,13 +6,13 @@
     gap: 6px;
     height: 100%;
 
-    .header-actions{
+    .header-actions {
         display: flex;
         gap: 16px;
         align-items: center;
     }
 
-    .infinite-scroll{
+    .infinite-scroll {
 
         overflow-y: auto;
     }

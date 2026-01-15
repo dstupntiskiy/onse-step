@@ -1,9 +1,10 @@
-@import '../../../../styles/mixins.scss';
+@use '../../../../styles/mixins.scss';
 
-.member-row:hover{
-    @include hover;
+.member-row:hover {
+    @include mixins.hover;
 }
-.member{
+
+.member {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -13,16 +14,16 @@
 
     padding-left: 4px;
 
-    .member-name{
+    .member-name {
         cursor: pointer;
     }
 
-    .right-block{
+    .right-block {
         display: flex;
         gap: 8px;
         align-items: center;
 
-        .membership{
+        .membership {
             cursor: pointer;
         }
     }

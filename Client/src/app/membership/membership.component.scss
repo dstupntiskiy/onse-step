@@ -1,6 +1,4 @@
-@import '../../styles/mixins.scss';
-
-.membership{
+.membership {
     margin-top: 6px;
     padding-top: 4px;
     display: flex;
@@ -11,8 +9,8 @@
 
     padding-left: 4px;
 
-    .left-area{
-        .membership-header{
+    .left-area {
+        .membership-header {
             display: flex;
             gap: 6px;
         }
@@ -22,7 +20,7 @@
 
     }
 
-    p{
+    p {
         margin: 0;
     }
 }

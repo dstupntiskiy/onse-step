@@ -1,7 +1,5 @@
-@import '../../../../styles/mixins.scss';
-
-.visitor-row{
-    .visitor{
+.visitor-row {
+    .visitor {
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -11,11 +9,11 @@
 
         padding-left: 4px;
 
-        p{
+        p {
             margin: 0;
         }
 
-        .right-block{
+        .right-block {
             display: flex;
             gap: 8px;
             align-items: center;
