@@ -285,7 +285,7 @@ export class EventDialogComponent implements DynamicComponent {
         coachId: this.coachId() ?? this.initialEvent()?.coach?.id,
         eventType: this.eventType.value as EventType,
         isRecurrent: this.isRecur.value as boolean,
-        updateOnlyThis: true
+        updateOnlyThis: !!this.initialEvent()?.id
       }
       if (this.isRecur?.value) {
         data.daysOfWeek = (this.weekdays?.value as Weekday[]).map((x: Weekday) => x.number),
@@ -295,7 +295,7 @@ export class EventDialogComponent implements DynamicComponent {
           data.recurrenceId = this.initialEvent()?.recurrence?.id ?? Guid.EMPTY.toString()
       }
 
-      if (this.isRecur?.value && this.dirty()) {
+      if (this.isRecur?.value && this.dirty() && this.initialEvent()?.id) {
         var dialog = this.dialogService.showDialog(UpdateOnlyThisDialogComponent, {})
         dialog.afterClosed().subscribe((result) => {
           if (result == 'all') {
