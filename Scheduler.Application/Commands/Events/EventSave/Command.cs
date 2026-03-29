@@ -22,4 +22,3 @@ public record Command(
     EventType EventType,
     bool UpdateOnlyThis
 ) : IRequest<List<EventDto>>;
-

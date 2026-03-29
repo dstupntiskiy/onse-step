@@ -42,20 +42,32 @@ public class CommandHandler(
                     foreach (var ev in recurEvents)
                     {
                         var duration = request.EndDateTime - request.StartDateTime;
-                        var startTime = ev.StartDateTime.Date + request.StartDateTime.TimeOfDay;
-                        var endTime = startTime + duration;
-                        if (this.IsOverlap(startTime, endTime, ev.Id))
+                        var startLocal = request.StartDateTime.ToLocalTime();
+                        var evDateLocal = ev.StartDateTime.ToLocalTime().Date;
+                        var startTimeLocal = evDateLocal + startLocal.TimeOfDay;
+                        var endTimeLocal = startTimeLocal + duration;
+                        
+                        var utcStart = startTimeLocal.ToUniversalTime();
+                        var utcEnd = endTimeLocal.ToUniversalTime();
+
+                        if (this.IsOverlap(utcStart, utcEnd, ev.Id))
                         {
-                            throw new ValidationException($"В период {startTime} - {endTime} уже существует другое событие");
+                            throw new ValidationException($"В период {startTimeLocal} - {endTimeLocal} уже существует другое событие");
                         }
                     }
                     foreach (var ev in recurEvents)
                     {
                         var duration = request.EndDateTime - request.StartDateTime;
-                        var startTime = ev.StartDateTime.Date + request.StartDateTime.TimeOfDay;
-                        var endTime = startTime + duration;
-                        var createdEvent = await CreateEvent(ev.Id, request.Name, startTime,
-                            endTime, request.Color, recurrence, group, coach, request.EventType);
+                        var startLocal = request.StartDateTime.ToLocalTime();
+                        var evDateLocal = ev.StartDateTime.ToLocalTime().Date;
+                        var startTimeLocal = evDateLocal + startLocal.TimeOfDay;
+                        var endTimeLocal = startTimeLocal + duration;
+
+                        var utcStart = startTimeLocal.ToUniversalTime();
+                        var utcEnd = endTimeLocal.ToUniversalTime();
+
+                        var createdEvent = await CreateEvent(ev.Id, request.Name, utcStart,
+                            utcEnd, request.Color, recurrence, group, coach, request.EventType);
                         events.Add(createdEvent);
                     }
                 }
@@ -112,23 +124,31 @@ public class CommandHandler(
         List<EventDto> events = new List<EventDto>();
         List<DateTime> eventStartDates = new List<DateTime>();
         
-        var currentEventStartTime = request.RecurrencyStartDate.Value.Date.AddDays(1) + request.StartDateTime.TimeOfDay;// need to remove offset
+        var reqStartLocal = request.StartDateTime.ToLocalTime();
+        var recurStartLocal = request.RecurrencyStartDate.Value.ToLocalTime();
+        var recurEndLocal = request.RecurrencyEndDate.Value.ToLocalTime();
+        
+        var currentEventStartTimeLocal = recurStartLocal.Date + reqStartLocal.TimeOfDay;
         var duration = request.EndDateTime - request.StartDateTime;
 
-        while (currentEventStartTime <= request.RecurrencyEndDate.Value.AddDays(1))// need to remove offset
+        while (currentEventStartTimeLocal.Date <= recurEndLocal.Date)
         {
-            if (Array.Exists(request.DaysOfWeek, day => day == currentEventStartTime.DayOfWeek))
+            if (Array.Exists(request.DaysOfWeek, day => day == currentEventStartTimeLocal.DayOfWeek))
             {
-                var currenEventEndTime = currentEventStartTime + duration;
-                if (this.IsOverlap(currentEventStartTime, currenEventEndTime, request.Id))
+                var currentEventEndTimeLocal = currentEventStartTimeLocal + duration;
+                
+                var utcStart = currentEventStartTimeLocal.ToUniversalTime();
+                var utcEnd = currentEventEndTimeLocal.ToUniversalTime();
+                
+                if (this.IsOverlap(utcStart, utcEnd, request.Id))
                 {
                     throw new ValidationException(
-                        $"В период {currentEventStartTime} - {currenEventEndTime} уже существует другое событие");
+                        $"В период {currentEventStartTimeLocal} - {currentEventEndTimeLocal} уже существует другое событие");
                 }
-                eventStartDates.Add(currentEventStartTime);
+                eventStartDates.Add(currentEventStartTimeLocal);
             }
             
-            currentEventStartTime = currentEventStartTime.AddDays(1);
+            currentEventStartTimeLocal = currentEventStartTimeLocal.AddDays(1);
         }
         
         var recurrence = new Recurrence()
@@ -140,10 +160,12 @@ public class CommandHandler(
             };
         recurrence = await recurrencyRepository.AddAsync(recurrence);
 
-        foreach (var start in eventStartDates)
+        foreach (var startLocal in eventStartDates)
         {
-            var endDateTime = start + duration;
-            var ev = await this.CreateEvent(request.Id, request.Name, start, endDateTime, request.Color,
+            var endLocal = startLocal + duration;
+            var utcStart = startLocal.ToUniversalTime();
+            var utcEnd = endLocal.ToUniversalTime();
+            var ev = await this.CreateEvent(request.Id, request.Name, utcStart, utcEnd, request.Color,
                 recurrence, group, coach, request.EventType);
             events.Add(ev);
         }
