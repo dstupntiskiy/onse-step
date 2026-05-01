@@ -126,7 +126,9 @@ public class CommandHandler(
         
         var reqStartLocal = request.StartDateTime.ToLocalTime();
         var recurStartLocal = request.RecurrencyStartDate.Value.ToLocalTime();
-        var recurEndLocal = request.RecurrencyEndDate.Value.ToLocalTime();
+        
+        
+        var recurEndLocal = request.RecurrencyEndDate.Value.AddDays(1).ToLocalTime();
         
         var currentEventStartTimeLocal = recurStartLocal.Date + reqStartLocal.TimeOfDay;
         var duration = request.EndDateTime - request.StartDateTime;
