@@ -1,18 +1,20 @@
-<div class="coach-dialog-content">
-    <div class="fields">
-        <mat-form-field>
-            <mat-label>Имя</mat-label>
-            <input matInput [formControl]="name">
-        </mat-form-field>
-        <mat-form-field>
-            <mat-label>Направление</mat-label>
-            <mat-select [formControl]="style">
-                @for(option of styles; track option){
-                <mat-option [value]="option">{{option.name}}</mat-option>
-                }
-            </mat-select>
-        </mat-form-field>
-        <mat-slide-toggle [formControl]="active">Активность</mat-slide-toggle>
+<div class="drawer-layout coach-dialog-content">
+    <div class="drawer-body coach-dialog-content">
+        <div class="fields">
+            <mat-form-field>
+                <mat-label>Имя</mat-label>
+                <input matInput [formControl]="name">
+            </mat-form-field>
+            <mat-form-field>
+                <mat-label>Направление</mat-label>
+                <mat-select [formControl]="style">
+                    @for(option of styles; track option){
+                    <mat-option [value]="option">{{option.name}}</mat-option>
+                    }
+                </mat-select>
+            </mat-form-field>
+            <mat-slide-toggle [formControl]="active">Активность</mat-slide-toggle>
+        </div>
     </div>
     <div class="actions">
         <button mat-button (click)="onCloseClick()">Закрыть</button>

@@ -18,7 +18,12 @@ export abstract class DialogService {
         component: component,
         customData: data
       },
-      width: '720px', maxWidth: '96vw',
+      panelClass: 'side-drawer',
+      position: { top: '0', right: '0' },
+      width: '720px', maxWidth: '100vw',
+      height: '100dvh', maxHeight: '100dvh',
+      enterAnimationDuration: 240,
+      exitAnimationDuration: 180,
       autoFocus: false
     })
   }

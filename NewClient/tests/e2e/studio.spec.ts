@@ -1,4 +1,4 @@
-import { test, expect, Page } from '@playwright/test';
+import { test, expect, Page, Locator } from '@playwright/test';
 
 // All data in this file are isolated test fixtures. Requests never reach the studio API.
 const style = { id:'s1', name:'Bachata', basePrice:6000, secondaryPrice:3500, onetimeVisitPrice:1000, baseSalary:2000, bonusSalary:100, active:true };
@@ -46,6 +46,86 @@ async function mockApi(page:Page, authenticated = true) {
     await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(body??null)});
   });
 }
+
+async function expectDrawer(page: Page, dialog: Locator) {
+  await expect(dialog).toBeVisible();
+  await expect(dialog).toHaveClass(/mdc-dialog--open/);
+  await expect(dialog).not.toHaveClass(/mdc-dialog--opening/);
+  const {width, height} = page.viewportSize()!;
+  const bounds = await dialog.boundingBox();
+  expect(bounds!.y).toBe(0);
+  expect(bounds!.height).toBe(height);
+  expect(bounds!.width).toBe(width <= 760 ? width : 720);
+  expect(bounds!.x + bounds!.width).toBe(width);
+  const body = dialog.locator('.drawer-body');
+  const footer = dialog.locator('.drawer-layout > .actions');
+  await expect(footer).toBeInViewport({ratio:1});
+  for (const button of await footer.getByRole('button').all()) await expect(button).toBeInViewport({ratio:1});
+  const before = await footer.boundingBox();
+  expect(before!.y + before!.height).toBe(height);
+  expect(await body.evaluate(el => el.scrollWidth <= el.clientWidth)).toBe(true);
+  await body.evaluate(el => el.scrollTop = el.scrollHeight);
+  expect(await footer.boundingBox()).toEqual(before);
+  expect(await dialog.locator('.mat-mdc-dialog-surface').evaluate(el => el.scrollTop)).toBe(0);
+}
+
+for (const viewport of [{width:1536,height:900}, {width:760,height:600}, {width:390,height:844}, {width:320,height:568}, {width:740,height:390}]) {
+  test(`drawers pin actions and preserve nested forms at ${viewport.width}x${viewport.height}`, async ({page}) => {
+    await page.setViewportSize(viewport); await mockApi(page);
+    for (const [route, card] of [['/styles','app-style-card'], ['/coaches','app-coach-card'], ['/groups','app-group-card'], ['/clients','app-client-card']]) {
+      await page.goto(route);
+      await page.locator(card).first().click();
+      await expectDrawer(page, page.getByRole('dialog').last());
+      await page.getByRole('button',{name:'Закрыть окно',exact:true}).click();
+      await expect(page.getByRole('dialog')).toHaveCount(0);
+    }
+    await page.locator('app-client-card').first().click();
+    await page.locator('app-client-memberships-list').getByRole('button',{name:'Добавить',exact:true}).click();
+    await expect(page.getByRole('dialog')).toHaveCount(2);
+    await expectDrawer(page, page.getByRole('dialog').last());
+    await page.getByRole('dialog').last().getByRole('button',{name:'Закрыть',exact:true}).click();
+    await expect(page.getByRole('dialog')).toHaveCount(1);
+    await expectDrawer(page, page.getByRole('dialog'));
+    await page.getByRole('dialog').getByRole('button',{name:'Удалить',exact:true}).click();
+    await expect(page.getByRole('dialog')).toHaveCount(2);
+    await expectDrawer(page, page.getByRole('dialog').last());
+    await page.keyboard.press('Escape');
+    await expect(page.getByRole('dialog')).toHaveCount(1);
+    await page.getByRole('button',{name:'Закрыть окно',exact:true}).click();
+    await page.goto('/');
+    await page.locator('.calendar-event[data-kind="event"]').first().click();
+    await expectDrawer(page, page.getByRole('dialog'));
+    await page.screenshot({path:`test-results/drawer-${viewport.width}x${viewport.height}.png`});
+    await page.getByRole('button',{name:'Закрыть окно',exact:true}).click();
+    await expect(page.getByRole('dialog')).toHaveCount(0);
+    await page.locator('.time-scroll').evaluate(el => el.scrollTop = 76);
+    await page.locator('.calendar-event[data-kind="duty"]').first().click({position:{x:4,y:30}});
+    await expectDrawer(page, page.getByRole('dialog'));
+  });
+}
+
+test('drawer slides from the right and adapts without losing input', async ({page}) => {
+  await page.setViewportSize({width:1100,height:800}); await mockApi(page); await page.goto('/clients');
+  await page.getByRole('button',{name:'Добавить клиента'}).click();
+  const dialog = page.getByRole('dialog');
+  // Inspect the transition's start, independent of the frame captured by the test.
+  const transforms = await dialog.locator('.mat-mdc-dialog-surface').evaluate(el => el.getAnimations().flatMap(animation =>
+    (animation.effect as KeyframeEffect).getKeyframes().map(frame => frame['transform']).filter(Boolean)));
+  expect(transforms).toContain('translateX(100%)');
+  expect(transforms).toContain('none');
+  await expectDrawer(page, dialog);
+  const name = dialog.getByRole('textbox',{name:'Имя',exact:true});
+  await name.fill('Несохранённое имя');
+  await page.setViewportSize({width:760,height:568});
+  await expectDrawer(page, dialog);
+  await expect(name).toHaveValue('Несохранённое имя');
+  await page.setViewportSize({width:761,height:800});
+  await expectDrawer(page, dialog);
+  await expect(name).toHaveValue('Несохранённое имя');
+  await page.keyboard.press('Escape');
+  await expect(dialog).toHaveCount(0);
+  await expect(page.getByRole('button',{name:'Добавить клиента'})).toBeFocused();
+});
 
 test('desktop calendar, views, dates and creation', async ({page}) => {
   const errors:string[]=[]; page.on('pageerror', e=>errors.push(e.message));

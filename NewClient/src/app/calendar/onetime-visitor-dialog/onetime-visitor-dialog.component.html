@@ -1,14 +1,16 @@
-<div class="onetime-visitors-dialog">
-    <div class="onetime-visitors-dialog-content">
-        <div class="add-client">
-            <app-add-client (selectedClient$$)="onClientSelect($event)" [clearControl]="clearControlSubject"></app-add-client>
-        </div>
-        <div class="visitors-list">
-            @for(visitor of onetimeVisitors; track visitor){
-                <app-onetime-visitor 
-                    [visitor]="visitor"
-                    [style]="styleSignal()"></app-onetime-visitor>
-            }
+<div class="drawer-layout onetime-visitors-dialog">
+    <div class="drawer-body onetime-visitors-dialog">
+        <div class="onetime-visitors-dialog-content">
+            <div class="add-client">
+                <app-add-client (selectedClient$$)="onClientSelect($event)" [clearControl]="clearControlSubject"></app-add-client>
+            </div>
+            <div class="visitors-list">
+                @for(visitor of onetimeVisitors; track visitor){
+                    <app-onetime-visitor
+                        [visitor]="visitor"
+                        [style]="styleSignal()"></app-onetime-visitor>
+                }
+            </div>
         </div>
     </div>
     <div class="actions">

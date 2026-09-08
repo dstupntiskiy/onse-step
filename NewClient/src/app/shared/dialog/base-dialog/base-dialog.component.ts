@@ -26,6 +26,7 @@ export class BaseDialogComponent implements OnInit {
   close(): void { this.dialogRef.close(); }
   ngOnInit(): void {
     this.componentRef = this.dynamicComponent.createComponent(this.data.component);
+    this.componentRef.location.nativeElement.classList.add('drawer-component');
     const instance = this.componentRef.instance as DynamicComponent
     instance.data = signal(this.data.customData)
 
