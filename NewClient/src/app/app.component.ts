@@ -18,6 +18,7 @@ export class AppComponent {
   readonly spinner = inject(SpinnerService);
   readonly router = inject(Router);
   readonly menuOpen = signal(false);
+  readonly pageTitle = signal('');
   readonly admin = signal(false);
   readonly today = new Intl.DateTimeFormat('ru', { day: 'numeric', month: 'long', weekday: 'long' }).format(new Date());
   readonly navigation = [
@@ -29,6 +30,9 @@ export class AppComponent {
   ];
   constructor() {
     this.router.events.pipe(filter(e => e instanceof NavigationEnd), takeUntilDestroyed()).subscribe(() => {
+      let route = this.router.routerState.snapshot.root;
+      while (route.firstChild) route = route.firstChild;
+      this.pageTitle.set(route.data['pageTitle'] ?? 'One Step');
       this.menuOpen.set(false);
       this.user.isAuthenticated(!!localStorage.getItem('jwtToken'));
     });

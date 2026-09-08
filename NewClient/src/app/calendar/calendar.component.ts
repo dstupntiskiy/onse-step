@@ -29,7 +29,9 @@ export class CalendarComponent {
     { originX: 'start', originY: 'top', overlayX: 'start', overlayY: 'bottom', offsetY: -8 },
     { originX: 'end', originY: 'top', overlayX: 'end', overlayY: 'bottom', offsetY: -8 }
   ];
-  readonly view = signal<View>(window.matchMedia('(max-width: 760px)').matches ? 'day' : 'week');
+  private readonly mobileViewport = window.matchMedia('(max-width: 760px)');
+  private readonly responsiveView = signal<View>(this.mobileViewport.matches ? 'day' : 'week');
+  readonly view = this.responsiveView.asReadonly();
   readonly mode = signal<'event' | 'duty'>('event');
   readonly query = signal('');
   readonly coachId = signal('');
@@ -40,7 +42,6 @@ export class CalendarComponent {
   readonly entries = signal<CalendarEntry[]>([]);
   readonly now = signal(new Date());
   readonly weekdays = ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ', 'ВС'];
-  readonly views: { id: View; label: string }[] = [{id:'day',label:'День'}, {id:'week',label:'Неделя'}];
   readonly dateKey = dateKey;
   readonly miniDays = computed(() => monthDays(this.miniMonth()));
   readonly days = computed(() => this.view() === 'day' ? [this.selected()] : Array.from({length: 7}, (_, i) => addDays(weekStart(this.selected()), i)));
@@ -61,6 +62,9 @@ export class CalendarComponent {
   readonly columns = computed(() => this.days().map(day => ({day, items: layoutScheduleDay(this.filtered(), day, this.firstHour(), this.lastHour(), this.mode())})));
   readonly next = computed(() => this.focusedEntries().find(e => e.end > this.now()));
   constructor() {
+    const updateView = (event: MediaQueryListEvent) => this.responsiveView.set(event.matches ? 'day' : 'week');
+    this.mobileViewport.addEventListener('change', updateView);
+    this.destroyRef.onDestroy(() => this.mobileViewport.removeEventListener('change', updateView));
     effect(onCleanup => {
       const {start, end} = this.range(); this.revision();
       this.loading.set(true); this.error.set(false);

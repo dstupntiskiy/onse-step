@@ -16,7 +16,7 @@
     </div>
   </aside>
   <div class="app-workspace">
-    <header class="topbar"><div class="breadcrumb"><button class="menu-button icon-button" aria-label="Открыть меню" [attr.aria-expanded]="menuOpen()" (click)="menuOpen.set(!menuOpen())"><mat-icon>menu</mat-icon></button><span>One Step</span><span class="slash">/</span><strong>Управление студией</strong></div><div class="topbar-date"><span class="online-dot"></span>{{today}}<span class="avatar small">OS</span></div></header>
+    <header class="topbar"><div class="breadcrumb"><button class="menu-button icon-button" aria-label="Открыть меню" [attr.aria-expanded]="menuOpen()" (click)="menuOpen.set(!menuOpen())"><mat-icon>menu</mat-icon></button><span class="breadcrumb-brand">One Step</span><span class="slash">/</span><h1>{{pageTitle()}}</h1></div><div class="topbar-date"><span class="online-dot"></span>{{today}}<span class="avatar small">OS</span></div></header>
     <main id="main"><router-outlet /></main>
   </div>
   <nav class="mobile-nav" aria-label="Мобильная навигация">

@@ -56,13 +56,14 @@ test('desktop calendar, filters, views, dates and creation', async ({page}) => {
   await page.getByLabel('Сбросить фильтры').click();
   await page.getByLabel('Фильтр по типу события').selectOption('1'); await expect(page.locator('.calendar-event')).toHaveCount(3);
   await page.getByLabel('Сбросить фильтры').click();
-  await expect(page.locator('.view-tabs button')).toHaveText(['День', 'Неделя']);
+  await expect(page.locator('.view-tabs')).toHaveCount(0);
+  await expect(page.locator('.topbar h1')).toHaveText('Расписание');
+  await expect(page.locator('.schedule .page-heading, .schedule .primary-button')).toHaveCount(0);
   expect(await page.locator('.calendar-panel').evaluate(element => Math.abs(element.getBoundingClientRect().width - element.closest('.schedule')!.getBoundingClientRect().width))).toBeLessThan(1);
   await expect(page.getByText('НА ЗАМЕТКУ',{exact:true})).toHaveCount(0);
   const dateButton = page.getByRole('button',{name:'Выбрать дату',exact:true});
   const datePicker = page.getByRole('dialog',{name:'Выбор даты',exact:true});
-  const dateButtonBox = await dateButton.boundingBox(), viewBox = await page.locator('.view-tabs').boundingBox();
-  expect(dateButtonBox!.x + dateButtonBox!.width).toBeLessThan(viewBox!.x);
+
   await dateButton.click(); await expect(datePicker).toBeVisible();
   await expect(datePicker.getByRole('button',{name:'8 сентября 2026',exact:true})).toBeFocused();
   await page.keyboard.press('Escape'); await expect(datePicker).not.toBeVisible(); await expect(dateButton).toBeFocused();
@@ -71,15 +72,19 @@ test('desktop calendar, filters, views, dates and creation', async ({page}) => {
   await datePicker.getByRole('button',{name:'Следующий месяц',exact:true}).click();
   await datePicker.getByRole('button',{name:'1 октября 2026',exact:true}).click();
   await expect(datePicker).not.toBeVisible(); await expect(dateButton).toBeFocused();
-  await expect(page.getByRole('button',{name:'Неделя',exact:true})).toHaveAttribute('aria-pressed','true');
+  await expect(page.locator('.day-header')).toHaveCount(7);
   await expect(page.locator('.day-header strong')).toHaveText(['28','29','30','01','02','03','04']);
   await dateButton.click(); await expect(datePicker.getByLabel('Перейти к дате')).toHaveValue('2026-10-01');
   await datePicker.getByLabel('Перейти к дате').fill('2026-09-08');
   await expect(datePicker).not.toBeVisible();
-  await page.getByRole('button',{name:'День',exact:true}).click(); await expect(page.locator('.calendar-event')).toHaveCount(5);
-  await page.getByRole('button',{name:'Дежурства',exact:true}).click(); await expect(page.locator('.calendar-event')).toHaveCount(5);
+  await page.setViewportSize({width:390,height:844}); await expect(page.locator('.calendar-event')).toHaveCount(5);
+  await expect(page.locator('.day-header strong')).toHaveText('08');
+  await page.setViewportSize({width:1536,height:1080});
+  await expect(page.locator('.day-header')).toHaveCount(7);
+  await expect(page.locator('.calendar-event')).toHaveCount(19);
+  await page.getByRole('button',{name:'Дежурства',exact:true}).click(); await expect(page.locator('.calendar-event')).toHaveCount(19);
   await page.getByRole('button',{name:'Занятия и события',exact:true}).click();
-  await page.getByRole('button',{name:'Добавить занятие',exact:true}).click();
+  await page.getByRole('button',{name:'Добавить: 8 сентября, 19:30',exact:true}).click();
   await expect(page.getByRole('dialog')).toBeVisible();
   await page.getByRole('textbox',{name:'Название',exact:true}).fill('Новое занятие');
   await page.screenshot({path:'test-results/event-dialog-desktop.png',fullPage:true});
@@ -87,7 +92,7 @@ test('desktop calendar, filters, views, dates and creation', async ({page}) => {
   await page.getByRole('button',{name:'Сохранить',exact:true}).click();
   expect((await saved).postDataJSON().name).toBe('Новое занятие');
   await page.getByRole('button',{name:'Закрыть окно',exact:true}).click();
-  await expect(page.locator('.calendar-event')).toHaveCount(6);
+  await expect(page.locator('.calendar-event')).toHaveCount(20);
   expect(errors).toEqual([]);
 });
 
@@ -112,6 +117,7 @@ test('mobile navigation, dialogs, memberships and no page overflow', async ({pag
   await page.getByRole('button',{name:'Закрыть окно',exact:true}).click();
   await page.locator('.mobile-nav').getByRole('link',{name:'Клиенты'}).click();
   await expect(page.locator('app-client-card')).toHaveCount(2);
+  await expect(page.locator('.topbar h1')).toHaveText('Клиенты');
   await page.locator('app-client-card').first().click();
   await expect(page.getByRole('tab',{name:'Абонементы',exact:true})).toBeVisible();
   await expect(page.locator('app-membership')).toHaveCount(1);
@@ -166,7 +172,7 @@ test('membership creation and duty creation submit existing API fields', async (
   await expect(page.locator('app-membership')).toHaveCount(2);
   await page.getByRole('button',{name:'Закрыть окно',exact:true}).click();
   await page.goto('/'); await page.getByRole('button',{name:'Дежурства',exact:true}).click();
-  await page.getByRole('button',{name:'Добавить дежурство',exact:true}).click();
+  await page.getByRole('button',{name:'Добавить: 8 сентября, 19:30',exact:true}).click();
   await page.getByRole('option',{name:'Оля',exact:true}).click();
   const dutyRequest=page.waitForRequest(r=>r.method()==='POST' && r.url().includes('/api/Event/SaveEventDuty'));
   await page.getByRole('dialog').getByRole('button',{name:'Сохранить',exact:true}).click();
@@ -179,8 +185,9 @@ test('320px login and all directory pages remain usable on mobile', async ({page
   expect(await page.evaluate(()=>document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.screenshot({path:'test-results/login-mobile.png',fullPage:true});
   await page.evaluate(()=>localStorage.setItem('jwtToken','isolated-test-token'));
-  for(const route of ['/', '/clients','/groups','/coaches','/styles','/reports']) {
-    await page.goto(route); await expect(page.locator('h1').first()).toBeVisible();
+  for(const [route, title] of [['/', 'Расписание'], ['/clients', 'Клиенты'], ['/groups', 'Группы'], ['/coaches', 'Тренеры'], ['/styles', 'Направления'], ['/reports', 'Отчёты']]) {
+    await page.goto(route); await expect(page.locator('.topbar h1')).toHaveText(title);
+    await expect(page.locator('app-page-header, .page-heading')).toHaveCount(0);
     expect(await page.evaluate(()=>document.documentElement.scrollWidth <= innerWidth),route).toBe(true);
     if (route === '/') {
       await page.getByRole('button',{name:'Выбрать дату',exact:true}).click();
@@ -203,9 +210,10 @@ for (const viewport of [{width:1536,height:1080}, {width:390,height:844}]) {
       body:JSON.stringify([{id:'duty1',name:'Администратор · Анна',startDateTime:makeDate(1,7),endDateTime:makeDate(1,23),color:'#c18b68'}])
     }));
     await page.goto('/');
-    await page.getByRole('button',{name:'День',exact:true}).click();
-    const lessons = page.locator('.calendar-event[data-kind="event"]');
-    const duty = page.locator('.calendar-event[data-kind="duty"]');
+    await expect(page.locator('.day-column')).toHaveCount(viewport.width <= 760 ? 1 : 7);
+    const column = page.locator('.day-column').nth(viewport.width <= 760 ? 0 : 1);
+    const lessons = column.locator('.calendar-event[data-kind="event"]');
+    const duty = column.locator('.calendar-event[data-kind="duty"]');
     await expect(lessons).toHaveCount(4);
     await expect(duty).toHaveCount(1);
     await expect(page.locator('.hour-label').first()).toHaveText('07:00');
@@ -215,8 +223,8 @@ for (const viewport of [{width:1536,height:1080}, {width:390,height:844}]) {
       await page.getByRole('button',{name:mode === 'event' ? 'Занятия и события' : 'Дежурства',exact:true}).click();
       await expect(lessons).toHaveCount(4);
       await expect(duty).toHaveCount(1);
-      await expect(page.locator('.calendar-event.context-event')).toHaveCount(mode === 'event' ? 1 : 4);
-      expect(await page.locator('.calendar-event.context-event').allTextContents()).toEqual(Array(mode === 'event' ? 1 : 4).fill(''));
+      await expect(column.locator('.calendar-event.context-event')).toHaveCount(mode === 'event' ? 1 : 4);
+      expect(await column.locator('.calendar-event.context-event').allTextContents()).toEqual(Array(mode === 'event' ? 1 : 4).fill(''));
       await expect(page.locator('.calendar-event:not(.context-event) strong').first()).not.toBeEmpty();
       await page.locator('.calendar-event').evaluateAll(elements => Promise.all(elements.flatMap(element => element.getAnimations()).map(animation => animation.finished)));
       const geometry = await page.locator('.calendar-event').evaluateAll(elements => elements.map(element => {
@@ -261,4 +269,26 @@ test('calendar filters preserve the other kind as context', async ({page}) => {
   await page.getByLabel('Поиск дежурств').fill('Анна');
   await expect(page.locator('.calendar-event[data-kind="duty"]')).toHaveCount(1);
   await expect(page.locator('.calendar-event[data-kind="event"]')).toHaveCount(18);
+});
+
+test('calendar follows viewport breakpoint while preserving selected date and navigation', async ({page}) => {
+  await page.setViewportSize({width:760,height:844}); await mockApi(page); await page.goto('/');
+  await expect(page.locator('.day-header strong')).toHaveText('08');
+  await page.getByLabel('Следующий период', {exact:true}).click();
+  await expect(page.locator('.day-header strong')).toHaveText('09');
+  await page.setViewportSize({width:761,height:844});
+  await expect(page.locator('.day-header')).toHaveCount(7);
+  await expect(page.getByLabel('Выбрать дату', {exact:true})).toContainText('9 сент. 2026');
+  await page.locator('.day-header').nth(2).click();
+  await expect(page.locator('.day-header')).toHaveCount(7);
+  await page.getByLabel('Следующий период', {exact:true}).click();
+  await expect(page.getByLabel('Выбрать дату', {exact:true})).toContainText('16 сент. 2026');
+  await page.setViewportSize({width:320,height:740});
+  await expect(page.locator('.day-header strong')).toHaveText('16');
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.getByRole('button', {name:'Сегодня',exact:true}).click();
+  await expect(page.locator('.calendar-event')).toHaveCount(5);
+  const grid = await page.locator('.time-scroll').boundingBox();
+  expect(grid!.y).toBeLessThan(300);
+  await page.screenshot({path:'test-results/calendar-compact-320.png',fullPage:true});
 });
