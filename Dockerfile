@@ -9,10 +9,11 @@ RUN npm install --force
 COPY Client/. .
 RUN npm run build --prod
 
-FROM mcr.microsoft.com/dotnet/sdk:8.0.302 AS dotnet-build
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS dotnet-build
 WORKDIR /src
 
 COPY Scheduler.sln ./
+COPY global.json ./
 COPY Scheduler.Application/Scheduler.Application.csproj Scheduler.Application/
 COPY Scheduler.Infrastructure/Scheduler.Infrastructure.csproj Scheduler.Infrastructure/
 COPY Scheduler.Web/Scheduler.Web.csproj Scheduler.Web/
@@ -29,7 +30,7 @@ RUN dotnet build Scheduler.sln -c Release --no-self-contained -m:1
 RUN dotnet publish Scheduler.Web/Scheduler.Web.csproj -c Release -o /app/publish --no-self-contained -m:1
 
 # Stage 3: Create final image
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS final
 WORKDIR /app
 EXPOSE 5000
 
