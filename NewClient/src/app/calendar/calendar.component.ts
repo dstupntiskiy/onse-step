@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, computed, effect, inject, signal, OutputRefSubscription } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, ElementRef, afterRenderEffect, computed, effect, inject, signal, viewChild, OutputRefSubscription } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
@@ -33,9 +33,6 @@ export class CalendarComponent {
   private readonly responsiveView = signal<View>(this.mobileViewport.matches ? 'day' : 'week');
   readonly view = this.responsiveView.asReadonly();
   readonly mode = signal<'event' | 'duty'>('event');
-  readonly query = signal('');
-  readonly coachId = signal('');
-  readonly type = signal('');
   readonly loading = signal(true);
   readonly error = signal(false);
   readonly revision = signal(0);
@@ -46,22 +43,21 @@ export class CalendarComponent {
   readonly miniDays = computed(() => monthDays(this.miniMonth()));
   readonly days = computed(() => this.view() === 'day' ? [this.selected()] : Array.from({length: 7}, (_, i) => addDays(weekStart(this.selected()), i)));
   readonly range = computed(() => ({ start: this.days()[0], end: addDays(this.days()[this.days().length - 1], 1) }));
-  readonly coaches = computed(() => Array.from(new Map(this.entries().filter(e => e.coachId).map(e => [e.coachId, {id:e.coachId,name:e.coach}])).values()).sort((a,b) => a.name.localeCompare(b.name)));
-  readonly filtered = computed(() => {
-    const q = this.query().trim().toLocaleLowerCase('ru');
-    return this.entries().filter(e => e.kind !== this.mode() || (
-      (e.kind === 'duty' || ((!this.coachId() || e.coachId === this.coachId()) && (!this.type() || String(e.eventType) === this.type()))) &&
-      (!q || [e.title, e.coach, e.group].join(' ').toLocaleLowerCase('ru').includes(q))
-    )).sort((a,b) => +a.start - +b.start);
-  });
-  readonly focusedEntries = computed(() => this.filtered().filter(entry => entry.kind === this.mode()));
-  readonly firstHour = computed(() => Math.min(9, ...this.filtered().map(e => dateKey(e.start) !== dateKey(e.end) ? 0 : e.start.getHours())));
-  readonly lastHour = computed(() => Math.max(22, ...this.filtered().map(e => dateKey(e.start) !== dateKey(e.end) ? 24 : Math.ceil(e.end.getHours() + e.end.getMinutes() / 60))));
-  readonly hours = computed(() => Array.from({length: this.lastHour() - this.firstHour()}, (_, i) => i + this.firstHour()));
-  readonly slots = computed(() => Array.from({length: this.hours().length * 2}, (_, i) => this.firstHour() + i / 2));
-  readonly columns = computed(() => this.days().map(day => ({day, items: layoutScheduleDay(this.filtered(), day, this.firstHour(), this.lastHour(), this.mode())})));
+  readonly sortedEntries = computed(() => [...this.entries()].sort((a, b) => +a.start - +b.start));
+  readonly focusedEntries = computed(() => this.sortedEntries().filter(entry => entry.kind === this.mode()));
+  readonly firstHour = 8;
+  readonly lastHour = 24;
+  private readonly calendarScroll = viewChild<ElementRef<HTMLDivElement>>('calendarScroll');
+  readonly hours = computed(() => Array.from({length: this.lastHour - this.firstHour}, (_, i) => i + this.firstHour));
+  readonly slots = computed(() => Array.from({length: this.hours().length * 2}, (_, i) => this.firstHour + i / 2));
+  readonly columns = computed(() => this.days().map(day => ({day, items: layoutScheduleDay(this.sortedEntries(), day, this.firstHour, this.lastHour, this.mode())})));
   readonly next = computed(() => this.focusedEntries().find(e => e.end > this.now()));
   constructor() {
+    afterRenderEffect({ write: () => {
+      const scroll = this.calendarScroll()?.nativeElement;
+      // Initialize each new grid once; data refreshes preserve the user's scroll position.
+      if (scroll) scroll.scrollTop = (9 - this.firstHour) * 76;
+    }});
     const updateView = (event: MediaQueryListEvent) => this.responsiveView.set(event.matches ? 'day' : 'week');
     this.mobileViewport.addEventListener('change', updateView);
     this.destroyRef.onDestroy(() => this.mobileViewport.removeEventListener('change', updateView));
@@ -82,7 +78,7 @@ export class CalendarComponent {
     return {id:e.id,kind:'event',title:e.name,start:new Date(e.startDateTime),end:new Date(e.endDateTime),color:e.color || '#2bb3ba',coach:coach?.name || '',coachId:coach?.id || '',group:e.group?.name || '',eventType:e.eventType,recurrent:!!e.recurrence,substituted:!!e.eventCoachSubstitution};
   }
   private dutyEntry(e: EventDutyModel): CalendarEntry { return {id:e.id,kind:'duty',title:e.name,start:new Date(e.startDateTime),end:new Date(e.endDateTime),color:e.color || '#c48950',coach:'',coachId:'',group:'',eventType:-1,recurrent:false,substituted:false}; }
-  eventsForDay(day: Date) { const end = addDays(day, 1); return this.filtered().filter(e => e.start < end && e.end > day); }
+  eventsForDay(day: Date) { const end = addDays(day, 1); return this.sortedEntries().filter(e => e.start < end && e.end > day); }
   isToday(day: Date) { return dateKey(day) === dateKey(this.now()); }
   navigate(delta: number) { this.selectDate(addDays(this.selected(), delta * (this.view() === 'day' ? 1 : 7))); }
   selectDate(day: Date) { this.selected.set(dayStart(day)); this.miniMonth.set(dayStart(day)); }
@@ -91,9 +87,8 @@ export class CalendarComponent {
   moveMini(delta: number) { this.miniMonth.set(moveMonth(this.miniMonth(), delta)); }
   toggleDatePicker() { this.miniMonth.set(this.selected()); this.datePickerOpen.update(open => !open); }
   selectMini(day: Date) { this.selectDate(day); this.datePickerOpen.set(false); }
-  setMode(mode: 'event' | 'duty') { this.mode.set(mode); this.coachId.set(''); this.type.set(''); }
-  clearFilters() { this.query.set(''); this.coachId.set(''); this.type.set(''); }
-  currentLine(day: Date): number | null { if (!this.isToday(day)) return null; const minute = this.now().getHours() * 60 + this.now().getMinutes(); return minute >= this.firstHour() * 60 && minute <= this.lastHour() * 60 ? (minute / 60 - this.firstHour()) * 76 : null; }
+  setMode(mode: 'event' | 'duty') { this.mode.set(mode); }
+  currentLine(day: Date): number | null { if (!this.isToday(day)) return null; const minute = this.now().getHours() * 60 + this.now().getMinutes(); return minute >= this.firstHour * 60 && minute <= this.lastHour * 60 ? (minute / 60 - this.firstHour) * 76 : null; }
   createAt(day = this.selected(), hour = 18) { const date = new Date(day); date.setHours(Math.floor(hour), hour % 1 * 60, 0, 0); this.open(undefined, date); }
   open(entry?: CalendarEntry, start = this.selected()) {
     const duty = entry ? entry.kind === 'duty' : this.mode() === 'duty';

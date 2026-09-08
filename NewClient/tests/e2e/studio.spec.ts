@@ -47,16 +47,12 @@ async function mockApi(page:Page, authenticated = true) {
   });
 }
 
-test('desktop calendar, filters, views, dates and creation', async ({page}) => {
+test('desktop calendar, views, dates and creation', async ({page}) => {
   const errors:string[]=[]; page.on('pageerror', e=>errors.push(e.message));
   await page.setViewportSize({width:1536,height:1080}); await mockApi(page); await page.goto('/');
   await expect(page.locator('.calendar-event')).toHaveCount(19);
   await page.screenshot({path:'test-results/calendar-desktop.png',fullPage:true});
-  await page.getByLabel('Поиск занятий').fill('High Heels'); await expect(page.locator('.calendar-event')).toHaveCount(3);
-  await page.getByLabel('Сбросить фильтры').click();
-  await page.getByLabel('Фильтр по типу события').selectOption('1'); await expect(page.locator('.calendar-event')).toHaveCount(3);
-  await page.getByLabel('Сбросить фильтры').click();
-  await expect(page.locator('.view-tabs')).toHaveCount(0);
+  await expect(page.locator('.view-tabs, .filter-bar, .search-field')).toHaveCount(0);
   await expect(page.locator('.topbar h1')).toHaveText('Расписание');
   await expect(page.locator('.schedule .page-heading, .schedule .primary-button')).toHaveCount(0);
   expect(await page.locator('.calendar-panel').evaluate(element => Math.abs(element.getBoundingClientRect().width - element.closest('.schedule')!.getBoundingClientRect().width))).toBeLessThan(1);
@@ -216,8 +212,8 @@ for (const viewport of [{width:1536,height:1080}, {width:390,height:844}]) {
     const duty = column.locator('.calendar-event[data-kind="duty"]');
     await expect(lessons).toHaveCount(4);
     await expect(duty).toHaveCount(1);
-    await expect(page.locator('.hour-label').first()).toHaveText('07:00');
-    await expect(page.locator('.hour-label').last()).toHaveText('22:00');
+    await expect(page.locator('.hour-label').first()).toHaveText('08:00');
+    await expect(page.locator('.hour-label').last()).toHaveText('23:00');
     const originalTimeGeometry = await page.locator('.calendar-event').evaluateAll(elements => elements.map(element => ({top:(element as HTMLElement).style.top,height:(element as HTMLElement).style.height})));
     for (const mode of ['event', 'duty'] as const) {
       await page.getByRole('button',{name:mode === 'event' ? 'Занятия и события' : 'Дежурства',exact:true}).click();
@@ -252,25 +248,6 @@ for (const viewport of [{width:1536,height:1080}, {width:390,height:844}]) {
   });
 }
 
-test('calendar filters preserve the other kind as context', async ({page}) => {
-  await page.setViewportSize({width:1536,height:1080});
-  await mockApi(page); await page.goto('/');
-  await page.getByLabel('Фильтр по тренеру').selectOption('coach1');
-  await expect(page.locator('.calendar-event[data-kind="duty"]')).toHaveCount(1);
-  await page.getByLabel('Поиск занятий').fill('Нет совпадений');
-  await expect(page.locator('.calendar-event[data-kind="event"]')).toHaveCount(0);
-  await expect(page.locator('.calendar-event[data-kind="duty"]')).toHaveCount(1);
-  await expect(page.getByText('По этим фильтрам ничего не найдено.',{exact:true})).toBeVisible();
-  await page.getByLabel('Сбросить фильтры').click();
-  await page.getByRole('button',{name:'Дежурства',exact:true}).click();
-  await page.getByLabel('Поиск дежурств').fill('Нет совпадений');
-  await expect(page.locator('.calendar-event[data-kind="duty"]')).toHaveCount(0);
-  await expect(page.locator('.calendar-event[data-kind="event"]')).toHaveCount(18);
-  await page.getByLabel('Поиск дежурств').fill('Анна');
-  await expect(page.locator('.calendar-event[data-kind="duty"]')).toHaveCount(1);
-  await expect(page.locator('.calendar-event[data-kind="event"]')).toHaveCount(18);
-});
-
 test('calendar follows viewport breakpoint while preserving selected date and navigation', async ({page}) => {
   await page.setViewportSize({width:760,height:844}); await mockApi(page); await page.goto('/');
   await expect(page.locator('.day-header strong')).toHaveText('08');
@@ -289,6 +266,70 @@ test('calendar follows viewport breakpoint while preserving selected date and na
   await page.getByRole('button', {name:'Сегодня',exact:true}).click();
   await expect(page.locator('.calendar-event')).toHaveCount(5);
   const grid = await page.locator('.time-scroll').boundingBox();
-  expect(grid!.y).toBeLessThan(300);
+  expect(grid!.y).toBeLessThan(200);
   await page.screenshot({path:'test-results/calendar-compact-320.png',fullPage:true});
 });
+
+for (const width of [1536, 390]) {
+  test('calendar hours and initial scroll at ' + width + 'px', async ({page}) => {
+    await page.setViewportSize({width, height: width > 760 ? 1080 : 844}); await mockApi(page); await page.goto('/');
+    await expect(page.locator('.calendar-event')).toHaveCount(width <= 760 ? 5 : 19);
+    const scroll = page.locator('.time-scroll');
+    await expect(page.locator('.hour-label')).toHaveCount(16);
+    await expect(page.locator('.hour-label').first()).toHaveText('08:00');
+    await expect(page.locator('.hour-label').last()).toHaveText('23:00');
+    await expect(page.locator('.day-column').first().locator('.time-slot')).toHaveCount(32);
+    await expect.poll(() => scroll.evaluate(el => el.scrollTop)).toBe(76);
+    const header = await page.locator('.day-headers').boundingBox();
+    const nine = await page.locator('.hour-label').filter({hasText:'09:00'}).boundingBox();
+    expect(Math.abs(nine!.y - header!.y - header!.height)).toBeLessThan(2);
+    await scroll.evaluate(el => el.scrollTop = 0);
+    await page.getByRole('button', {name:'Следующий период',exact:true}).click();
+    await expect(page.locator('.calendar-status')).toHaveCount(0);
+    await expect.poll(() => scroll.evaluate(el => el.scrollTop)).toBe(0);
+    await page.getByRole('button', {name:'Дежурства',exact:true}).click();
+    await expect.poll(() => scroll.evaluate(el => el.scrollTop)).toBe(0);
+    await scroll.evaluate(el => el.scrollTop = el.scrollHeight);
+    await expect(page.locator('.time-end')).toHaveText('24:00');
+    await expect(page.locator('.time-end')).toBeInViewport();
+    await expect(page.locator('.day-column').first().locator('.time-slot').last()).toBeInViewport();
+  });
+}
+
+for (const viewport of [{width:390,height:844}, {width:320,height:568}, {width:740,height:390}]) {
+  test('mobile calendar has one scroll at ' + viewport.width + 'x' + viewport.height, async ({page}) => {
+    await page.setViewportSize(viewport); await mockApi(page); await page.goto('/');
+    await expect(page.locator('.calendar-event')).toHaveCount(5);
+    const grid = page.locator('.time-scroll');
+    const controls = page.locator('.topbar, .calendar-top, .calendar-toolbar, .mobile-nav');
+    const before = await controls.evaluateAll(elements => elements.map(el => el.getBoundingClientRect().y));
+    const assertFrame = async () => {
+      expect(await page.evaluate(() => document.documentElement.scrollHeight <= innerHeight)).toBe(true);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+      expect(await page.evaluate(() => window.scrollY)).toBe(0);
+      expect(await controls.evaluateAll(elements => elements.map(el => el.getBoundingClientRect().y))).toEqual(before);
+      for (const control of await controls.all()) await expect(control).toBeInViewport({ratio:1});
+      const panel = await page.locator('.calendar-panel').boundingBox();
+      const nav = await page.locator('.mobile-nav').boundingBox();
+      expect(panel!.y + panel!.height).toBeLessThanOrEqual(nav!.y);
+    };
+    await expect.poll(() => grid.evaluate(el => el.scrollTop)).toBe(76);
+    await grid.hover(); await page.mouse.wheel(0, 2000);
+    await expect.poll(() => grid.evaluate(el => el.scrollTop)).toBeGreaterThan(76);
+    await assertFrame();
+    await grid.evaluate(el => el.scrollTop = el.scrollHeight);
+    await expect(page.locator('.time-end')).toBeInViewport();
+    await page.locator('.topbar').hover(); await page.mouse.wheel(0, 1000);
+    await assertFrame();
+    await page.getByRole('button', {name:'Выбрать дату',exact:true}).click();
+    await expect(page.getByRole('dialog', {name:'Выбор даты',exact:true})).toBeVisible();
+    await page.keyboard.press('Escape');
+    await page.screenshot({path:'test-results/calendar-single-scroll-' + viewport.width + '.png', animations:'disabled'});
+    await page.locator('.mobile-nav').getByRole('link', {name:'Клиенты',exact:true}).click();
+    await expect(page.locator('app-client-card')).toHaveCount(2);
+    await expect(page.locator('app-root')).not.toHaveClass(/calendar-page/);
+    await page.locator('.mobile-nav').getByRole('link', {name:'Расписание',exact:true}).click();
+    await expect(page.locator('.calendar-event')).toHaveCount(5);
+    await assertFrame();
+  });
+}

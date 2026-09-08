@@ -10,6 +10,7 @@ import { SpinnerService } from './shared/spinner/spinner.service';
 
 @Component({
   selector: 'app-root', standalone: true,
+  host: { '[class.calendar-page]': 'calendarPage()' },
   imports: [AsyncPipe, RouterOutlet, RouterLink, RouterLinkActive, MatIconModule, SpinnerComponent],
   templateUrl: './app.component.html', styleUrl: './app.component.scss'
 })
@@ -19,6 +20,7 @@ export class AppComponent {
   readonly router = inject(Router);
   readonly menuOpen = signal(false);
   readonly pageTitle = signal('');
+  readonly calendarPage = signal(false);
   readonly admin = signal(false);
   readonly today = new Intl.DateTimeFormat('ru', { day: 'numeric', month: 'long', weekday: 'long' }).format(new Date());
   readonly navigation = [
@@ -33,6 +35,7 @@ export class AppComponent {
       let route = this.router.routerState.snapshot.root;
       while (route.firstChild) route = route.firstChild;
       this.pageTitle.set(route.data['pageTitle'] ?? 'One Step');
+      this.calendarPage.set(route.data['calendarPage'] === true);
       this.menuOpen.set(false);
       this.user.isAuthenticated(!!localStorage.getItem('jwtToken'));
     });
