@@ -1,5 +1,69 @@
 import { test, expect, Page, Locator } from '@playwright/test';
 
+for (const width of [1536, 320]) {
+  test.describe(`controls at ${width}px`, () => {
+  test.use({hasTouch: width === 320});
+  test(`controls preserve keyboard selection and membership pricing at ${width}px`, async ({page}) => {
+    await page.setViewportSize({width, height:900});
+    await mockApi(page);
+    await page.goto('/groups');
+    await expect(page.locator('app-group-card')).toHaveCount(1);
+    const active = page.getByRole('switch', {name:'Только активные'});
+    await expect(active).toBeChecked();
+    const filtered = page.waitForRequest(r => r.url().includes('GetAllWithDetails') && new URL(r.url()).searchParams.get('onlyActive') === 'false');
+    await active.focus();
+    await page.keyboard.press('Space');
+    await filtered;
+    await expect(active).not.toBeChecked();
+    await page.screenshot({path:`test-results/controls-switch-${width}.png`, animations:'disabled'});
+
+    await page.goto('/clients');
+    await page.locator('app-client-card').first().click();
+    await page.locator('app-client-memberships-list').getByRole('button',{name:'Добавить',exact:true}).click();
+    const dialog = page.getByRole('dialog').last();
+    await expect(dialog).toHaveClass(/mdc-dialog--open/);
+    await expect(dialog).not.toHaveClass(/mdc-dialog--opening/);
+    const direction = dialog.getByRole('combobox', {name:'Направление'});
+    await direction.focus();
+    await page.keyboard.press('Tab');
+    await expect(direction).toHaveAttribute('aria-invalid','true');
+    await direction.focus();
+    await page.keyboard.press('Alt+ArrowDown');
+    await page.getByRole('option', {name:'Bachata',exact:true}).click();
+    await expect(direction).toContainText('Bachata');
+    await dialog.getByRole('radio', {name:'4',exact:true}).focus();
+    await page.keyboard.press('Space');
+    await dialog.getByRole('radio', {name:'20%',exact:true}).click();
+    await expect(dialog.getByText('Цена: 2800', {exact:true})).toBeVisible();
+    const unlimited = dialog.getByRole('checkbox', {name:'Безлимит',exact:true});
+    await unlimited.focus();
+    await page.keyboard.press('Space');
+    await expect(direction).toHaveCount(0);
+    await expect(dialog.getByText('Цена: 20500', {exact:true})).toBeVisible();
+    await page.keyboard.press('Space');
+    await expect(direction).toBeVisible();
+    if (width === 320) {
+      await dialog.locator('mat-checkbox .mdc-label').tap();
+      await expect(unlimited).toBeChecked();
+      await dialog.locator('mat-checkbox .mdc-label').tap();
+      await expect(unlimited).not.toBeChecked();
+      for (const control of await dialog.locator('button[mat-raised-button], button[mat-button], .mat-button-toggle-button, .mat-mdc-icon-button').all()) {
+        const box = await control.boundingBox();
+        expect(box!.height).toBeGreaterThanOrEqual(48);
+        expect(box!.width, await control.evaluate(el => el.outerHTML)).toBeGreaterThanOrEqual(48);
+      }
+    }
+    await dialog.getByRole('textbox', {name:'Комментарий'}).fill('Проверка управления');
+    await dialog.locator('.drawer-body').evaluate(el => el.scrollTop = 0);
+    expect(await dialog.locator('.drawer-body').evaluate(el => el.scrollWidth <= el.clientWidth)).toBe(true);
+    await page.screenshot({path:`test-results/controls-membership-${width}.png`, animations:'disabled'});
+    const saved = page.waitForRequest(r => r.method() === 'POST' && r.url().endsWith('/api/membership/'));
+    await dialog.getByRole('button', {name:'Сохранить',exact:true}).click();
+    expect((await saved).postDataJSON()).toMatchObject({clientId:'client1', styleId:'s1', visitsNumber:4, discount:20, amount:2800, unlimited:false, comment:'Проверка управления'});
+  });
+  });
+}
+
 // All data in this file are isolated test fixtures. Requests never reach the studio API.
 const style = { id:'s1', name:'Bachata', basePrice:6000, secondaryPrice:3500, onetimeVisitPrice:1000, baseSalary:2000, bonusSalary:100, active:true };
 const coach = {id:'coach1', name:'Анна Смирнова', style, active:true};
@@ -346,7 +410,8 @@ test('calendar follows viewport breakpoint while preserving selected date and na
   await page.getByRole('button', {name:'Сегодня',exact:true}).click();
   await expect(page.locator('.calendar-event')).toHaveCount(5);
   const grid = await page.locator('.time-scroll').boundingBox();
-  expect(grid!.y).toBeLessThan(200);
+  const toolbar = await page.locator('.calendar-toolbar').boundingBox();
+  expect(Math.abs(grid!.y - toolbar!.y - toolbar!.height)).toBeLessThan(2);
   await page.screenshot({path:'test-results/calendar-compact-320.png',fullPage:true});
 });
 

@@ -19,6 +19,7 @@
         @if(!isUnlimited()){
             <div class="fields-row">
                 <mat-button-toggle-group
+                    aria-label="Количество посещений"
                     [hideSingleSelectionIndicator]="true"
                     [value]="visitsCount()"
                     (change)="onVisitsCOuntChange($event.value)">
@@ -30,6 +31,7 @@
                     </mat-button-toggle>
                 </mat-button-toggle-group>
                 <mat-button-toggle-group
+                    aria-label="Скидка"
                     [hideSingleSelectionIndicator]="true"
                     [value]="discountSignal()"
                     (change)="onSaleChange($event.value)">

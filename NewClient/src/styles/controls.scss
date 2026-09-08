@@ -1,0 +1,205 @@
+@use '@angular/material' as mat;
+
+// Applied after the Material theme, including controls rendered in CDK overlays.
+@mixin theme() {
+  :root {
+    --control-height: 44px;
+    --control-action-height: 40px;
+    --control-border: #91a79d;
+    --control-accent: #16847f;
+    --control-radius: 8px;
+  }
+
+  .mat-mdc-form-field {
+    @include mat.form-field-overrides((
+      container-height: var(--control-height),
+      container-vertical-padding: 12px,
+      container-text-size: 14px,
+      container-text-line-height: 20px,
+      container-text-tracking: 0,
+      outlined-container-shape: var(--control-radius),
+      outlined-label-text-size: 14px,
+      outlined-label-text-populated-size: 14px,
+      outlined-label-text-color: #465f53,
+      outlined-input-text-color: var(--ink),
+      outlined-outline-color: var(--control-border),
+      outlined-hover-outline-color: #8da99e,
+      outlined-focus-outline-color: var(--control-accent),
+      outlined-focus-label-text-color: var(--control-accent),
+      outlined-focus-outline-width: 2px,
+      outlined-error-outline-color: #bd4545,
+      outlined-error-focus-outline-color: #bd4545,
+      outlined-error-label-text-color: #bd4545,
+      outlined-disabled-outline-color: #e0e7e3,
+      outlined-disabled-input-text-color: #8a9791,
+      subscript-text-size: 12px,
+      subscript-text-line-height: 18px,
+    ));
+    .mat-mdc-text-field-wrapper { background: var(--surface); border-radius: var(--control-radius); transition: box-shadow 150ms; }
+    &.mat-focused .mat-mdc-text-field-wrapper { box-shadow: 0 0 0 3px #16847f16; }
+    &.mat-form-field-invalid.mat-focused .mat-mdc-text-field-wrapper { box-shadow: 0 0 0 3px #bd454516; }
+    &.mat-form-field-disabled .mat-mdc-text-field-wrapper { background: #f4f6f5; }
+    .mat-mdc-form-field-icon-suffix { color: #63776e; }
+  }
+
+  .mat-mdc-select {
+    vertical-align: top;
+    @include mat.select-overrides((trigger-text-size: 14px, trigger-text-line-height: 20px, trigger-text-tracking: 0, enabled-trigger-text-color: var(--ink), focused-arrow-color: var(--control-accent)));
+  }
+  .mat-mdc-select-panel, .mat-mdc-autocomplete-panel, .mat-timepicker-panel {
+    border: 1px solid var(--line);
+    border-radius: 10px !important;
+    padding: 4px !important;
+    box-shadow: 0 8px 28px #233b341a !important;
+  }
+  .mat-mdc-option {
+    min-height: var(--control-height);
+    border-radius: 6px;
+    padding-inline: 12px;
+    @include mat.option-overrides((label-text-size: 14px, label-text-tracking: 0, label-text-color: var(--ink), selected-state-label-text-color: #116d69, selected-state-layer-color: #e5f4f0, hover-state-layer-color: #f1f6f3, focus-state-layer-color: #e5f4f0));
+  }
+
+  .mat-mdc-button-base {
+    @include mat.button-overrides((
+      text-container-height: var(--control-action-height), text-container-shape: var(--control-radius), text-label-text-size: 13px, text-label-text-tracking: 0, text-label-text-weight: 600,
+      filled-container-height: var(--control-action-height), filled-container-shape: var(--control-radius), filled-label-text-size: 13px, filled-label-text-tracking: 0, filled-label-text-weight: 600,
+      outlined-container-height: var(--control-action-height), outlined-container-shape: var(--control-radius), outlined-label-text-size: 13px, outlined-label-text-tracking: 0, outlined-label-text-weight: 600, outlined-outline-color: var(--control-border),
+      protected-container-height: var(--control-action-height), protected-container-shape: var(--control-radius), protected-label-text-size: 13px, protected-label-text-tracking: 0, protected-label-text-weight: 600,
+      protected-container-elevation-shadow: none, protected-hover-container-elevation-shadow: none, protected-focus-container-elevation-shadow: none, protected-pressed-container-elevation-shadow: none,
+    ));
+    &.mat-primary, &.mat-accent {
+      @include mat.button-overrides((protected-container-color: var(--brand), protected-label-text-color: #103e3e, filled-container-color: var(--brand), filled-label-text-color: #103e3e, text-label-text-color: var(--control-accent), outlined-label-text-color: var(--control-accent)));
+    }
+    &.mat-warn {
+      @include mat.button-overrides((protected-container-color: #fceceb, protected-label-text-color: #a33232, filled-container-color: #fceceb, filled-label-text-color: #a33232, text-label-text-color: #a33232));
+    }
+    &:disabled { opacity: 1; }
+  }
+  .mat-mdc-icon-button {
+    padding: 8px;
+    @include mat.icon-button-overrides((state-layer-size: 36px, icon-size: 20px));
+    mat-icon { width: 20px; height: 20px; font-size: 20px; }
+  }
+
+  .primary-button, .quiet-button, button.icon-button {
+    min-height: var(--control-action-height);
+    border-radius: var(--control-radius);
+    border-color: var(--control-border);
+    padding: 7px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    box-shadow: none;
+    transition: background 150ms, border-color 150ms;
+  }
+  .primary-button { border-color: var(--brand); }
+  button.icon-button { width: var(--control-action-height); height: var(--control-action-height); padding: 0; }
+  button.icon-button mat-icon { width: 20px; height: 20px; font-size: 20px; }
+  .directory-toolbar { padding: 12px 16px; gap: 12px; }
+
+  .mat-button-toggle-group {
+    padding: 3px;
+    gap: 3px;
+    background: #eef3f0;
+    border: 1px solid #e1e9e4;
+    max-width: 100%;
+    @include mat.button-toggle-overrides((height: 36px, shape: 10px, background-color: transparent, text-color: #465f53, selected-state-background-color: #16847f, selected-state-text-color: white, disabled-state-background-color: transparent, disabled-state-text-color: #8a9791, disabled-selected-state-background-color: #dfe7e2, disabled-selected-state-text-color: #63776e, divider-color: transparent, label-text-size: 13px, label-text-weight: 600, label-text-tracking: 0));
+    .mat-button-toggle { border: 0; border-radius: 6px; min-width: 0; }
+    .mat-button-toggle-checked { box-shadow: 0 1px 3px #233b341a; }
+    .mat-button-toggle-label-content { padding-inline: 12px; }
+    mat-icon { width: 17px; height: 17px; font-size: 17px; margin-right: 6px; vertical-align: middle; }
+  }
+
+  .mat-mdc-slide-toggle {
+    min-height: var(--control-height);
+    display: inline-flex;
+    align-items: center;
+    @include mat.slide-toggle-overrides((
+      track-width: 36px, track-height: 22px, track-shape: 12px,
+      handle-width: 16px, handle-height: 16px, handle-shape: 50%,
+      selected-handle-size: 16px, unselected-handle-size: 16px, pressed-handle-size: 16px, with-icon-handle-size: 16px,
+      selected-handle-horizontal-margin: 0 -3px, unselected-handle-horizontal-margin: 0 3px,
+      selected-with-icon-handle-horizontal-margin: 0 -3px, unselected-with-icon-handle-horizontal-margin: 0 3px,
+      selected-pressed-handle-horizontal-margin: 0 -3px, unselected-pressed-handle-horizontal-margin: 0 3px,
+      handle-elevation-shadow: 0 1px 3px #233b3433,
+      selected-handle-color: white, selected-hover-handle-color: white, selected-focus-handle-color: white, selected-pressed-handle-color: white,
+      unselected-handle-color: white, unselected-hover-handle-color: white, unselected-focus-handle-color: white, unselected-pressed-handle-color: white,
+      selected-track-color: var(--control-accent), selected-hover-track-color: #116d69, selected-focus-track-color: var(--control-accent), selected-pressed-track-color: #116d69,
+      unselected-track-color: #a7b8b0, unselected-hover-track-color: #8da99e, unselected-focus-track-color: #8da99e, unselected-pressed-track-color: #8da99e,
+      label-text-size: 13px, label-text-tracking: 0, label-text-color: var(--ink),
+    ));
+  }
+  .mat-mdc-checkbox {
+    @include mat.checkbox-overrides((selected-icon-color: var(--control-accent), selected-hover-icon-color: #116d69, selected-focus-icon-color: var(--control-accent), selected-checkmark-color: white, unselected-icon-color: #8da99e, label-text-size: 13px, label-text-tracking: 0, label-text-color: var(--ink)));
+    .mdc-checkbox__background { border-radius: 5px; border-width: 1.5px; }
+  }
+
+  @media (max-width: 760px), (pointer: coarse) {
+    :root { --control-height: 56px; --control-action-height: 48px; --control-radius: 10px; }
+    .mat-mdc-form-field {
+      @include mat.form-field-overrides((container-vertical-padding: 18px, container-text-size: 16px, outlined-label-text-size: 16px, outlined-label-text-populated-size: 16px, outlined-outline-width: 1.5px));
+    }
+    .mat-mdc-select { @include mat.select-overrides((trigger-text-size: 16px)); }
+    .mat-mdc-option { @include mat.option-overrides((label-text-size: 16px)); }
+    .mat-mdc-button-base {
+      @include mat.button-overrides((text-label-text-size: 15px, filled-label-text-size: 15px, outlined-label-text-size: 15px, protected-label-text-size: 15px));
+    }
+    .mat-mdc-icon-button {
+      padding: 12px;
+      min-width: 48px;
+      min-height: 48px;
+      @include mat.icon-button-overrides((state-layer-size: 48px, icon-size: 24px));
+      mat-icon { width: 24px; height: 24px; font-size: 24px; }
+    }
+    .primary-button, .quiet-button, button.icon-button { font-size: 15px; padding-inline: 16px; }
+    button.icon-button { padding: 0; flex-shrink: 0; }
+    button.icon-button mat-icon { width: 24px; height: 24px; font-size: 24px; }
+    .mat-button-toggle-group {
+      gap: 4px;
+      flex-wrap: wrap;
+      @include mat.button-toggle-overrides((height: 48px, label-text-size: 14px));
+      .mat-button-toggle { min-width: 48px; }
+      .mat-button-toggle-button { min-width: 48px; min-height: 48px; }
+      .mat-button-toggle-label-content { font-size: 14px; padding-inline: 12px !important; }
+    }
+    .mat-button-toggle-group.event-types {
+      width: 100%;
+      .mat-button-toggle { flex: 1 1 80px; }
+      .mat-button-toggle-label-content { display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 48px; line-height: 20px; white-space: normal; padding: 6px !important; }
+      mat-icon { flex-shrink: 0; margin: 0; }
+    }
+    .mat-mdc-slide-toggle {
+      @include mat.slide-toggle-overrides((track-width: 44px, track-height: 28px, track-shape: 14px, handle-width: 22px, handle-height: 22px, selected-handle-size: 22px, unselected-handle-size: 22px, pressed-handle-size: 22px, with-icon-handle-size: 22px, label-text-size: 16px, label-text-weight: 500));
+    }
+    .mat-mdc-checkbox {
+      @include mat.checkbox-overrides((state-layer-size: 48px, label-text-size: 16px, label-text-weight: 500));
+    }
+    .mat-mdc-slide-toggle .mat-internal-form-field,
+    .mat-mdc-checkbox .mat-internal-form-field {
+      min-height: 52px;
+      padding: 2px 10px;
+      border: 1px solid var(--control-border);
+      border-radius: 10px;
+      background: #f5f8f6;
+    }
+    .mat-mdc-slide-toggle.mat-mdc-slide-toggle-checked .mat-internal-form-field,
+    .mat-mdc-checkbox.mat-mdc-checkbox-checked .mat-internal-form-field { background: #e4f3ef; border-color: var(--control-accent); }
+    .mat-mdc-slide-toggle .mdc-label, .mat-mdc-checkbox .mdc-label { padding-block: 10px; }
+    .side-drawer .drawer-layout > .actions { gap: 12px; }
+    .side-drawer .drawer-layout > .actions > div { gap: 12px !important; }
+    .directory-toolbar { padding: 16px; gap: 16px; }
+  }
+
+  // Keep the complete date visible beside its picker button on small phones.
+  @media (max-width: 400px) {
+    .side-drawer .fields-row > mat-form-field:has(mat-datepicker-toggle),
+    .side-drawer .field-row > mat-form-field:has(mat-datepicker-toggle) {
+      flex: 1 1 100%;
+      width: 100%;
+    }
+    .side-drawer .drawer-layout > .actions > .actions-right,
+    .side-drawer .drawer-layout > .actions > .right-actions {
+      flex: 1 1 100%;
+      > button { flex: 1; }
+    }
+  }
+}

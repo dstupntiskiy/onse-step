@@ -1,5 +1,6 @@
 @use '@angular/material' as mat;
 @use './drawer';
+@use './styles/controls';
 @import '@fontsource/manrope/cyrillic-400.css';
 @import '@fontsource/manrope/cyrillic-500.css';
 @import '@fontsource/manrope/cyrillic-600.css';
@@ -67,8 +68,8 @@ mat-form-field { min-width: 0; }
  .cdk-overlay-pane .fields-row > mat-form-field,.cdk-overlay-pane .field-row > mat-form-field { flex: 1 1 125px; width: auto; }
  .cdk-overlay-pane .participants > * { flex: 1 1 100%; min-width: 0; }
  .cdk-overlay-pane .mat-mdc-dialog-content { padding: 16px !important; max-height: 72dvh; }
- .mat-button-toggle-label-content { padding-inline: 9px !important; font-size: 11px; }
- .cdk-overlay-pane .actions { gap: 6px !important; }.cdk-overlay-pane .actions-right,.cdk-overlay-pane .right-actions { display: flex; gap: 3px !important; }
+ .cdk-overlay-pane .actions { gap: 12px; }.cdk-overlay-pane .actions-right,.cdk-overlay-pane .right-actions { display: flex; gap: 12px; }
 }
 @media(prefers-reduced-motion: reduce) { *,*::before,*::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; } }
+@include controls.theme();
 

@@ -14,7 +14,7 @@
                 <input matInput placeholder="Название" formControlName="name">
             </mat-form-field>
             <div class="color-wrapper">
-                <button type="button" (click)="isColorSelectorOpen = !isColorSelectorOpen" class="color-selector"
+                <button type="button" aria-label="Выбрать цвет события" [attr.aria-expanded]="isColorSelectorOpen" (click)="isColorSelectorOpen = !isColorSelectorOpen" class="color-selector"
                     [style.background-color]="color()" cdkOverlayOrigin #trigger="cdkOverlayOrigin"></button>
                 <ng-template cdkConnectedOverlay [cdkConnectedOverlayOrigin]="trigger"
                     [cdkConnectedOverlayOpen]="isColorSelectorOpen">
@@ -23,7 +23,7 @@
             </div>
         </div>
         <div class="fields-row">
-            <mat-button-toggle-group class="event-types" formControlName="eventType" [hideSingleSelectionIndicator]="true">
+            <mat-button-toggle-group class="event-types" aria-label="Тип события" formControlName="eventType" [hideSingleSelectionIndicator]="true">
                 <mat-button-toggle class="event-type" [value]="eventTypes.Event">
                     <mat-icon>event</mat-icon>
                     <span>Занятие</span>
