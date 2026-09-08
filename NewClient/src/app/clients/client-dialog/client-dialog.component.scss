@@ -7,6 +7,46 @@
         margin-top: 8px;
     }
 
+    .onetime-visits {
+        display: grid;
+        gap: 12px;
+        margin-top: 16px;
+    }
+
+    .onetime-visit {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 16px;
+        min-width: 0;
+        padding: 16px;
+        border: 1px solid #dce6e0;
+        border-radius: 12px;
+        background: #f5f8f6;
+    }
+
+    .visit-name {
+        flex: 1 1 160px;
+        min-width: 0;
+        color: #233b34;
+        font-size: 14px;
+        font-weight: 700;
+        line-height: 20px;
+        overflow-wrap: anywhere;
+    }
+
+    .visit-date {
+        flex-shrink: 0;
+        padding: 6px 10px;
+        border: 1px solid #dce6e0;
+        border-radius: 8px;
+        background: white;
+        color: #63776e;
+        font-size: 13px;
+        line-height: 20px;
+        font-variant-numeric: tabular-nums;
+    }
+
     .actions {
         display: flex;
         justify-content: space-between;
@@ -16,5 +56,14 @@
             display: flex;
             gap: 8px;
         }
+    }
+}
+
+@media (max-width: 400px) {
+    .client-dialog-content .onetime-visit {
+        padding: 14px;
+        gap: 14px;
+
+        .visit-name { flex-basis: 100%; }
     }
 }

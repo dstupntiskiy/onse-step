@@ -88,7 +88,6 @@ export class PaymentDialogComponent implements DynamicComponent {
         .pipe(
           finalize(() => this.spinnerService.loadingOff()),
           catchError(() => {
-            this.snackbarService.error('Не удалось удалить оплату')
             return of()
           })
         )

@@ -1,62 +1,38 @@
-import { Component, EventEmitter, Output } from '@angular/core';
-
+import { A11yModule } from '@angular/cdk/a11y';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
   selector: 'app-palette',
   standalone: true,
-  imports: [],
+  imports: [A11yModule],
   templateUrl: './palette.component.html',
   styleUrl: './palette.component.scss'
 })
 export class PaletteComponent {
-  @Output() onColorSelect: EventEmitter<string> = new EventEmitter()
+  @Input() selectedColor = '';
+  @Output() onColorSelect = new EventEmitter<string>();
+  @Output() dismissed = new EventEmitter<void>();
 
-  public colors = ['#ffffbe',
-  '#ffff99',
-  '#ffff4d',
-  '#ffff00',
-  '#b3b300',
-  '#666600',
-  '#ffe7be',
-  '#ffdb99',
-  '#ffc14d',
-  '#ffa500',
-  '#b37400',
-  '#664200',
-  '#f6dbc6',
-  '#f3c6a5',
-  '#ea9a62',
-  '#e06f1f',
-  '#9d4e15',
-  '#70380f',
-  '#ffbebe',
-  '#ff9999',
-  '#ff4d4d',
-  '#ff0000',
-  '#b30000',
-  '#660000',
-  '#ffc2ff',
-  '#ff99ff',
-  '#ff4dff',
-  '#ff00ff',
-  '#b300b3',
-  '#660066',
-  '#c2c2ff',
-  '#9999ff',
-  '#4d4dff',
-  '#0000ff',
-  '#0000b3',
-  '#000066',
-  '#c3f6d2',
-  '#a2fdb3',
-  '#82db9a',
-  '#8fdb82',
-  '#5bab53',
-  '#187f3d']
+  readonly families = [
+    { name: 'Розовый', shades: ['#ffe4e6', '#fda4af', '#fb7185', '#e11d48', '#9f1239'] },
+    { name: 'Оранжевый', shades: ['#ffedd5', '#fed7aa', '#fb923c', '#ea580c', '#9a3412'] },
+    { name: 'Жёлтый', shades: ['#fef9c3', '#fde68a', '#facc15', '#ca8a04', '#854d0e'] },
+    { name: 'Зелёный', shades: ['#dcfce7', '#86efac', '#4ade80', '#16a34a', '#166534'] },
+    { name: 'Бирюзовый', shades: ['#ccfbf1', '#99e3db', '#2bb3ba', '#008080', '#115e59'] },
+    { name: 'Фиолетовый', shades: ['#ede9fe', '#c4b5fd', '#a78bfa', '#7c3aed', '#5b21b6'] },
+    { name: 'Синий', shades: ['#dbeafe', '#93c5fd', '#60a5fa', '#2563eb', '#1e40af'] },
+  ];
+  readonly tones = ['Очень светлый', 'Светлый', 'Средний', 'Насыщенный', 'Тёмный'];
 
-  onColorClick(color: string){
+  get currentColor(): string {
+    return this.selectedColor.toLowerCase() === 'teal' ? '#008080' : this.selectedColor;
+  }
+
+  isSelected(color: string): boolean {
+    return this.currentColor.toLowerCase() === color;
+  }
+
+  onColorClick(color: string): void {
     this.onColorSelect.emit(color);
   }
 }
-
-

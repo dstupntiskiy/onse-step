@@ -1,8 +1,7 @@
 import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from '@angular/common/http';
-import { Injectable, inject } from '@angular/core';
-import { Observable, catchError, tap, throwError } from 'rxjs';
+import { Injectable } from '@angular/core';
+import { Observable, catchError, throwError } from 'rxjs';
 import { SnackBarService } from './snack-bar.service';
-import { UserService } from '../shared/services/user.service';
 
 
 export interface IAngularHttpRequestOptions {
@@ -53,13 +52,23 @@ export abstract class BaseHttpService {
   }
 
   private handleError(error: HttpErrorResponse){
-    const message = error.status === 0 || error.status >= 500
+    const body = error.error;
+    const validationMessages = body?.errors && typeof body.errors === 'object'
+      ? Object.values(body.errors).flat().filter((value): value is string => typeof value === 'string' && !!value.trim())
+      : [];
+    const serverMessage = [
+      typeof body === 'string' ? body : undefined,
+      body?.message,
+      body?.detail,
+      validationMessages.join('\n'),
+      body?.title
+    ].find((value): value is string => typeof value === 'string' && !!value.trim());
+    const fallback = error.status === 0 || error.status >= 500
       ? 'Сервер недоступен. Попробуйте ещё раз.'
       : error.status === 403 ? 'У вас нет прав на это действие'
       : error.status === 401 ? 'Проверьте данные для входа'
-      : typeof error.error === 'string' ? error.error
-      : error.error?.message || 'Не удалось выполнить действие';
-    this.snackbarService.error(message);
+      : 'Не удалось выполнить действие';
+    this.snackbarService.error(serverMessage?.trim() || fallback);
     return throwError(() => error);
   }
 }

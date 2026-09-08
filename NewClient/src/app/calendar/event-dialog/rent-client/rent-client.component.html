@@ -6,12 +6,15 @@
     }
     @else{
     <app-client-name [client]="oneTimeVisitor()!.client"></app-client-name>
-    <app-payment [memberId]="oneTimeVisitor()!.id" [paymentType]="paymentTypes.Onetime"
-        [(payment)]="oneTimeVisitor()!.payment">
-    </app-payment>
-    <button mat-button type="button" (click)="onDeleteClick()">
-        <mat-icon>clear</mat-icon>
-    </button>
+    <div class="rent-client-actions">
+        <app-payment [memberId]="oneTimeVisitor()!.id" [paymentType]="paymentTypes.Onetime"
+            [(payment)]="oneTimeVisitor()!.payment">
+        </app-payment>
+        <button mat-icon-button class="remove-client" type="button" aria-label="Удалить участника"
+            title="Удалить участника" (click)="onDeleteClick()">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
     }
     }
 </div>

@@ -1,32 +1,110 @@
-.participant-content:hover .label {
-    visibility: visible;
+:host {
+    display: block;
+    width: 100%;
+    min-width: 0;
 }
 
-.participant-content .label {
-    visibility: hidden;
+.participant {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    border: 1px solid #dce6e0;
+    border-radius: 12px;
+    background: #f5f8f6;
+
+    app-client-name {
+        flex: 1 1 160px;
+        min-width: 0;
+    }
 }
 
-.participant-content {
-    .participant {
-        padding: 4px;
-        gap: 4px;
+.right-block {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-left: auto;
+    max-width: 100%;
+
+    app-membership-details { min-width: 0; }
+    .attendance-toggle { flex-shrink: 0; }
+}
+
+// Keep shared component overrides inside the attendance card.
+:host ::ng-deep .participant {
+    .client-name {
         display: flex;
-        justify-content: space-between;
-        border-radius: 6px;
+        flex-direction: column;
+        gap: 6px;
 
-        background-color: rgb(0, 0, 0, 0.05);
-
-        app-client-name {
-            flex: 1;
-            min-width: 0;
+        h5 {
+            margin: 0;
+            color: #233b34;
+            font-size: 14px;
+            font-weight: 700;
+            line-height: 20px;
         }
 
-        .right-block {
-            display: flex;
-            gap: 6px;
-            justify-content: flex-end;
-            align-items: center;
-            flex-shrink: 0;
+        span {
+            color: #63776e;
+            font-size: 13px;
+            line-height: 18px;
         }
+
+        span:empty { display: none; }
+    }
+
+    .membership-details {
+        max-width: 100%;
+        height: auto;
+        min-height: var(--control-action-height);
+        padding: 10px 12px !important;
+        border: 1px solid #719b8d;
+        background: #e0f1e9;
+        color: #145c50;
+        font-weight: 700;
+        line-height: 20px;
+        white-space: normal;
+        overflow-wrap: anywhere;
+        transition: background 150ms, border-color 150ms;
+
+        &.mat-accent { border-color: #16847f; background: #c9e7da; }
+
+        &:hover {
+            border-color: #145c50;
+            background: #c9e7da;
+        }
+
+        &:focus-visible {
+            outline: 3px solid var(--control-accent);
+            outline-offset: 3px;
+        }
+    }
+
+    .attendance-toggle {
+        min-height: var(--control-action-height);
+
+        .mat-internal-form-field {
+            min-height: var(--control-action-height);
+            padding: 0 10px;
+            border: 1px solid #c4d2ca;
+            border-radius: var(--control-radius);
+            background: white;
+        }
+
+        &.mat-mdc-slide-toggle-checked .mat-internal-form-field {
+            border-color: #719b8d;
+            background: #e0f1e9;
+        }
+    }
+}
+
+@media (max-width: 400px) {
+    .participant {
+        padding: 14px;
+        gap: 14px;
+
+        app-client-name { flex-basis: 100%; }
     }
 }

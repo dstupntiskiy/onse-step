@@ -24,13 +24,25 @@ for (const width of [1536, 320]) {
     await expect(dialog).toHaveClass(/mdc-dialog--open/);
     await expect(dialog).not.toHaveClass(/mdc-dialog--opening/);
     const direction = dialog.getByRole('combobox', {name:'Направление'});
+    const saveMembership = dialog.getByRole('button', {name:'Сохранить',exact:true});
+    await expect(saveMembership).toBeDisabled();
+    await expect(direction).toHaveAttribute('aria-required','true');
+    await expect(dialog.getByText('Выберите направление — обязательное поле', {exact:true})).toBeVisible();
+    const unlimitedWithoutDirection = dialog.getByRole('checkbox', {name:'Безлимит',exact:true});
+    await unlimitedWithoutDirection.check();
+    await expect(saveMembership).toBeEnabled();
+    await unlimitedWithoutDirection.uncheck();
+    await expect(saveMembership).toBeDisabled();
     await direction.focus();
     await page.keyboard.press('Tab');
     await expect(direction).toHaveAttribute('aria-invalid','true');
+    await expect(dialog.locator('mat-error')).toHaveText('Выберите направление — обязательное поле');
     await direction.focus();
     await page.keyboard.press('Alt+ArrowDown');
     await page.getByRole('option', {name:'Bachata',exact:true}).click();
     await expect(direction).toContainText('Bachata');
+    await expect(saveMembership).toBeEnabled();
+    await expect(dialog.getByText('Выберите направление — обязательное поле', {exact:true})).toHaveCount(0);
     await dialog.getByRole('radio', {name:'4',exact:true}).focus();
     await page.keyboard.press('Space');
     await dialog.getByRole('radio', {name:'20%',exact:true}).click();
@@ -297,6 +309,40 @@ test('login, failed API and expired session states', async ({page}) => {
   await expect(page.locator('.sidebar')).toHaveCount(0);
 });
 
+test('server error messages are shown and membership can be retried', async ({page}) => {
+  await mockApi(page);
+  await page.goto('/clients');
+  await page.locator('app-client-card').first().click();
+  await page.locator('app-client-memberships-list').getByRole('button',{name:'Добавить',exact:true}).click();
+  const dialog = page.getByRole('dialog').last();
+  await dialog.getByRole('combobox',{name:'Направление'}).click();
+  await page.getByRole('option',{name:'Bachata',exact:true}).click();
+  const cases = [
+    {status:500, body:'У клиента уже есть абонемент на этот период', expected:'У клиента уже есть абонемент на этот период'},
+    {status:500, body:{message:'Абонемент нельзя изменить'}, expected:'Абонемент нельзя изменить'},
+    {status:403, body:{message:'Изменять абонемент может только администратор'}, expected:'Изменять абонемент может только администратор'},
+    {status:400, body:{title:'Некорректный запрос', detail:'Дата окончания раньше даты начала'}, expected:'Дата окончания раньше даты начала'},
+    {status:400, body:{title:'Ошибка проверки', errors:{StyleId:['Выберите направление'], EndDate:['Укажите дату окончания']}}, expected:'Выберите направление Укажите дату окончания'},
+    {status:500, body:'   ', expected:'Сервер недоступен. Попробуйте ещё раз.'},
+    {status:400, body:{message:{invalid:true}}, expected:'Не удалось выполнить действие'},
+  ];
+  for (const scenario of cases) {
+    await page.route('**/api/membership/', route => route.fulfill({status:scenario.status, contentType:'application/json', body:JSON.stringify(scenario.body)}), {times:1});
+    await dialog.getByRole('button',{name:'Сохранить',exact:true}).click();
+    const notification = page.locator('mat-snack-bar-container');
+    await expect(notification.locator('.mdc-snackbar__label')).toHaveText(scenario.expected);
+    await expect(dialog).toBeVisible();
+    await notification.getByRole('button',{name:'Закрыть',exact:true}).click();
+    await expect(notification).toHaveCount(0);
+  }
+  await page.route('**/api/membership/', route => route.abort('failed'), {times:1});
+  await dialog.getByRole('button',{name:'Сохранить',exact:true}).click();
+  await expect(page.locator('mat-snack-bar-container')).toContainText('Сервер недоступен. Попробуйте ещё раз.');
+  await page.locator('mat-snack-bar-container').getByRole('button',{name:'Закрыть',exact:true}).click();
+  await dialog.getByRole('button',{name:'Сохранить',exact:true}).click();
+  await expect(page.locator('app-membership')).toHaveCount(2);
+});
+
 test('membership creation and duty creation submit existing API fields', async ({page}) => {
   const errors:string[]=[]; page.on('pageerror',e=>errors.push(e.message));
   await mockApi(page); await page.goto('/clients');
@@ -476,5 +522,66 @@ for (const viewport of [{width:390,height:844}, {width:320,height:568}, {width:7
     await page.locator('.mobile-nav').getByRole('link', {name:'Расписание',exact:true}).click();
     await expect(page.locator('.calendar-event')).toHaveCount(5);
     await assertFrame();
+  });
+}
+
+for (const viewport of [{width:1536,height:960}, {width:390,height:844}, {width:320,height:568}, {width:740,height:390}]) {
+  test.describe(`event palette ${viewport.width}px`, () => {
+    test.use({hasTouch: viewport.width <= 760});
+    test('palette selection, dismissal, focus and saving at ' + viewport.width + 'px', async ({page}) => {
+      await page.setViewportSize(viewport);
+      await mockApi(page);
+      await page.goto('/');
+      await page.locator('.calendar-event[data-kind="event"]').first().click();
+      const editor = page.getByRole('dialog').first();
+      await expect(editor).not.toHaveClass(/mdc-dialog--opening/);
+      const trigger = page.getByRole('button', {name:'Выбрать цвет события',exact:true});
+      const palette = page.getByRole('dialog', {name:'Цвет события',exact:true});
+      const activate = async (target: Locator) => viewport.width <= 760 ? target.tap() : target.click();
+      await activate(trigger);
+      await expect(palette).toBeVisible();
+      const bounds = await palette.boundingBox();
+      expect(bounds!.x).toBeGreaterThanOrEqual(0);
+      expect(bounds!.y).toBeGreaterThanOrEqual(0);
+      expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(viewport.width);
+      expect(bounds!.y + bounds!.height).toBeLessThanOrEqual(viewport.height);
+      for (const swatch of await palette.locator('.color').all()) {
+        const box = await swatch.boundingBox();
+        expect(box!.width).toBeGreaterThanOrEqual(44);
+        expect(box!.height).toBeGreaterThanOrEqual(44);
+      }
+      await expect(palette.locator('[aria-pressed="true"]')).toHaveCount(1);
+      await expect(palette.getByRole('button', {name:'Закрыть палитру'})).toBeFocused();
+      await page.keyboard.press('Shift+Tab');
+      await expect(palette.locator('.color').last()).toBeFocused();
+      await page.keyboard.press('Tab');
+      await expect(palette.getByRole('button', {name:'Закрыть палитру'})).toBeFocused();
+      await page.keyboard.press('Escape');
+      await expect(palette).not.toBeVisible();
+      await expect(editor).toBeVisible();
+      await expect(trigger).toBeFocused();
+      await activate(trigger);
+      const blue = palette.getByRole('button', {name:'Синий · Насыщенный',exact:true});
+      await blue.scrollIntoViewIfNeeded();
+      await activate(blue);
+      await expect(palette).not.toBeVisible();
+      await expect(trigger.locator('.color-preview')).toHaveCSS('background-color','rgb(37, 99, 235)');
+      await expect(trigger).toBeFocused();
+      await activate(trigger);
+      await expect(blue).toHaveAttribute('aria-pressed','true');
+      await expect(palette.locator('.palette-footer strong')).toHaveText('#2563eb');
+      await palette.locator('.palette-colors').evaluate(el => el.scrollTop = 0);
+      await page.screenshot({path:`test-results/palette-${viewport.width}.png`, animations:'disabled'});
+      await activate(palette.getByRole('button', {name:'Закрыть палитру'}));
+      await expect(palette).not.toBeVisible();
+      await activate(trigger);
+      await page.locator('.cdk-overlay-transparent-backdrop').click({position:{x:2,y:2}});
+      await expect(palette).not.toBeVisible();
+      await expect(editor).toBeVisible();
+      const saved = page.waitForRequest(r => r.method() === 'POST' && r.url().endsWith('/api/Event/'));
+      await editor.getByRole('button', {name:'Сохранить',exact:true}).click();
+      expect((await saved).postDataJSON().color).toBe('#2563eb');
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    });
   });
 }

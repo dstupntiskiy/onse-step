@@ -4,8 +4,6 @@ import { catchError, of, switchMap } from 'rxjs';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { Attendence } from '../../../shared/models/attendence-model';
 import { EventService } from '../../event/event.service';
-import { SnackBarService } from '../../../services/snack-bar.service';
-import { HttpErrorResponse } from '@angular/common/http';
 import { ClientNameComponent } from '../../../shared/components/client-name/client-name.component';
 import { MembershipDetailsComponent } from '../../../shared/components/membership-details/membership-details.component';
 import { StyleModel } from '../../../shared/models/style-model';
@@ -32,9 +30,7 @@ export class ParticipantComponent {
 
   membershipService = inject(MembershipService)
 
-  constructor(private eventService: EventService,
-    private snackBarService: SnackBarService,
-  ){}
+  constructor(private eventService: EventService){}
 
   ngOnInit(){
     this.isAttendant.setValue(this.attendy().isAttendant)
@@ -47,7 +43,6 @@ export class ParticipantComponent {
             return this.eventService.addAttendy(this.eventId(), this.attendy().client.id)
               .pipe(
                 catchError(() =>{
-                  this.snackBarService.error("Не удалось отметить участника")
                   this.isAttendant.setValue(false, {emitEvent: false})
                   this.updateMembership()
                   return of(false)
@@ -57,9 +52,7 @@ export class ParticipantComponent {
           else{
             return this.eventService.removeAttendy(this.eventId(), this.attendy().client.id)
               .pipe(
-                catchError((error: HttpErrorResponse) => {
-                  if(error.status != 200)
-                  this.snackBarService.error("Не удалось удалить участника")
+                catchError(() => {
                   this.isAttendant.setValue(true, {emitEvent: false})
                   this.updateMembership()
                   return of(true)

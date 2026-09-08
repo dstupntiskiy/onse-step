@@ -208,8 +208,10 @@ export class MembershipDialogComponent implements DynamicComponent  {
     this.discountSignal.update(() => sale)
   }
 
-  private isValid(): boolean{
-    return this.startDate.valid
+  isValid(): boolean{
+    return !this.isLoading
+    && this.startDate.valid
     && this.endDate.valid
+    && (this.unlimited.value === true || this.style.valid)
   }
 }

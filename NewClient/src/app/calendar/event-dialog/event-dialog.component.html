@@ -14,11 +14,20 @@
                 <input matInput placeholder="Название" formControlName="name">
             </mat-form-field>
             <div class="color-wrapper">
-                <button type="button" aria-label="Выбрать цвет события" [attr.aria-expanded]="isColorSelectorOpen" (click)="isColorSelectorOpen = !isColorSelectorOpen" class="color-selector"
-                    [style.background-color]="color()" cdkOverlayOrigin #trigger="cdkOverlayOrigin"></button>
+                <button type="button" aria-label="Выбрать цвет события" aria-haspopup="dialog" [attr.aria-expanded]="isColorSelectorOpen" (click)="isColorSelectorOpen = !isColorSelectorOpen" class="color-selector"
+                    cdkOverlayOrigin #trigger="cdkOverlayOrigin">
+                    <span class="color-preview" [style.background-color]="color()"></span>
+                    <span class="color-caption">Цвет</span>
+                    <mat-icon aria-hidden="true">expand_more</mat-icon>
+                </button>
                 <ng-template cdkConnectedOverlay [cdkConnectedOverlayOrigin]="trigger"
-                    [cdkConnectedOverlayOpen]="isColorSelectorOpen">
-                    <app-palette (onColorSelect)="colorSelected($event)"></app-palette>
+                    [cdkConnectedOverlayOpen]="isColorSelectorOpen"
+                    [cdkConnectedOverlayPositions]="palettePositions"
+                    [cdkConnectedOverlayPush]="true" [cdkConnectedOverlayViewportMargin]="12"
+                    [cdkConnectedOverlayHasBackdrop]="true" cdkConnectedOverlayBackdropClass="cdk-overlay-transparent-backdrop"
+                    (backdropClick)="isColorSelectorOpen = false" (overlayKeydown)="onPaletteKeydown($event)">
+                    <app-palette [selectedColor]="color()" (onColorSelect)="colorSelected($event)"
+                        (dismissed)="isColorSelectorOpen = false"></app-palette>
                 </ng-template>
             </div>
         </div>
@@ -111,8 +120,8 @@
                 </mat-select>
             </mat-form-field>
             @if(initialEvent()?.group){
-            <button mat-icon-button type="button" (click)="onEditGroupClick()">
-                <mat-icon class="edit-group-button icon-button">edit</mat-icon>
+            <button mat-icon-button class="event-field-action" type="button" aria-label="Редактировать группу" title="Редактировать группу" (click)="onEditGroupClick()">
+                <mat-icon>edit</mat-icon>
             </button>
             }
         </div>

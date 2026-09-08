@@ -1,31 +1,56 @@
-.membership-dialog-content{
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    max-width: 400px;
-
-    .fields-row{
-        display: flex;
-        gap: 16px;
-
-        .payed-less{
-            color: red;
-        }
-
-        .payed{
-            color: green;
-        }
+:host { min-width: 0; }
+.membership-body { display: flex; flex-direction: column; gap: 20px; background: #f7f9f7; }
+.membership-client {
+    display: flex; align-items: center; gap: 12px; min-width: 0;
+    .client-avatar {
+        display: grid; place-items: center; flex: 0 0 44px; height: 44px;
+        border: 1px solid #d5e8df; border-radius: 14px; background: #e6f2ec;
+        color: #287b69; font-size: 20px; font-weight: 600;
     }
-
-    .actions{
-        display: flex;
-        gap: 16px;
-        justify-content: space-between;
-
-        .right-actions{
-            display: flex;
-            gap: 16px;
-            justify-content: flex-end;
-        }
-    }
+    .eyebrow { display: block; margin-bottom: 3px; color: #63776e; font-size: 11px; }
+    strong { font-size: 15px; font-weight: 600; overflow-wrap: anywhere; }
+}
+.form-section {
+    display: flex; flex-direction: column; gap: 18px; padding: 20px;
+    border: 1px solid #dfe7e2; border-radius: 14px; background: white;
+}
+h2 { margin: 0; color: var(--ink); font-size: 14px; font-weight: 700; line-height: 22px; }
+mat-form-field { width: 100%; min-width: 0; }
+.section-heading { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px 16px; }
+.plan-options { display: grid; grid-template-columns: minmax(140px, 1fr) minmax(0, 2fr); gap: 20px; }
+.option-field { display: flex; flex-direction: column; gap: 9px; min-width: 0; }
+.field-label { color: #63776e; font-size: 12px; font-weight: 500; }
+mat-button-toggle-group { width: 100%; }
+mat-button-toggle { flex: 1; }
+.custom-option { flex-grow: 1.8; }
+.unlimited-note { margin: 0; color: #63776e; font-size: 13px; line-height: 1.7; }
+.price-section {
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;
+    gap: 16px 24px; padding: 20px; border: 1px solid #cde5dc; border-radius: 14px; background: #eaf5ef;
+    mat-form-field { flex: 1 1 160px; }
+    .custom-price-heading { flex: 1 1 220px; }
+    p { margin: 4px 0 0; color: #63776e; font-size: 12px; }
+}
+.price-total, .price-paid { display: flex; flex-direction: column; gap: 5px; font-variant-numeric: tabular-nums; }
+.price-total span, .price-paid span { color: #536d61; font-size: 12px; }
+.price-total strong { color: #176653; font-size: 28px; font-weight: 700; line-height: 1.2; }
+.price-paid { padding-left: 24px; border-left: 1px solid #cde0d6; min-width: 120px; }
+.price-paid strong { color: var(--ink); font-size: 20px; font-weight: 600; }
+.price-paid.payed-less strong { color: #975627; }
+.price-paid.payed strong { color: #267451; }
+.date-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.comment-field textarea { resize: vertical; min-height: 48px; line-height: 24px; }
+.actions { display: flex; justify-content: space-between; }
+.right-actions { margin-left: auto; }
+.right-actions button:last-child { min-width: 128px; }
+@media (max-width: 760px) {
+    .plan-options { grid-template-columns: 1fr; gap: 18px; }
+    .discount-options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .custom-option { grid-column: 1 / -1; }
+}
+@media (max-width: 400px) {
+    .membership-body { gap: 16px; }
+    .form-section, .price-section { padding: 16px; }
+    .date-fields { grid-template-columns: 1fr; gap: 18px; }
+    .price-paid { padding-left: 16px; min-width: 96px; }
 }

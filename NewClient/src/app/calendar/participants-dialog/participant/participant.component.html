@@ -10,7 +10,8 @@
                 [style]="style()"
                 [date]="eventDate()"
                 ></app-membership-details>
-            <mat-slide-toggle [formControl]="isAttendant">
+            <mat-slide-toggle class="attendance-toggle" [formControl]="isAttendant"
+                [aria-label]="'Посещение: ' + attendy().client.name" title="Отметить посещение">
             </mat-slide-toggle>
         </div>
     </div>

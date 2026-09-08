@@ -7,19 +7,16 @@
         display: flex;
         flex-direction: column;
         gap: 16px;
-        box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
-        border-radius: 6px;
-        padding: 12px;
+        min-width: 0;
         
         .add-client{
-            display: flex;
-            gap: 8px;
-            align-items: center;
+            app-add-client { display: block; width: 100%; }
         }
 
         .visitors-list{
-            max-height: 300px;
-            overflow-y: scroll; 
+            display: grid;
+            gap: 12px;
+            min-width: 0;
         }
     }
     .actions{
@@ -27,3 +24,5 @@
         justify-content: flex-end;
     }
 }
+
+:host ::ng-deep .add-client mat-form-field { width: 100%; }

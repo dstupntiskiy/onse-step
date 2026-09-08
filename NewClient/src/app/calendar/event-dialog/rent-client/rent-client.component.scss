@@ -1,8 +1,113 @@
-.rent-client{
+:host {
+    display: block;
+    width: 100%;
+    min-width: 0;
+}
+
+.rent-client {
     display: flex;
+    flex-wrap: wrap;
     gap: 16px;
-    background-color: rgb(0, 0, 0, 0.05);
     align-items: center;
-    border-radius: 6px;
-    padding: 6px;
+    padding: 16px;
+    border: 1px solid #dce6e0;
+    border-radius: 12px;
+    background: #f5f8f6;
+
+    app-client-name {
+        flex: 1 1 160px;
+        min-width: 0;
+    }
+
+    app-add-client {
+        display: block;
+        width: 100%;
+        min-width: 0;
+    }
+}
+
+.rent-client-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-left: auto;
+}
+
+.remove-client {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: var(--control-action-height);
+    height: var(--control-action-height);
+    padding: 0;
+    border: 1px solid #c4d2ca;
+    border-radius: var(--control-radius);
+    background: white;
+    color: #63776e;
+    transition: background 150ms, border-color 150ms, color 150ms;
+
+    &:hover {
+        border-color: #c98585;
+        background: #fceceb;
+        color: #a33232;
+    }
+
+    &:focus-visible {
+        outline: 3px solid var(--control-accent);
+        outline-offset: 3px;
+    }
+}
+
+// Keep these overrides inside the rental card, including child component content.
+:host ::ng-deep .rent-client {
+    .client-name {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+
+        h5 {
+            margin: 0;
+            color: #233b34;
+            font-size: 14px;
+            font-weight: 700;
+            line-height: 20px;
+        }
+
+        span {
+            color: #63776e;
+            font-size: 13px;
+            line-height: 18px;
+        }
+
+        span:empty { display: none; }
+    }
+
+    .payment-details {
+        border: 1px solid #719b8d;
+        background: #e0f1e9;
+        color: #145c50;
+        font-weight: 700;
+        white-space: nowrap;
+        transition: background 150ms, border-color 150ms;
+
+        &:hover {
+            border-color: #145c50;
+            background: #c9e7da;
+        }
+
+        &:focus-visible {
+            outline: 3px solid var(--control-accent);
+            outline-offset: 3px;
+        }
+    }
+}
+
+@media (max-width: 400px) {
+    .rent-client {
+        padding: 14px;
+        gap: 14px;
+
+        app-client-name { flex-basis: 100%; }
+    }
 }

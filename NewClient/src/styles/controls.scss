@@ -81,6 +81,27 @@
     mat-icon { width: 20px; height: 20px; font-size: 20px; }
   }
 
+  .mat-mdc-icon-button.event-field-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: var(--control-action-height);
+    height: var(--control-action-height);
+    padding: 0;
+    border: 1px solid #719b8d;
+    border-radius: var(--control-radius);
+    background: #e4f3ef;
+    color: #145c50;
+    transition: background 150ms, border-color 150ms;
+    @include mat.icon-button-overrides((state-layer-size: var(--control-action-height), icon-size: 24px));
+
+    mat-icon { width: 24px; height: 24px; font-size: 24px; }
+    &:hover:not(:disabled) { background: #cde9e0; border-color: #145c50; }
+    &:focus-visible { outline: 3px solid var(--control-accent); outline-offset: 3px; }
+    &:disabled { background: #f0f3f1; border-color: #d4ded8; color: #8a9791; }
+  }
+
   .primary-button, .quiet-button, button.icon-button {
     min-height: var(--control-action-height);
     border-radius: var(--control-radius);

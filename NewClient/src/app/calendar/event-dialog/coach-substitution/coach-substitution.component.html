@@ -21,13 +21,13 @@
     }
     @if(coach()){
     @if(isEditing){
-    <button mat-icon-button type="button" [disabled]="!substitutionControl.value" (click)="onSubstitutionChange()">
-        <mat-icon class="icon-button">done</mat-icon>
+    <button mat-icon-button class="event-field-action" type="button" aria-label="Сохранить замену тренера" title="Сохранить замену тренера" [disabled]="!substitutionControl.value" (click)="onSubstitutionChange()">
+        <mat-icon>done</mat-icon>
     </button>
     }
     @else{
-    <button mat-icon-button type="button" (click)="substitution() ? onSubstitutionDelete() : onCoachEdit()">
-        <mat-icon class="icon-button">{{ substitution() ? 'close' : 'loop'}}</mat-icon>
+    <button mat-icon-button class="event-field-action" type="button" [attr.aria-label]="substitution() ? 'Удалить замену тренера' : 'Заменить тренера'" [title]="substitution() ? 'Удалить замену тренера' : 'Заменить тренера'" (click)="substitution() ? onSubstitutionDelete() : onCoachEdit()">
+        <mat-icon>{{ substitution() ? 'close' : 'loop'}}</mat-icon>
     </button>
     }
     }

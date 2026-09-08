@@ -7,8 +7,9 @@
                 [paymentType]="paymentType"
                 [memberId]="visitor().id"
                 [onetimeVisitPrice]="style().onetimeVisitPrice"></app-payment>
-            <button mat-icon-button (click)="removeVisitor()">
-                <mat-icon>clear</mat-icon>
+            <button mat-icon-button class="remove-visitor" type="button" aria-label="Удалить участника"
+                title="Удалить участника" (click)="removeVisitor()">
+                <mat-icon>close</mat-icon>
             </button>
         </div>
     </div>

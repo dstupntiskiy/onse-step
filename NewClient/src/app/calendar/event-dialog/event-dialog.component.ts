@@ -19,7 +19,7 @@ import { SpinnerService } from '../../shared/spinner/spinner.service';
 import { finalize, Observable, of } from 'rxjs';
 import { EventRequestModel, EventService } from '../event/event.service';
 
-import { OverlayModule } from '@angular/cdk/overlay';
+import { ConnectedPosition, OverlayModule } from '@angular/cdk/overlay';
 import { PaletteComponent } from '../../shared/components/palette/palette.component';
 import { RecurrenceService } from '../recurrence/recurrence.service';
 import { MatIconModule } from '@angular/material/icon';
@@ -116,6 +116,18 @@ export class EventDialogComponent implements DynamicComponent {
   pickerEnd: Date;
   color = signal<string>('');
   isColorSelectorOpen: boolean = false;
+  readonly palettePositions: ConnectedPosition[] = [
+    { originX: 'end', originY: 'bottom', overlayX: 'end', overlayY: 'top', offsetY: 8 },
+    { originX: 'end', originY: 'top', overlayX: 'end', overlayY: 'bottom', offsetY: -8 },
+  ];
+
+  onPaletteKeydown(event: KeyboardEvent): void {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      event.stopPropagation();
+      this.isColorSelectorOpen = false;
+    }
+  }
   coachId = signal<string | null>(null)
 
   onetimeVisitorsCount: number = 0;

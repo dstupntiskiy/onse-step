@@ -5,7 +5,6 @@ import { Client } from '../../models/client-model';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 
 import { BehaviorSubject, Observable, catchError, debounceTime, filter, of, switchMap } from 'rxjs';
-import { SnackBarService } from '../../../services/snack-bar.service';
 import { ClientService } from '../../../clients/client.service';
 import { CommonModule } from '@angular/common';
 
@@ -30,7 +29,6 @@ export class AddClientComponent {
   selectedClient$$ = output<Client>() 
   filteredOptions$: Observable<Client[]>
 
-  snackbarService = inject(SnackBarService)
   clientService = inject(ClientService)
 
   clearControl = input<BehaviorSubject<boolean>>()
@@ -51,8 +49,7 @@ export class AddClientComponent {
         return true
       }),
       switchMap(value => this.clientService.getClientsByQuery(value).pipe(
-        catchError(error => {
-          this.snackbarService.error("Не удалось выполнить поиск");
+        catchError(() => {
           return of([])
         })
       ))

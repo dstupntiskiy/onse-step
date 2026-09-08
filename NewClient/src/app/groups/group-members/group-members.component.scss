@@ -1,28 +1,42 @@
-.members-content{
-    box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
-    border-radius: 6px;
-    padding: 6px;
+:host {
+    display: block;
+    width: 100%;
+    min-width: 0;
+}
 
-    .field-row{
+.members-content {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    .field-row {
         display: flex;
-        justify-content: space-between;
         flex-wrap: wrap;
-        gap: 16px;
+        gap: 12px;
         align-items: center;
-        .add-member{
-            display: flex;
-            gap: 16px;
-            align-items: center;
-        }
     }
-    .member-list{
-        max-height: 300px;
-        overflow-y: scroll;
+
+    .add-member {
+        flex: 1 1 220px;
+        min-width: 0;
+
+        app-add-client { display: block; }
+    }
+
+    .members-count {
+        color: #63776e;
+        font-size: 13px;
+        white-space: nowrap;
+    }
+
+    .member-list {
+        display: grid;
+        gap: 12px;
         position: relative;
         min-height: 50px;
-
-        .member-row{
-            margin-top: 6px;
-        }
     }
+
+    .member-row { min-width: 0; }
 }
+
+:host ::ng-deep .add-member mat-form-field { width: 100%; }
