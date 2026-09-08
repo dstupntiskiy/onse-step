@@ -359,7 +359,23 @@ test('membership creation and duty creation submit existing API fields', async (
   await page.getByRole('button',{name:'Закрыть окно',exact:true}).click();
   await page.goto('/'); await page.getByRole('button',{name:'Дежурства',exact:true}).click();
   await page.getByRole('button',{name:'Добавить: 8 сентября, 19:30',exact:true}).click();
-  await page.getByRole('option',{name:'Оля',exact:true}).click();
+  const person = page.getByRole('radio',{name:'Оля',exact:true});
+  await person.check();
+  await person.focus();
+  await page.keyboard.press('ArrowRight');
+  await expect(page.getByRole('radio',{name:'Тоня',exact:true})).toBeChecked();
+  await expect(page.locator('.duty-summary strong')).toHaveText('Тоня');
+  await page.keyboard.press('ArrowLeft');
+  await expect(person).toBeChecked();
+  for (const width of [900, 390, 320]) {
+    await page.setViewportSize({width, height:844});
+    await expect(page.getByRole('dialog').getByRole('button',{name:'Сохранить',exact:true})).toBeInViewport();
+    expect(await page.locator('app-duty-dialog .drawer-body').evaluate(el => el.scrollWidth <= el.clientWidth)).toBe(true);
+    const fields = await page.locator('.duty-time-row mat-form-field').all();
+    const startBox = await fields[0].boundingBox(), endBox = await fields[1].boundingBox();
+    expect(startBox!.y).toBe(endBox!.y);
+    await page.screenshot({path:`test-results/duty-creation-${width}.png`,animations:'disabled'});
+  }
   const dutyRequest=page.waitForRequest(r=>r.method()==='POST' && r.url().includes('/api/Event/SaveEventDuty'));
   await page.getByRole('dialog').getByRole('button',{name:'Сохранить',exact:true}).click();
   const duty=(await dutyRequest).postDataJSON(); expect(duty.name).toBe('Оля'); expect(new Date(duty.endDateTime).getTime()).toBeGreaterThan(new Date(duty.startDateTime).getTime());

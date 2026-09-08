@@ -1,28 +1,52 @@
 <div class="drawer-layout duty-dialog-content">
     <div class="drawer-body duty-dialog-content">
-        <h1>Дежурство</h1>
-        <div class="field-row">
-            <app-duty-list
-                [(currentDuty)]="selectedDuty"></app-duty-list>
+        <header class="duty-heading">
+            <span class="heading-icon"><mat-icon aria-hidden="true">badge</mat-icon></span>
+            <div>
+                <h1>Дежурство</h1>
+                <p>{{ data()?.id ? 'Редактирование смены' : 'Новая смена' }}</p>
+            </div>
+        </header>
+        <div class="duty-date">
+            <mat-icon aria-hidden="true">calendar_today</mat-icon>
+            <span>{{ start.value | date:'EEEE, d MMMM' }}</span>
         </div>
-        <div class="field-row">
-            <mat-form-field>
-                <mat-label>Начало</mat-label>
-                <input matInput [matTimepicker]="pickerStart" [formControl]="start">
-                <mat-timepicker-toggle matIconSuffix [for]="pickerStart">
-                <mat-icon matTimepickerToggleIcon>keyboard_arrow_down</mat-icon>
-                </mat-timepicker-toggle>
-                <mat-timepicker #pickerStart/>
-            </mat-form-field>
-            <mat-form-field>
-                <mat-label>Конец</mat-label>
-                <input matInput [matTimepicker]="pickerEnd" [formControl]="end">
-                <mat-timepicker-toggle matIconSuffix [for]="pickerEnd">
-                <mat-icon matTimepickerToggleIcon>keyboard_arrow_down</mat-icon>
-                </mat-timepicker-toggle>
-                <mat-timepicker #pickerEnd/>
-            </mat-form-field>
-        </div>
+        <section class="duty-section" aria-labelledby="duty-person-title">
+            <h2 id="duty-person-title">Кто дежурит</h2>
+            <p class="section-hint">Выберите сотрудника на смену</p>
+            <app-duty-list [(currentDuty)]="selectedDuty"></app-duty-list>
+        </section>
+        <section class="duty-section" aria-labelledby="duty-time-title">
+            <h2 id="duty-time-title">Время смены</h2>
+            <div class="duty-time-row">
+                <mat-form-field subscriptSizing="dynamic">
+                    <mat-label>Начало</mat-label>
+                    <input matInput [matTimepicker]="pickerStart" [formControl]="start">
+                    <mat-timepicker-toggle matIconSuffix [for]="pickerStart">
+                        <mat-icon matTimepickerToggleIcon>keyboard_arrow_down</mat-icon>
+                    </mat-timepicker-toggle>
+                    <mat-timepicker #pickerStart/>
+                </mat-form-field>
+                <mat-form-field subscriptSizing="dynamic">
+                    <mat-label>Окончание</mat-label>
+                    <input matInput [matTimepicker]="pickerEnd" [formControl]="end">
+                    <mat-timepicker-toggle matIconSuffix [for]="pickerEnd">
+                        <mat-icon matTimepickerToggleIcon>keyboard_arrow_down</mat-icon>
+                    </mat-timepicker-toggle>
+                    <mat-timepicker #pickerEnd/>
+                </mat-form-field>
+            </div>
+        </section>
+        @if(selectedDuty()) {
+            <div class="duty-summary" aria-live="polite">
+                <span class="summary-dot" [style.background-color]="selectedDuty()?.color"></span>
+                <div>
+                    <strong>{{ selectedDuty()?.name }}</strong>
+                    <p>{{ start.value | date:'HH:mm' }} — {{ end.value | date:'HH:mm' }}</p>
+                </div>
+                <mat-icon aria-hidden="true">check_circle</mat-icon>
+            </div>
+        }
     </div>
     <div class="actions">
         <div class="actions-left">

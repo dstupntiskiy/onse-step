@@ -1,7 +1,4 @@
-import { CommonModule } from '@angular/common';
-import { Component, effect, input, model } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { MatChipListbox, MatChipSelectionChange, MatChipsModule } from '@angular/material/chips'
+import { Component, effect, model } from '@angular/core';
 
 export type Duty = {
   name: string, 
@@ -10,11 +7,6 @@ export type Duty = {
 
 @Component({
   selector: 'app-duty-list',
-  imports: [MatChipsModule, 
-    MatChipListbox,
-    CommonModule,
-    FormsModule
-  ],
   templateUrl: './duty-list.component.html',
   styleUrl: './duty-list.component.scss'
 })
@@ -38,9 +30,4 @@ export class DutyListComponent {
     })
   }
 
-  selectDuty(event: MatChipSelectionChange, duty: Duty){
-    if(event.selected){
-      this.currentDuty.set(duty)
-    }
-  }
 }

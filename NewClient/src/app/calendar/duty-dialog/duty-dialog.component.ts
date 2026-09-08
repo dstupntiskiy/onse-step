@@ -1,4 +1,5 @@
-import { Component, computed, effect, inject, input, output, signal } from '@angular/core';
+import { Component, effect, inject, input, output, signal } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { DynamicComponent } from '../../shared/dialog/base-dialog/base-dialog.component';
 import { MatIcon } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -25,6 +26,7 @@ export interface DutyDialogData{
   selector: 'app-duty-dialog',
   standalone: true,
   imports: [
+    DatePipe,
     MatIcon,
     MatTimepickerModule,
     MatInputModule,

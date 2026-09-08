@@ -64,9 +64,10 @@ mat-form-field { min-width: 0; }
 @media(max-width: 760px) {
  .directory-toolbar { padding: 14px; gap: 12px; }.directory-grid { grid-template-columns: 1fr; max-height: calc(100dvh - 320px); }.directory-toolbar mat-form-field { width: 100%; }.record-card { padding: 18px; }
  .cdk-overlay-pane { max-width: 96vw !important; }
- .cdk-overlay-pane .fields-row, .cdk-overlay-pane .field-row, .cdk-overlay-pane .participants { flex-wrap: wrap; gap: 12px !important; }
+ .cdk-overlay-pane .fields-row, .cdk-overlay-pane .field-row { flex-wrap: wrap; gap: 12px !important; }
  .cdk-overlay-pane .fields-row > mat-form-field,.cdk-overlay-pane .field-row > mat-form-field { flex: 1 1 125px; width: auto; }
- .cdk-overlay-pane .participants > * { flex: 1 1 100%; min-width: 0; }
+ .cdk-overlay-pane .participants { flex-wrap: nowrap; justify-content: flex-start; gap: 12px !important; }
+ .cdk-overlay-pane .participants > * { flex: 0 1 auto; min-width: 0; }
  .cdk-overlay-pane .mat-mdc-dialog-content { padding: 16px !important; max-height: 72dvh; }
  .cdk-overlay-pane .actions { gap: 12px; }.cdk-overlay-pane .actions-right,.cdk-overlay-pane .right-actions { display: flex; gap: 12px; }
 }

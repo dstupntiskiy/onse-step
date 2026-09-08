@@ -1,13 +1,13 @@
-<div class="duty-list">
-    <mat-chip-listbox class="duty-listbox"
-        [value]="currentDuty()?.name">
-        @for(duty of DutyList; track duty){
-            <mat-chip-option (selectionChange)="selectDuty($event, duty)">
-                <div class="chip-content">
-                    <span class="chip-label">{{ duty.name}}</span>
-                    <span class="color-circle" [style.background-color]="duty.color"></span>
-                </div>
-            </mat-chip-option>
-        }
-    </mat-chip-listbox>
+<div class="duty-list" role="radiogroup" aria-label="Кто дежурит">
+    @for(duty of DutyList; track duty.name) {
+        <label class="duty-option">
+            <input type="radio" name="duty-person" [value]="duty.name"
+                [checked]="currentDuty()?.name === duty.name" (change)="currentDuty.set(duty)">
+            <span class="duty-card">
+                <span class="duty-avatar" [style.background-color]="duty.color" aria-hidden="true">{{ duty.name.slice(0, 1) }}</span>
+                <span class="duty-name">{{ duty.name }}</span>
+                <span class="selection-mark" aria-hidden="true"></span>
+            </span>
+        </label>
+    }
 </div>
