@@ -2,6 +2,8 @@ import { ChangeDetectionStrategy, Component, DestroyRef, computed, effect, injec
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
+import { A11yModule } from '@angular/cdk/a11y';
+import { ConnectedPosition, OverlayModule } from '@angular/cdk/overlay';
 import { forkJoin } from 'rxjs';
 import { EventService } from './event/event.service';
 import { EventModel, EventDutyModel } from './event/event.model';
@@ -9,9 +11,9 @@ import { DialogService } from '../services/dialog.service';
 import { EventDialogComponent } from './event-dialog/event-dialog.component';
 import { DutyDialogComponent } from './duty-dialog/duty-dialog.component';
 import { addDays, CalendarEntry, dateKey, dayStart, layoutScheduleDay, monthDays, moveMonth, parseDateKey, weekStart } from './calendar-layout';
-type View = 'week' | 'day' | 'month' | 'list';
+type View = 'week' | 'day';
 @Component({
-  selector: 'app-calendar', standalone: true, imports: [DatePipe, FormsModule, MatIconModule],
+  selector: 'app-calendar', standalone: true, imports: [DatePipe, FormsModule, MatIconModule, A11yModule, OverlayModule],
   templateUrl: './calendar.component.html', styleUrl: './calendar.component.scss', changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CalendarComponent {
@@ -20,6 +22,13 @@ export class CalendarComponent {
   private readonly destroyRef = inject(DestroyRef);
   readonly selected = signal(dayStart(new Date()));
   readonly miniMonth = signal(dayStart(new Date()));
+  readonly datePickerOpen = signal(false);
+  readonly datePickerPositions: ConnectedPosition[] = [
+    { originX: 'start', originY: 'bottom', overlayX: 'start', overlayY: 'top', offsetY: 8 },
+    { originX: 'end', originY: 'bottom', overlayX: 'end', overlayY: 'top', offsetY: 8 },
+    { originX: 'start', originY: 'top', overlayX: 'start', overlayY: 'bottom', offsetY: -8 },
+    { originX: 'end', originY: 'top', overlayX: 'end', overlayY: 'bottom', offsetY: -8 }
+  ];
   readonly view = signal<View>(window.matchMedia('(max-width: 760px)').matches ? 'day' : 'week');
   readonly mode = signal<'event' | 'duty'>('event');
   readonly query = signal('');
@@ -31,10 +40,10 @@ export class CalendarComponent {
   readonly entries = signal<CalendarEntry[]>([]);
   readonly now = signal(new Date());
   readonly weekdays = ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ', 'ВС'];
-  readonly views: { id: View; label: string }[] = [{id:'day',label:'День'}, {id:'week',label:'Неделя'}, {id:'month',label:'Месяц'}, {id:'list',label:'Список'}];
+  readonly views: { id: View; label: string }[] = [{id:'day',label:'День'}, {id:'week',label:'Неделя'}];
   readonly dateKey = dateKey;
   readonly miniDays = computed(() => monthDays(this.miniMonth()));
-  readonly days = computed(() => this.view() === 'month' ? monthDays(this.selected()) : this.view() === 'day' ? [this.selected()] : Array.from({length: 7}, (_, i) => addDays(weekStart(this.selected()), i)));
+  readonly days = computed(() => this.view() === 'day' ? [this.selected()] : Array.from({length: 7}, (_, i) => addDays(weekStart(this.selected()), i)));
   readonly range = computed(() => ({ start: this.days()[0], end: addDays(this.days()[this.days().length - 1], 1) }));
   readonly coaches = computed(() => Array.from(new Map(this.entries().filter(e => e.coachId).map(e => [e.coachId, {id:e.coachId,name:e.coach}])).values()).sort((a,b) => a.name.localeCompare(b.name)));
   readonly filtered = computed(() => {
@@ -50,10 +59,6 @@ export class CalendarComponent {
   readonly hours = computed(() => Array.from({length: this.lastHour() - this.firstHour()}, (_, i) => i + this.firstHour()));
   readonly slots = computed(() => Array.from({length: this.hours().length * 2}, (_, i) => this.firstHour() + i / 2));
   readonly columns = computed(() => this.days().map(day => ({day, items: layoutScheduleDay(this.filtered(), day, this.firstHour(), this.lastHour(), this.mode())})));
-  readonly agenda = computed(() => this.days().map(day => {
-    const entries = this.eventsForDay(day);
-    return {day, entries, lanes: (['event', 'duty'] as const).map(kind => ({kind, entries: entries.filter(entry => entry.kind === kind)}))};
-  }));
   readonly next = computed(() => this.focusedEntries().find(e => e.end > this.now()));
   constructor() {
     effect(onCleanup => {
@@ -75,12 +80,13 @@ export class CalendarComponent {
   private dutyEntry(e: EventDutyModel): CalendarEntry { return {id:e.id,kind:'duty',title:e.name,start:new Date(e.startDateTime),end:new Date(e.endDateTime),color:e.color || '#c48950',coach:'',coachId:'',group:'',eventType:-1,recurrent:false,substituted:false}; }
   eventsForDay(day: Date) { const end = addDays(day, 1); return this.filtered().filter(e => e.start < end && e.end > day); }
   isToday(day: Date) { return dateKey(day) === dateKey(this.now()); }
-  navigate(delta: number) { this.selectDate(this.view() === 'month' ? moveMonth(this.selected(), delta) : addDays(this.selected(), delta * (this.view() === 'day' ? 1 : 7))); }
+  navigate(delta: number) { this.selectDate(addDays(this.selected(), delta * (this.view() === 'day' ? 1 : 7))); }
   selectDate(day: Date) { this.selected.set(dayStart(day)); this.miniMonth.set(dayStart(day)); }
-  dateInput(value: string) { const day = parseDateKey(value); if (day) this.selectDate(day); }
+  dateInput(value: string) { const day = parseDateKey(value); if (day) this.selectMini(day); }
   today() { this.selectDate(new Date()); }
   moveMini(delta: number) { this.miniMonth.set(moveMonth(this.miniMonth(), delta)); }
-  selectMini(day: Date) { this.selectDate(day); if (this.view() === 'month' || this.view() === 'list') this.view.set('day'); }
+  toggleDatePicker() { this.miniMonth.set(this.selected()); this.datePickerOpen.update(open => !open); }
+  selectMini(day: Date) { this.selectDate(day); this.datePickerOpen.set(false); }
   setMode(mode: 'event' | 'duty') { this.mode.set(mode); this.coachId.set(''); this.type.set(''); }
   clearFilters() { this.query.set(''); this.coachId.set(''); this.type.set(''); }
   currentLine(day: Date): number | null { if (!this.isToday(day)) return null; const minute = this.now().getHours() * 60 + this.now().getMinutes(); return minute >= this.firstHour() * 60 && minute <= this.lastHour() * 60 ? (minute / 60 - this.firstHour()) * 76 : null; }

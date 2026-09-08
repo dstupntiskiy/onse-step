@@ -3,17 +3,28 @@
   <div class="schedule-layout">
     <div class="calendar-panel">
       <div class="calendar-top"><div class="mode-tabs" aria-label="Тип расписания"><button [class.active]="mode() === 'event'" [attr.aria-pressed]="mode() === 'event'" (click)="setMode('event')">Занятия и события</button><button [class.active]="mode() === 'duty'" [attr.aria-pressed]="mode() === 'duty'" (click)="setMode('duty')">Дежурства</button></div><span class="calendar-caption">Планируйте. Танцуйте. Вдохновляйте.</span></div>
-      <div class="calendar-toolbar"><div class="date-controls"><button class="icon-button" aria-label="Предыдущий период" (click)="navigate(-1)"><mat-icon>chevron_left</mat-icon></button><button class="icon-button" aria-label="Следующий период" (click)="navigate(1)"><mat-icon>chevron_right</mat-icon></button><h2>{{selected() | date:'LLLL yyyy'}}</h2><button class="quiet-button today-button" (click)="today()">Сегодня</button></div><div class="view-tabs" aria-label="Вид календаря">@for (option of views; track option.id) { <button [class.active]="view() === option.id" [attr.aria-pressed]="view() === option.id" (click)="view.set(option.id)">{{option.label}}</button> }</div></div>
+      <div class="calendar-toolbar">
+        <div class="date-controls"><button class="icon-button" aria-label="Предыдущий период" (click)="navigate(-1)"><mat-icon>chevron_left</mat-icon></button><button class="icon-button" aria-label="Следующий период" (click)="navigate(1)"><mat-icon>chevron_right</mat-icon></button><h2>{{selected() | date:'LLLL yyyy'}}</h2><button class="quiet-button today-button" (click)="today()">Сегодня</button></div>
+        <div class="calendar-view-controls">
+          <button class="quiet-button date-picker-button" cdkOverlayOrigin #datePickerOrigin="cdkOverlayOrigin" aria-label="Выбрать дату" aria-haspopup="dialog" [attr.aria-expanded]="datePickerOpen()" [attr.aria-controls]="datePickerOpen() ? 'calendar-date-picker' : null" (click)="toggleDatePicker()"><mat-icon>calendar_today</mat-icon><span>{{selected() | date:'d MMM yyyy'}}</span></button>
+          <div class="view-tabs" aria-label="Вид календаря">@for (option of views; track option.id) { <button [class.active]="view() === option.id" [attr.aria-pressed]="view() === option.id" (click)="view.set(option.id)">{{option.label}}</button> }</div>
+          <ng-template cdkConnectedOverlay [cdkConnectedOverlayOrigin]="datePickerOrigin" [cdkConnectedOverlayOpen]="datePickerOpen()" [cdkConnectedOverlayPositions]="datePickerPositions" [cdkConnectedOverlayHasBackdrop]="true" cdkConnectedOverlayBackdropClass="cdk-overlay-transparent-backdrop" [cdkConnectedOverlayPush]="true" [cdkConnectedOverlayViewportMargin]="12" (backdropClick)="datePickerOpen.set(false)" (detach)="datePickerOpen.set(false)" (overlayKeydown)="$event.key === 'Escape' && datePickerOpen.set(false)">
+            <div class="mini-calendar" id="calendar-date-picker" role="dialog" aria-label="Выбор даты" aria-modal="true" cdkTrapFocus [cdkTrapFocusAutoCapture]="true">
+              <div class="mini-header"><strong aria-live="polite">{{miniMonth() | date:'LLLL yyyy'}}</strong><button class="icon-button" aria-label="Предыдущий месяц" (click)="moveMini(-1)"><mat-icon>chevron_left</mat-icon></button><button class="icon-button" aria-label="Следующий месяц" (click)="moveMini(1)"><mat-icon>chevron_right</mat-icon></button></div>
+              <div class="mini-grid">@for(label of weekdays; track label) { <span>{{label}}</span> }@for(day of miniDays(); track dateKey(day)) { <button [class.selected]="dateKey(day) === dateKey(selected())" [class.muted]="day.getMonth() !== miniMonth().getMonth()" [class.today-text]="isToday(day)" [attr.aria-pressed]="dateKey(day) === dateKey(selected())" [attr.aria-current]="isToday(day) ? 'date' : null" [attr.cdkFocusInitial]="dateKey(day) === dateKey(selected()) ? '' : null" [attr.aria-label]="day | date:'d MMMM yyyy'" (click)="selectMini(day)">{{day.getDate()}}</button> }</div>
+              <div class="mini-footer"><input class="jump-date" type="date" aria-label="Перейти к дате" [ngModel]="dateKey(selected())" (change)="dateInput($any($event.target).value)"><button class="quiet-button" (click)="selectMini(now())">Сегодня</button></div>
+            </div>
+          </ng-template>
+        </div>
+      </div>
       <div class="filter-bar"><label class="search-field"><mat-icon>search</mat-icon><input [attr.aria-label]="mode() === 'duty' ? 'Поиск дежурств' : 'Поиск занятий'" [placeholder]="mode() === 'duty' ? 'Найти дежурство...' : 'Найти занятие...'" [ngModel]="query()" (ngModelChange)="query.set($event)"></label>
         @if(mode() === 'event') { <select aria-label="Фильтр по тренеру" [ngModel]="coachId()" (ngModelChange)="coachId.set($event)"><option value="">Все тренеры</option>@for(coach of coaches(); track coach.id) { <option [value]="coach.id">{{coach.name}}</option> }</select><select aria-label="Фильтр по типу события" [ngModel]="type()" (ngModelChange)="type.set($event)"><option value="">Все события</option><option value="0">Занятия</option><option value="1">Аренда</option><option value="2">Мастер-классы</option></select> }
-        <input class="jump-date" type="date" aria-label="Перейти к дате" [ngModel]="dateKey(selected())" (ngModelChange)="dateInput($event)">
         @if (query() || coachId() || type()) { <button class="clear-button" (click)="clearFilters()" aria-label="Сбросить фильтры"><mat-icon>filter_alt_off</mat-icon></button> }
       </div>
       @if (loading()) { <div class="calendar-status" role="status"><span class="loading-dot"></span>Обновляем расписание…</div> }
       @if (error()) { <div class="error-state" role="alert"><mat-icon>cloud_off</mat-icon><strong>Не удалось загрузить расписание</strong><p>Проверьте подключение и попробуйте ещё раз.</p><button class="quiet-button" (click)="refresh()">Повторить</button></div> }
       @else {
         @if(!loading() && focusedEntries().length === 0) { <div class="empty-inline" role="status"><mat-icon>event_available</mat-icon><span>{{query() || coachId() || type() ? 'По этим фильтрам ничего не найдено.' : mode() === 'duty' ? 'Пока нет дежурств. Выберите время или добавьте первое дежурство.' : 'Пока нет событий. Выберите время или добавьте первое занятие.'}}</span></div> }
-        @if(view() === 'week' || view() === 'day') {
           <div class="time-scroll" [class.single-day]="view() === 'day'">
             <div class="time-calendar" [class.week]="view() === 'week'" [style.--days]="days().length">
               <div class="day-headers"><div class="time-label">ВРЕМЯ</div>@for(day of days(); track dateKey(day)) { <button class="day-header" [class.today]="isToday(day)" (click)="selectDate(day); view.set('day')"><span>{{day | date:'EEEEEE'}}</span><strong>{{day | date:'dd'}}</strong><span class="day-count">{{eventsForDay(day).length}} соб.</span></button> }</div>
@@ -38,61 +49,10 @@
               </div>
             </div>
           </div>
-        }
-        @if(view() === 'month') {
-          <div class="month-scroll">
-            <div class="month-weekdays">@for(label of weekdays; track label) { <span>{{label}}</span> }</div>
-            <div class="month-grid">
-              @for(section of agenda(); track dateKey(section.day)) {
-                <div class="month-cell" [class.outside]="section.day.getMonth() !== selected().getMonth()">
-                  <button class="month-day" [class.today]="isToday(section.day)" [attr.aria-label]="section.day | date:'d MMMM'" (click)="selectMini(section.day)">{{section.day.getDate()}}</button>
-                  <div class="entry-lanes">
-                    @for(lane of section.lanes; track lane.kind) {
-                      <div class="entry-lane" [attr.data-kind]="lane.kind">
-                        @for(entry of lane.entries.slice(0,3); track entry.id) {
-                          <button class="month-event" [class.context-event]="entry.kind !== mode()" [attr.data-kind]="entry.kind" [style.--event-color]="entry.color" [attr.aria-label]="typeName(entry) + ': ' + entry.title + ', ' + (entry.start | date:'HH:mm') + ' — ' + (entry.end | date:'HH:mm')" (click)="open(entry)">@if(entry.kind === mode()) { {{entry.start | date:'HH:mm'}} {{entry.title}} }</button>
-                        }
-                        @if(lane.entries.length > 3) { <button class="more-events" [class.context-event]="lane.kind !== mode()" [attr.aria-label]="'Показать все записи: ' + (section.day | date:'d MMMM')" (click)="selectMini(section.day)">@if(lane.kind === mode()) { Ещё {{lane.entries.length - 3}} }</button> }
-                      </div>
-                    }
-                  </div>
-                  <button class="month-add" [attr.aria-label]="(mode() === 'duty' ? 'Добавить дежурство ' : 'Добавить событие ') + (section.day | date:'d MMMM')" (click)="createAt(section.day)">+</button>
-                </div>
-              }
-            </div>
-          </div>
-        }
-        @if(view() === 'list') {
-          <div class="agenda">
-            @for(section of agenda(); track dateKey(section.day)) {
-              <section class="agenda-day">
-                <h3 [class.today-text]="isToday(section.day)">{{section.day | date:'EEEE, d MMMM'}}</h3>
-                <div class="entry-lanes">
-                  @for(lane of section.lanes; track lane.kind) {
-                    <div class="entry-lane" [attr.data-kind]="lane.kind">
-                      @for(entry of lane.entries; track entry.id) {
-                        <button class="agenda-event" [class.context-event]="entry.kind !== mode()" [attr.data-kind]="entry.kind" [style.--event-color]="entry.color" [attr.aria-label]="typeName(entry) + ': ' + entry.title + ', ' + (entry.start | date:'HH:mm') + ' — ' + (entry.end | date:'HH:mm')" (click)="open(entry)">
-                          @if(entry.kind === mode()) {
-                            <span class="agenda-time">{{entry.start | date:'HH:mm'}}<small>{{entry.end | date:'HH:mm'}}</small></span><span class="agenda-details"><strong>{{entry.title}}</strong><small>{{entry.coach || typeName(entry)}}{{entry.group ? ' · ' + entry.group : ''}}</small></span><mat-icon>chevron_right</mat-icon>
-                          }
-                        </button>
-                      }
-                    </div>
-                  }
-                </div>
-                @if(section.entries.length === 0) { <p class="free-day">Свободный день</p> }
-              </section>
-            }
-          </div>
-        }
       }
       <footer class="calendar-footer"><span><i></i>{{filtered().length}} событий в расписании</span><span>Время браузера · {{now() | date:'ZZZZ'}}</span></footer>
     </div>
-    <aside class="calendar-aside">
-      <div class="mini-calendar"><div class="mini-header"><strong>{{miniMonth() | date:'LLLL yyyy'}}</strong><button class="icon-button" aria-label="Предыдущий месяц" (click)="moveMini(-1)"><mat-icon>chevron_left</mat-icon></button><button class="icon-button" aria-label="Следующий месяц" (click)="moveMini(1)"><mat-icon>chevron_right</mat-icon></button></div><div class="mini-grid">@for(label of weekdays; track label) { <span>{{label}}</span> }@for(day of miniDays(); track dateKey(day)) { <button [class.selected]="dateKey(day) === dateKey(selected())" [class.muted]="day.getMonth() !== miniMonth().getMonth()" [class.today-text]="isToday(day)" [attr.aria-label]="day | date:'d MMMM yyyy'" (click)="selectMini(day)">{{day.getDate()}}</button> }</div></div>
-      <div class="aside-note"><span class="eyebrow">НА ЗАМЕТКУ</span><mat-icon>touch_app</mat-icon><h3>Свободное время —<br>новые возможности</h3><p>Нажмите на свободный слот, чтобы добавить занятие или дежурство.</p></div>
-      @if(next(); as entry) { <div class="up-next"><span class="eyebrow">БЛИЖАЙШЕЕ В ПЕРИОДЕ</span><p>{{entry.start | date:'d MMM · HH:mm'}}</p><strong>{{entry.title}}</strong><small>{{entry.coach || typeName(entry)}}</small><button (click)="open(entry)">Открыть событие <span>↗</span></button></div> }
-    </aside>
+    @if(next(); as entry) { <aside class="up-next"><div><span class="eyebrow">БЛИЖАЙШЕЕ В ПЕРИОДЕ</span><p>{{entry.start | date:'d MMM · HH:mm'}}</p></div><div><strong>{{entry.title}}</strong><small>{{entry.coach || typeName(entry)}}</small></div><button class="quiet-button" (click)="open(entry)">Открыть событие <span>↗</span></button></aside> }
   </div>
 </section>
 

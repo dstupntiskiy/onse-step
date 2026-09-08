@@ -56,8 +56,26 @@ test('desktop calendar, filters, views, dates and creation', async ({page}) => {
   await page.getByLabel('Сбросить фильтры').click();
   await page.getByLabel('Фильтр по типу события').selectOption('1'); await expect(page.locator('.calendar-event')).toHaveCount(3);
   await page.getByLabel('Сбросить фильтры').click();
-  await page.getByRole('button',{name:'Месяц',exact:true}).click(); await expect(page.locator('.month-cell')).toHaveCount(42);
-  await page.getByRole('button',{name:'Список',exact:true}).click(); await expect(page.locator('.agenda-event')).toHaveCount(19);
+  await expect(page.locator('.view-tabs button')).toHaveText(['День', 'Неделя']);
+  expect(await page.locator('.calendar-panel').evaluate(element => Math.abs(element.getBoundingClientRect().width - element.closest('.schedule')!.getBoundingClientRect().width))).toBeLessThan(1);
+  await expect(page.getByText('НА ЗАМЕТКУ',{exact:true})).toHaveCount(0);
+  const dateButton = page.getByRole('button',{name:'Выбрать дату',exact:true});
+  const datePicker = page.getByRole('dialog',{name:'Выбор даты',exact:true});
+  const dateButtonBox = await dateButton.boundingBox(), viewBox = await page.locator('.view-tabs').boundingBox();
+  expect(dateButtonBox!.x + dateButtonBox!.width).toBeLessThan(viewBox!.x);
+  await dateButton.click(); await expect(datePicker).toBeVisible();
+  await expect(datePicker.getByRole('button',{name:'8 сентября 2026',exact:true})).toBeFocused();
+  await page.keyboard.press('Escape'); await expect(datePicker).not.toBeVisible(); await expect(dateButton).toBeFocused();
+  await dateButton.click(); await page.locator('.cdk-overlay-backdrop').click({position:{x:2,y:2}}); await expect(datePicker).not.toBeVisible();
+  await dateButton.click();
+  await datePicker.getByRole('button',{name:'Следующий месяц',exact:true}).click();
+  await datePicker.getByRole('button',{name:'1 октября 2026',exact:true}).click();
+  await expect(datePicker).not.toBeVisible(); await expect(dateButton).toBeFocused();
+  await expect(page.getByRole('button',{name:'Неделя',exact:true})).toHaveAttribute('aria-pressed','true');
+  await expect(page.locator('.day-header strong')).toHaveText(['28','29','30','01','02','03','04']);
+  await dateButton.click(); await expect(datePicker.getByLabel('Перейти к дате')).toHaveValue('2026-10-01');
+  await datePicker.getByLabel('Перейти к дате').fill('2026-09-08');
+  await expect(datePicker).not.toBeVisible();
   await page.getByRole('button',{name:'День',exact:true}).click(); await expect(page.locator('.calendar-event')).toHaveCount(5);
   await page.getByRole('button',{name:'Дежурства',exact:true}).click(); await expect(page.locator('.calendar-event')).toHaveCount(5);
   await page.getByRole('button',{name:'Занятия и события',exact:true}).click();
@@ -79,6 +97,15 @@ test('mobile navigation, dialogs, memberships and no page overflow', async ({pag
   await expect(page.locator('.calendar-event')).toHaveCount(5);
   expect(await page.evaluate(()=>document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.screenshot({path:'test-results/calendar-mobile.png',fullPage:true});
+  await page.getByRole('button',{name:'Выбрать дату',exact:true}).click();
+  const datePicker = page.getByRole('dialog',{name:'Выбор даты',exact:true});
+  await expect(datePicker).toBeVisible();
+  const pickerBox = await datePicker.boundingBox(); expect(pickerBox!.x).toBeGreaterThanOrEqual(0); expect(pickerBox!.x + pickerBox!.width).toBeLessThanOrEqual(390);
+  await page.screenshot({path:'test-results/calendar-date-picker-mobile.png',fullPage:true});
+  await datePicker.getByRole('button',{name:'9 сентября 2026',exact:true}).click();
+  await expect(datePicker).not.toBeVisible();
+  await expect(page.locator('.day-header strong')).toHaveText('09');
+  await page.getByRole('button',{name:'Сегодня',exact:true}).click(); await expect(page.locator('.calendar-event')).toHaveCount(5);
   await page.locator('.calendar-event').first().click(); await expect(page.getByRole('dialog')).toBeVisible();
   await page.screenshot({path:'test-results/event-dialog-mobile.png',fullPage:true});
   const dialog = await page.getByRole('dialog').boundingBox(); expect(dialog!.width).toBeLessThanOrEqual(390);
@@ -155,6 +182,15 @@ test('320px login and all directory pages remain usable on mobile', async ({page
   for(const route of ['/', '/clients','/groups','/coaches','/styles','/reports']) {
     await page.goto(route); await expect(page.locator('h1').first()).toBeVisible();
     expect(await page.evaluate(()=>document.documentElement.scrollWidth <= innerWidth),route).toBe(true);
+    if (route === '/') {
+      await page.getByRole('button',{name:'Выбрать дату',exact:true}).click();
+      const datePicker = page.getByRole('dialog',{name:'Выбор даты',exact:true});
+      await expect(datePicker).toBeVisible();
+      const box = await datePicker.boundingBox(); expect(box!.x).toBeGreaterThanOrEqual(0); expect(box!.x + box!.width).toBeLessThanOrEqual(320);
+      expect(await page.evaluate(()=>document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+      await datePicker.getByRole('button',{name:'Сегодня',exact:true}).click();
+      await expect(datePicker).not.toBeVisible();
+    }
   }
 });
 
@@ -225,31 +261,4 @@ test('calendar filters preserve the other kind as context', async ({page}) => {
   await page.getByLabel('Поиск дежурств').fill('Анна');
   await expect(page.locator('.calendar-event[data-kind="duty"]')).toHaveCount(1);
   await expect(page.locator('.calendar-event[data-kind="event"]')).toHaveCount(18);
-});
-
-test('month and list views retain separate areas and hide only the secondary content', async ({page}) => {
-  await page.setViewportSize({width:1536,height:1080});
-  await mockApi(page); await page.goto('/');
-  for (const view of [{name:'Месяц',selector:'.month-event'}, {name:'Список',selector:'.agenda-event'}]) {
-    await page.getByRole('button',{name:view.name,exact:true}).click();
-    for (const mode of ['event', 'duty'] as const) {
-      await page.getByRole('button',{name:mode === 'event' ? 'Занятия и события' : 'Дежурства',exact:true}).click();
-      await expect(page.locator(`${view.selector}[data-kind="duty"]`)).toHaveCount(1);
-      expect(await page.locator(`${view.selector}[data-kind="event"]`).count()).toBeGreaterThan(0);
-      const hiddenContent = await page.locator(`${view.selector}.context-event`).allTextContents();
-      expect(hiddenContent.every(text => !text.trim())).toBe(true);
-      await expect(page.locator(`${view.selector}:not(.context-event)`).first()).not.toBeEmpty();
-      await page.locator('.entry-lanes').evaluateAll(elements => Promise.all(elements.flatMap(element => element.getAnimations()).map(animation => animation.finished)));
-      const areas = await page.locator('.entry-lanes').evaluateAll(elements => elements.map(element => {
-        const box = element.getBoundingClientRect();
-        const left = element.children[0].getBoundingClientRect(), right = element.children[1].getBoundingClientRect();
-        return {width:box.width,leftWidth:left.width,rightWidth:right.width,rightStart:right.left-box.left};
-      }));
-      for (const area of areas) {
-        expect(Math.abs(area.leftWidth - area.width * (mode === 'event' ? .9 : .1))).toBeLessThan(1);
-        expect(Math.abs(area.rightStart - area.leftWidth)).toBeLessThan(1);
-        expect(Math.abs(area.leftWidth + area.rightWidth - area.width)).toBeLessThan(1);
-      }
-    }
-  }
 });
