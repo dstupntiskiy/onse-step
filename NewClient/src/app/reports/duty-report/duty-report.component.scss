@@ -1,0 +1,10 @@
+.duty-report-content{
+    padding-top: 16px;
+    box-sizing: border-box;
+
+    .duties-list{
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+}

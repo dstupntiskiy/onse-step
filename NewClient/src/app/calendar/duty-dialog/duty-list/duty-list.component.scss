@@ -1,0 +1,19 @@
+.duty-listbox{
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.color-circle {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    vertical-align: middle;
+}
+
+.chip-content{
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}

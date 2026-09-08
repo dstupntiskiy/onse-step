@@ -1,0 +1,10 @@
+<div class="event" [style.border-right-color]="borderColor()">  
+    <p>{{title()}}</p>
+    <p>{{start() | date:'HH:mm'}} - {{end() | date:'HH:mm'}}</p>
+    @if(!isCompactView())
+    {
+        <p>{{groupName()}}</p>
+        <p>{{coachName()}}</p>
+    }
+    <mat-icon class="icon">{{this.icon()}}</mat-icon>
+</div>

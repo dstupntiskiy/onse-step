@@ -1,0 +1,15 @@
+.payment{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-align: center;
+
+    .edit-icon{
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+    .add-payment-button{
+        cursor: pointer;
+    }
+}

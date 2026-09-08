@@ -1,0 +1,15 @@
+<div class="visitor-row">
+    <div class="visitor">
+        <app-client-name [client]="visitor().client"></app-client-name>
+        <div class="right-block">
+            <app-payment 
+                [payment]="visitor().payment" 
+                [paymentType]="paymentType"
+                [memberId]="visitor().id"
+                [onetimeVisitPrice]="style().onetimeVisitPrice"></app-payment>
+            <button mat-icon-button (click)="removeVisitor()">
+                <mat-icon>clear</mat-icon>
+            </button>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,20 @@
+<div class="members-content">
+    <div class="field-row">
+        <div class="add-member">
+            <app-add-client (selectedClient$$)="onClientSelect($event)" [clearControl]="clearControlSubject"></app-add-client>
+        </div>
+        <div class="members-count">
+            @if(groupMembers$$().length > 0){
+                <span>Участники: {{groupMembers$$().length}}</span>
+            }
+        </div>
+    </div>
+    <div class="member-list">
+        <app-spinner [isLoading$$]="isLoading" size="small"></app-spinner>
+        @for(member of groupMembers$$(); track member){
+            <div class="member-row">
+                <app-member [member]="member" (memberRemoved)="onMemberRemove(member)" ></app-member>
+            </div>
+        }
+    </div>
+</div>

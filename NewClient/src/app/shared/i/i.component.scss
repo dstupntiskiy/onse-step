@@ -1,0 +1,16 @@
+div{
+    border-radius: 50%;
+    background-color: blue;
+    width: 15px;
+    height: 15px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    span{
+        color: white;
+        font-size: 12px;
+        font-weight: 600;
+    }
+}

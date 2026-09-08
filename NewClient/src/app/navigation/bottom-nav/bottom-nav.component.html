@@ -1,0 +1,12 @@
+<div class="bottom-nav">
+    <mat-nav-list>
+        <div class="bottom-nav-list">
+            <a *ngFor="let nav of navigationService.navigationList"
+                class="nav-item"
+                [routerLink]="nav.link"
+                >
+                <mat-icon class="nav-icon" [svgIcon]="nav.customIcon ? nav.icon : ''">{{ nav.icon }}</mat-icon>
+            </a>
+        </div>
+    </mat-nav-list>
+</div>

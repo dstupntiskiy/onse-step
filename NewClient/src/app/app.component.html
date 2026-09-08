@@ -1,0 +1,29 @@
+@if (user.isAuthenticated$ | async) {
+  <a class="skip-link" href="#main">Перейти к содержимому</a>
+  @if (menuOpen()) { <button class="nav-backdrop" aria-label="Закрыть меню" (click)="menuOpen.set(false)"></button> }
+  <aside class="sidebar" [class.open]="menuOpen()">
+    <a routerLink="/" class="brand" aria-label="One Step — расписание"><img src="assets/images/one-step.svg" alt="One Step"></a>
+    <div class="workspace"><span class="workspace-mark">OS</span><div><strong>Студия One Step</strong><small>Управление студией</small></div><span class="online-dot"></span></div>
+    <span class="nav-label">РАБОЧЕЕ ПРОСТРАНСТВО</span>
+    <nav aria-label="Основная навигация">
+      @for (item of navigation; track item.link) {
+        <a [routerLink]="item.link" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" ariaCurrentWhenActive="page"><mat-icon>{{item.icon}}</mat-icon><span>{{item.name}}</span></a>
+      }
+      @if (admin()) { <a routerLink="/reports" routerLinkActive="active" ariaCurrentWhenActive="page"><mat-icon>bar_chart</mat-icon><span>Отчёты</span></a> }
+    </nav>
+    <div class="sidebar-bottom"><div class="studio-note"><span class="note-star">✳</span><strong>Всё начинается<br>с одного шага.</strong><small>Больше танцев. Меньше рутины.</small></div>
+      <button class="profile" (click)="logout()" aria-label="Выйти из аккаунта"><span class="avatar">OS</span><span><strong>Администратор</strong><small>Выйти из аккаунта</small></span><mat-icon>logout</mat-icon></button>
+    </div>
+  </aside>
+  <div class="app-workspace">
+    <header class="topbar"><div class="breadcrumb"><button class="menu-button icon-button" aria-label="Открыть меню" [attr.aria-expanded]="menuOpen()" (click)="menuOpen.set(!menuOpen())"><mat-icon>menu</mat-icon></button><span>One Step</span><span class="slash">/</span><strong>Управление студией</strong></div><div class="topbar-date"><span class="online-dot"></span>{{today}}<span class="avatar small">OS</span></div></header>
+    <main id="main"><router-outlet /></main>
+  </div>
+  <nav class="mobile-nav" aria-label="Мобильная навигация">
+    @for (item of navigation.slice(0, 3); track item.link) { <a [routerLink]="item.link" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" ariaCurrentWhenActive="page"><mat-icon>{{item.icon}}</mat-icon>{{item.name}}</a> }
+    <button (click)="menuOpen.set(!menuOpen())" [attr.aria-expanded]="menuOpen()"><mat-icon>menu</mat-icon>Ещё</button>
+  </nav>
+} @else { <router-outlet /> }
+<app-spinner [isLoading$$]="spinner.loading$$()" />
+
+

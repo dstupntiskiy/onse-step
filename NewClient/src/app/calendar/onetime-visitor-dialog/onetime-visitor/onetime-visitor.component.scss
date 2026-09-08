@@ -1,0 +1,22 @@
+.visitor-row {
+    .visitor {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        border-radius: 6px;
+        background-color: rgb(0, 0, 0, 0.05);
+
+        padding-left: 4px;
+
+        p {
+            margin: 0;
+        }
+
+        .right-block {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+    }
+}

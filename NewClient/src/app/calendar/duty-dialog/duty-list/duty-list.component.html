@@ -1,0 +1,13 @@
+<div class="duty-list">
+    <mat-chip-listbox class="duty-listbox"
+        [value]="currentDuty()?.name">
+        @for(duty of DutyList; track duty){
+            <mat-chip-option (selectionChange)="selectDuty($event, duty)">
+                <div class="chip-content">
+                    <span class="chip-label">{{ duty.name}}</span>
+                    <span class="color-circle" [style.background-color]="duty.color"></span>
+                </div>
+            </mat-chip-option>
+        }
+    </mat-chip-listbox>
+</div>

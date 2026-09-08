@@ -1,0 +1,10 @@
+.client-card{
+    max-width: 400px;
+
+    cursor: pointer;
+
+    .client-card-content{
+        display: flex;
+        flex-direction: column;
+    }
+}

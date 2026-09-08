@@ -1,0 +1,15 @@
+
+<mat-drawer-container id="container" autosize>
+    <mat-drawer #snav [mode]="'side'" opened="true" disableClose="true" class="drawer">
+        <mat-nav-list>
+            <a class="logo" mat-list-item [routerLink]="''">
+                <img [src]="'../../assets/images/one-step.svg'" >
+            </a>
+            <a *ngFor="let nav of navigationService.navigationList"
+                class="nav-item"
+                mat-list-item [routerLink]="nav.link">
+                    <span class="nav-name">{{nav.name}}</span>
+            </a>
+        </mat-nav-list>
+    </mat-drawer >
+</mat-drawer-container>

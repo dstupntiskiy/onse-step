@@ -1,0 +1,13 @@
+<app-card [header] = "item().coach?.name ?? 'Нет тренера'">
+    <p>Всего занятий: {{ item().totalEvents }}</p>
+    <p>Общая ЗП {{ item().totalSalary }}</p>
+    @if(showDetailes){
+        <div class="event-items">
+            @for(item of item().eventWithParticipants; track item){
+                <app-event-report-item [item]="item"></app-event-report-item>    
+        }
+        </div>
+    }
+    <button class="show-more-button" mat-button (click)="toggleDetails()">{{ showDetailes ? 'скрыть детали' : 'показать детали' }}</button>
+    
+</app-card>

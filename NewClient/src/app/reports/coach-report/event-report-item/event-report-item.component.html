@@ -1,0 +1,12 @@
+<app-card>
+    <div class="head">
+        <h4>{{ item().name }}</h4>
+        <span class="date">{{ item().startDate | date : "dd.MM" }}</span>
+    </div>
+    <p>Разовые: {{ item().onetimeVisitsCount}}</p>
+    <p>Участники: {{ item().membersCount}}</p>
+    <p>Базовая ЗП: {{ item().baseSalary}}</p>
+    <p>Бонусная ЗП: {{ item(). bonusSalary}}</p>
+</app-card>
+
+

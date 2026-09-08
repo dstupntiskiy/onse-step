@@ -1,0 +1,10 @@
+<div class="dialog">
+    <mat-dialog-content>
+        <p>Обновить только это событие?</p>
+    </mat-dialog-content>
+    <mat-dialog-actions class="actions">
+        <button mat-button (click)="onCloseClick()">Закрыть</button>
+        <button mat-raised-button color="warn" (click)="onAllClick()">Обновить все</button>
+        <button mat-raised-button color="accent" (click)="onYesClick()">Только это</button>
+    </mat-dialog-actions>
+</div>
