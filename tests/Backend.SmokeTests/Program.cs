@@ -13,6 +13,8 @@ using Scheduler.Infrastructure.Data;
 using Scheduler.Extentions;
 using Scheduler.Infrastructure.Extentions;
 
+await PaymentsReportChecks.Run();
+
 // Deliberately uses an unreachable database and never invokes Program.Main or Migrate.
 var configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
 {
@@ -64,11 +66,26 @@ try
     using var document = JsonDocument.Parse(await swagger.Content.ReadAsStringAsync());
     if (!document.RootElement.GetProperty("paths").EnumerateObject().Any())
         throw new Exception("No API routes in OpenAPI document.");
+    if (!document.RootElement.GetProperty("paths").TryGetProperty("/api/Report/GetPaymentsReportByPeriod", out _))
+        throw new Exception("Combined payment report route is missing.");
+    var reportRoutes = document.RootElement.GetProperty("paths").EnumerateObject()
+        .Select(path => path.Name).Where(path => path.StartsWith("/api/Report/"))
+        .ToHashSet();
+    if (!reportRoutes.SetEquals([
+            "/api/Report/GetPaymentsReportByPeriod",
+            "/api/Report/GetEventDutiesReportByPeriod",
+            "/api/Report/GetAllCoachesEventsWithParticipantsByPeriod"
+        ]))
+        throw new Exception("Report API must expose only combined payments, duties and coaches reports.");
+    Console.WriteLine("PASS: Report API exposes only the three supported report endpoints.");
     Console.WriteLine("PASS: NHibernate initialization and API/OpenAPI pipeline.");
     using var protectedResponse = await client.GetAsync("/api/Group/GetAll");
     if (protectedResponse.StatusCode != HttpStatusCode.Unauthorized)
         throw new Exception($"Protected route returned {protectedResponse.StatusCode}, expected 401.");
     Console.WriteLine("PASS: JWT authentication rejects unauthenticated requests.");
+    using var reportResponse = await client.GetAsync("/api/Report/GetPaymentsReportByPeriod");
+    if (reportResponse.StatusCode != HttpStatusCode.Unauthorized)
+        throw new Exception("Combined payment report must require authentication.");
 }
 finally
 {

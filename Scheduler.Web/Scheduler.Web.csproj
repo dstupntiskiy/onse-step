@@ -37,11 +37,11 @@
       <ProjectReference Include="..\Scheduler.Infrastructure\Scheduler.Infrastructure.csproj" />
     </ItemGroup>
     
-    <Target Name="CopyAngularBuildOutput" AfterTargets="Build">
-        <ItemGroup>
-            <AngularFiles Include="$(ProjectDir)..\Client\dist\browser\**\*" />
-        </ItemGroup>
-        <Copy SourceFiles="@(AngularFiles)" DestinationFolder="$(OutDir)wwwroot" />
-    </Target>
+    <ItemGroup>
+        <Content Include="../NewClient/dist/browser/**/*"
+                 Link="wwwroot/%(RecursiveDir)%(Filename)%(Extension)"
+                 CopyToOutputDirectory="PreserveNewest"
+                 CopyToPublishDirectory="PreserveNewest" />
+    </ItemGroup>
 
 </Project>

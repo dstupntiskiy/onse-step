@@ -7,6 +7,7 @@ import { MembershipStyle, OnetimeVisitStyle } from './models/style-report.model'
 import { CoachWithEventsDto } from './models/coaches-report.model';
 import { AmountByDate } from './models/amount-by-date.model';
 import { EventDutyReport } from './models/eventDutyReport.model';
+import { PaymentsReport } from './models/payments-report.model';
 
 @Injectable({
   providedIn: 'root'
@@ -14,6 +15,16 @@ import { EventDutyReport } from './models/eventDutyReport.model';
 export class ReportService extends BaseHttpService {
 
   protected route: string = 'Report';
+
+  getPaymentsReportByPeriod(startDate: Date, endDate: Date): Observable<PaymentsReport> {
+    const start = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+    const endExclusive = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate() + 1);
+    return this.get<PaymentsReport>('GetPaymentsReportByPeriod', { params: {
+      startDate: start.toISOString(),
+      endDate: endExclusive.toISOString(),
+      timeZoneId: Intl.DateTimeFormat().resolvedOptions().timeZone
+    } });
+  }
 
   constructor(http: HttpClient, snackbarService: SnackBarService) {
     super(http, snackbarService)

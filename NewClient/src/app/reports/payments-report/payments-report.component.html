@@ -1,0 +1,86 @@
+@if (loading()) {
+  <p class="report-state" role="status">Загружаем отчет…</p>
+} @else if (failed()) {
+  <div class="report-state" role="alert">
+    <p>Не удалось загрузить отчет</p>
+    <button mat-button (click)="retry()">Повторить</button>
+  </div>
+}
+@if (report(); as data) {
+  <section class="total-panel" aria-label="Общая сумма">
+    <div class="total-amount">{{ data.totalAmount | number:'1.0-2' }} RSD</div>
+    <h2>Общая сумма</h2>
+    <div class="total-breakdown">
+      <span><i class="dot membership"></i>Абонементы <strong>{{ data.membershipAmount | number:'1.0-2' }} RSD</strong></span>
+      <span><i class="dot onetime"></i>Разовые <strong>{{ data.onetimeAmount | number:'1.0-2' }} RSD</strong></span>
+    </div>
+  </section>
+  <p class="period-note">По дате оформления абонемента и дате разовой оплаты</p>
+
+  <section class="chart-panel" aria-labelledby="amounts-title">
+    <h3 id="amounts-title">Сумма, RSD <span>по направлениям</span></h3>
+    <div class="legend"><span><i class="dot membership"></i>Абонементы</span><span><i class="dot onetime"></i>Разовые</span></div>
+    @if (styles().length) {
+      <div class="chart-rows" role="list">
+        @for (row of styles(); track row.key) {
+          <div class="chart-row" role="listitem">
+            <div class="row-label"><span>{{ row.styleName }}</span><strong>{{ row.totalAmount | number:'1.0-2' }}</strong></div>
+            <div class="bar-track" aria-hidden="true">
+              <div class="segment membership" [style.width.%]="100 * row.membershipAmount / maximumAmount()"></div>
+              <div class="segment onetime" [style.width.%]="100 * row.onetimeAmount / maximumAmount()"></div>
+            </div>
+            <div class="row-breakdown"><span>Абонементы: {{ row.membershipAmount | number:'1.0-2' }}</span><span>Разовые: {{ row.onetimeAmount | number:'1.0-2' }}</span></div>
+          </div>
+        }
+      </div>
+    } @else { <p class="empty">За этот период данных пока нет</p> }
+  </section>
+
+  <section class="chart-panel" aria-labelledby="counts-title">
+    <h3 id="counts-title">Количество <span>по направлениям</span></h3>
+    <div class="legend"><span><i class="dot membership"></i>Абонементы: <strong>{{ data.membershipCount | number }}</strong></span><span><i class="dot onetime"></i>Разовые: <strong>{{ data.onetimeCount | number }}</strong></span></div>
+    @if (countStyles().length) {
+      <div class="chart-rows" role="list">
+        @for (row of countStyles(); track row.key) {
+          <div class="chart-row" role="listitem">
+            <div class="row-label"><span>{{ row.styleName }}</span><strong>{{ row.totalCount | number }}</strong></div>
+            <div class="bar-track" aria-hidden="true">
+              <div class="segment membership" [style.width.%]="100 * row.membershipCount / maximumCount()"></div>
+              <div class="segment onetime" [style.width.%]="100 * row.onetimeCount / maximumCount()"></div>
+            </div>
+            <div class="row-breakdown"><span>Абонементы: {{ row.membershipCount | number }}</span><span>Разовые: {{ row.onetimeCount | number }}</span></div>
+          </div>
+        }
+      </div>
+    } @else { <p class="empty">За этот период данных пока нет</p> }
+  </section>
+
+  <section class="chart-panel" aria-labelledby="dates-title">
+    <h3 id="dates-title">Сумма по датам <span>RSD</span></h3>
+    <div class="legend"><span><i class="dot membership"></i>Абонементы</span><span><i class="dot onetime"></i>Разовые</span></div>
+    @if (dates().length) {
+      <div class="date-chart" tabindex="0" role="region" aria-label="Суммы по дням. Прокрутите, чтобы увидеть все даты">
+        <div class="date-columns" role="list">
+          @for (row of dates(); track row.date) {
+            <div class="date-column" role="listitem" tabindex="0">
+              <div class="column-area">
+                <strong class="column-total">{{ row.totalAmount | number:'1.0-2' }}</strong>
+                <div class="column-stack" [style.height.px]="200 * row.totalAmount / maximumDateAmount()" aria-hidden="true">
+                  <div class="segment onetime" [style.height.%]="row.totalAmount ? 100 * row.onetimeAmount / row.totalAmount : 0"></div>
+                  <div class="segment membership" [style.height.%]="row.totalAmount ? 100 * row.membershipAmount / row.totalAmount : 0"></div>
+                </div>
+              </div>
+              <span class="date-label">{{ row.date | date:'dd.MM' }}</span>
+              <div class="column-details">
+                <strong>{{ row.date | date:'dd.MM.yyyy' }}</strong>
+                <span>Абонементы: {{ row.membershipAmount | number:'1.0-2' }} RSD</span>
+                <span>Разовые: {{ row.onetimeAmount | number:'1.0-2' }} RSD</span>
+                <span>Всего: {{ row.totalAmount | number:'1.0-2' }} RSD</span>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    } @else { <p class="empty">За этот период данных пока нет</p> }
+  </section>
+}

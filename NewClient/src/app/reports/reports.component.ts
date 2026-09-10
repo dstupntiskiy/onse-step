@@ -3,10 +3,9 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatTabsModule } from '@angular/material/tabs';
-import { MembershipsReportComponent } from './memberships-report/memberships-report.component';
+import { PaymentsReportComponent } from './payments-report/payments-report.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
-import { OneTimeVisitsReportComponent } from './one-time-visits-report/one-time-visits-report.component';
 import { CoachReportComponent } from "./coach-report/coach-report.component";
 import { PageComponent } from '../shared/components/page/page.component';
 import { DutyReportComponent } from './duty-report/duty-report.component'
@@ -25,9 +24,8 @@ export interface DateRange{
     MatInputModule,
     ReactiveFormsModule,
     MatTabsModule,
-    MembershipsReportComponent,
+    PaymentsReportComponent,
     MatButtonModule,
-    OneTimeVisitsReportComponent,
     CoachReportComponent,
     PageComponent,
     DutyReportComponent
@@ -41,11 +39,20 @@ export class ReportsComponent {
   
   periodStartDate = signal<Date>(this.defaultStartDate)
   periodEndDate = signal<Date>(this.defaultEndDate)
+  dateRange = computed<DateRange>(() => ({ startDate: this.periodStartDate(), endDate: this.periodEndDate() }))
 
   startDateFormControl = new FormControl<Date>(this.defaultStartDate)
   endDateFormControl = new FormControl<Date>(this.defaultEndDate)
 
+  get invalidPeriod(): boolean {
+    const start = this.startDateFormControl.value;
+    const end = this.endDateFormControl.value;
+    return this.startDateFormControl.invalid || this.endDateFormControl.invalid || !start || !end ||
+      !Number.isFinite(start.getTime()) || !Number.isFinite(end.getTime()) || start > end;
+  }
+
   onRecalculate(){
+    if (this.invalidPeriod) return;
     this.periodStartDate.update(() => {
       if(this.startDateFormControl.value)
         return this.startDateFormControl.value

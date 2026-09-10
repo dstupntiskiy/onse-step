@@ -11,27 +11,18 @@
                     </mat-form-field>
                     <mat-form-field>
                         <mat-label>Конец</mat-label>
-                            <input matInput  [matDatepicker]="pickerEnd" [formControl]="endDateFormControl" placeholder="Начало">
+                            <input matInput  [matDatepicker]="pickerEnd" [formControl]="endDateFormControl" placeholder="Конец">
                         <mat-datepicker-toggle matIconSuffix [for]="pickerEnd"></mat-datepicker-toggle>
                         <mat-datepicker #pickerEnd></mat-datepicker>
                     </mat-form-field>
                 </div>
-                <button mat-button (click)="onRecalculate()">Построить</button>
+                <button mat-button [disabled]="invalidPeriod" (click)="onRecalculate()">Построить</button>
             </div>
             <div class="tabs">
                 <mat-tab-group animationDuration="0">
-                    <mat-tab label="Абонементы">
+                    <mat-tab label="Абонементы и разовые">
                         <ng-template matTabContent>
-                            <app-memberships-report
-                                [dateRange]="{ startDate: periodStartDate(), endDate: periodEndDate() }"
-                                ></app-memberships-report>
-                        </ng-template>
-                    </mat-tab>
-                    <mat-tab label="Разовые">
-                        <ng-template matTabContent>
-                            <app-one-time-visits-report
-                                [dateRange]="{ startDate: periodStartDate(), endDate: periodEndDate() }">
-                            </app-one-time-visits-report>
+                            <app-payments-report [dateRange]="dateRange()"></app-payments-report>
                         </ng-template>
                     </mat-tab>
                     <mat-tab label="Дежурства">
