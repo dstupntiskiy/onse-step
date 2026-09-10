@@ -69,6 +69,49 @@ for (const width of [1440, 390, 320]) {
   });
 }
 
+test('a full month fits the chart width after resizing, including day details at both edges', async ({page}) => {
+  await setup(page);
+  const byDate = Array.from({length:31}, (_, index) => ({
+    date:`2026-08-${String(index + 1).padStart(2, '0')}`,
+    membershipAmount: (index % 7 + 1) * 1000,
+    onetimeAmount: (index % 3 + 1) * 400,
+    totalAmount: (index % 7 + 1) * 1000 + (index % 3 + 1) * 400
+  }));
+  await page.route('**/api/Report/GetPaymentsReportByPeriod?**', route => route.fulfill({json:{...report, byDate}}));
+  await page.goto('/reports');
+  await page.getByRole('button', {name:'Месяц отчёта: Сент 2026'}).click();
+  await page.getByRole('button', {name:'Август 2026', exact:true}).click();
+  const chart = page.locator('.date-chart');
+  const columns = chart.locator('.date-column');
+  await expect(columns).toHaveCount(31);
+  for (const width of [1440, 900, 390, 320, 1440]) {
+    await page.setViewportSize({width, height:1000});
+    await expect.poll(() => chart.evaluate(el => el.scrollWidth <= el.clientWidth)).toBe(true);
+    const bounds = (await chart.boundingBox())!;
+    const first = (await columns.first().boundingBox())!;
+    const last = (await columns.last().boundingBox())!;
+    expect(first.y).toBe(last.y);
+    expect(first.x).toBeCloseTo(bounds.x, 0);
+    expect(last.x + last.width).toBeCloseTo(bounds.x + bounds.width, 0);
+    expect(first.width).toBeCloseTo(bounds.width / 31, 0);
+    await expect(columns.first().locator('.date-label')).toBeVisible();
+    await expect(columns.last().locator('.date-label')).toBeVisible();
+    for (const index of [0, 15, 30]) {
+      await columns.nth(index).focus();
+      const tooltip = columns.nth(index).locator('.column-details');
+      await expect(tooltip).toBeVisible();
+      await expect(tooltip).toContainText(`${String(index + 1).padStart(2, '0')}.08.2026`);
+      const tooltipBounds = (await tooltip.boundingBox())!;
+      expect(tooltipBounds.x).toBeGreaterThanOrEqual(bounds.x);
+      expect(tooltipBounds.x + tooltipBounds.width).toBeLessThanOrEqual(bounds.x + bounds.width + 1);
+      expect(await chart.evaluate(el => el.scrollWidth <= el.clientWidth)).toBe(true);
+    }
+    await page.getByRole('button', {name:'Построить'}).focus();
+    await page.locator('.chart-panel').last().screenshot({path:`test-results/date-chart-full-month-${width}.png`});
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  }
+});
+
 test('report handles failures, retry, empty periods and the entire selected final day', async ({page}) => {
   await setup(page);
   let fail = true;

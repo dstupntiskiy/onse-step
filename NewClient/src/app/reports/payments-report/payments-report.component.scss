@@ -25,17 +25,19 @@ h3 span { color: #667b70; font-weight: 400; }
 .bar-track { display: flex; height: 10px; background: #eff5ef; border-radius: 3px; overflow: hidden; }
 .segment { flex-shrink: 0; }
 .row-breakdown { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: 11px; color: #667b70; margin-top: 6px; }
-.date-chart { overflow-x: auto; padding: 8px 0; }
-.date-columns { display: flex; gap: 12px; width: max-content; min-width: 100%; }
-.date-column { position: relative; flex: 1 0 76px; min-width: 76px; text-align: center; }
+.date-chart { position: relative; width: 100%; padding: 8px 0; }
+.date-columns { display: flex; width: 100%; }
+.date-column { flex: 1 1 0; min-width: 0; text-align: center; }
 .column-area { height: 240px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; border-bottom: 1px solid #bdccc2; background: repeating-linear-gradient(to top, transparent 0, transparent 59px, #eff3ef 59px, #eff3ef 60px); }
 .column-total { font-size: 10px; font-weight: 600; margin-bottom: 6px; white-space: nowrap; }
-.column-stack { display: flex; flex-direction: column; justify-content: flex-end; width: 36px; border-radius: 4px 4px 0 0; overflow: hidden; }
-.date-label { display: block; padding-top: 10px; font-size: 11px; color: #536d60; }
-.column-details { position: absolute; top: 0; left: 0; z-index: 1; display: flex; flex-direction: column; gap: 6px; width: 215px; padding: 12px; border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 4px 16px #233b3420; background: white; text-align: left; font-size: 11px; opacity: 0; pointer-events: none; }
-.date-column:last-child .column-details { left: auto; right: 0; }
-.date-column:only-child .column-details { left: 0; right: auto; }
-.date-column:hover .column-details, .date-column:focus .column-details { opacity: 1; }
+.column-stack { display: flex; flex-direction: column; justify-content: flex-end; width: min(36px, 75%); border-radius: 4px 4px 0 0; overflow: hidden; }
+.date-label { display: block; padding-top: 10px; font-size: 11px; color: #536d60; white-space: nowrap; }
+.hidden-label { visibility: hidden; overflow: hidden; }
+.compact-dates .column-total { display: none; }
+.compact-dates .date-column:first-child .date-label { text-align: left; }
+.compact-dates .date-column:last-child .date-label { direction: rtl; text-align: right; }
+.column-details { position: absolute; top: 0; z-index: 1; display: flex; flex-direction: column; gap: 6px; width: min(215px, 100%); padding: 12px; border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 4px 16px #233b3420; background: white; text-align: left; font-size: 11px; opacity: 0; visibility: hidden; pointer-events: none; overflow-wrap: anywhere; }
+.date-column:hover .column-details, .date-column:focus .column-details { opacity: 1; visibility: visible; }
 .empty, .report-state { text-align: center; padding: 24px 12px; color: #667b70; font-size: 13px; }
 @media (max-width: 760px) {
   .chart-panel { padding: 16px; }

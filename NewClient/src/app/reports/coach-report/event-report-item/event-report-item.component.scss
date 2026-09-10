@@ -1,12 +1,17 @@
-.head{
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    text-align: center;
-    gap: 8px;
-    margin-bottom: 8px;
-
-    h4{
-        margin: 0;
-    }
+:host { border-top: 1px solid var(--line); }
+:host(:hover) { background: #fafcf9; }
+td { padding: 16px 12px; text-align: right; font-size: 12px; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; vertical-align: middle; }
+td:first-child { padding-left: 20px; text-align: left; }
+td:last-child { padding-right: 20px; }
+.lesson strong { display: block; font-weight: 500; line-height: 1.6; }
+time { display: block; font-size: 11px; color: #667b70; margin-top: 5px; }
+.event-total { color: #285c45; }
+.event-total strong { font-weight: 600; }
+@media (max-width: 760px) {
+  :host { display: block; padding: 16px; }
+  td, td:first-child, td:last-child { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; padding: 6px 0; text-align: right; }
+  td::before { content: attr(data-label); color: #667b70; text-align: left; }
+  td.lesson { display: block; text-align: left; padding: 0 0 12px; }
+  td.lesson::before { content: none; }
+  td.event-total { margin-top: 8px; padding-top: 12px; border-top: 1px dashed var(--line); }
 }

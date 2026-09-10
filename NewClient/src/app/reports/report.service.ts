@@ -55,8 +55,7 @@ export class ReportService extends BaseHttpService {
    getEventDutiesReportByPeriod(startDate: Date, endDate: Date) : Observable<EventDutyReport[]>{ 
     var options: IAngularHttpRequestOptions = {
       params: {
-        startDate: startDate.toISOString(),
-        endDate: endDate.toISOString()
+        ...this.inclusivePeriod(startDate, endDate)
       }
     }
     
@@ -66,12 +65,19 @@ export class ReportService extends BaseHttpService {
    getAllCoachesEventsWithParticipantsByPeriod(startDate: Date, endDate: Date) : Observable<CoachWithEventsDto[]>{
     var options: IAngularHttpRequestOptions = {
       params: {
-        startDate: startDate.toISOString(),
-        endDate: endDate.toISOString()
+        ...this.inclusivePeriod(startDate, endDate)
       }
     }
 
     return this.get<CoachWithEventsDto[]>("GetAllCoachesEventsWithParticipantsByPeriod", options)
+  }
+
+  // These endpoints use an inclusive end; include the entire selected final day.
+  private inclusivePeriod(startDate: Date, endDate: Date) {
+    return {
+      startDate: new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate()).toISOString(),
+      endDate: new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate(), 23, 59, 59, 999).toISOString()
+    };
   }
 
   getPaymentsAmountByDate(startDate: Date, endDate: Date) : Observable<AmountByDate[]>{

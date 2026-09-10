@@ -1,9 +1,43 @@
-<div class="duty-report-content">
-    <div class="duties-list">
-        @for (item of eventDutys(); track item) {
-        <app-card [header]="item.name">
-            <p>Всего часов: {{item.totalHours}}</p>
-        </app-card>
-        }
+<div class="report-content">
+  <div class="report-heading">
+    <h2>Дежурства</h2>
+    <span class="period">{{ dateRange().startDate | date:'dd.MM.yyyy' }} — {{ dateRange().endDate | date:'dd.MM.yyyy' }}</span>
+  </div>
+  @if (loading()) {
+    <div class="report-state" role="status">Загружаем отчёт…</div>
+  } @else if (failed()) {
+    <div class="report-state" role="alert">
+      <p>Не удалось загрузить отчёт по дежурствам</p>
+      <button mat-stroked-button (click)="retry()">Повторить</button>
     </div>
+  } @else {
+    <div class="summary-grid">
+      <div class="summary-card accent"><span>Всего часов</span><strong>{{ totalHours() | number:'1.0-2' }} <small>ч</small></strong></div>
+      <div class="summary-card"><span>Дежурств за период</span><strong>{{ totalDuties() | number }}</strong></div>
+      <div class="summary-card"><span>Сотрудников</span><strong>{{ eventDutys().length | number }}</strong></div>
+    </div>
+    <div class="duties-list">
+      @for (item of eventDutys(); track $index) {
+        <article class="duty-card">
+          <div class="duty-heading">
+            <div class="person"><span class="avatar" aria-hidden="true">{{ item.name.slice(0, 1) }}</span><h3>{{ item.name }}</h3></div>
+            <strong class="hours">{{ item.totalHours | number:'1.0-2' }} <small>ч</small></strong>
+          </div>
+          <div class="hours-track" aria-hidden="true"><div [style.width.%]="item.totalHours / maxHours() * 100"></div></div>
+          <details>
+            <summary>Дежурства <span>{{ item.eventDutyDetails.length }}</span></summary>
+            <ul class="duty-details">
+              @for (duty of item.eventDutyDetails; track $index) {
+                <li><span>{{ duty.startDate | date:'dd.MM.yyyy' }}</span><strong>{{ duty.startDate | date:'HH:mm' }} — @if ((duty.startDate | date:'yyyyMMdd') !== (duty.endDate | date:'yyyyMMdd')) { {{ duty.endDate | date:'dd.MM.yyyy' }} }{{ duty.endDate | date:'HH:mm' }}</strong></li>
+              } @empty {
+                <li>Нет подробностей о дежурствах</li>
+              }
+            </ul>
+          </details>
+        </article>
+      } @empty {
+        <div class="report-state"><strong>За этот период дежурств нет</strong><p>Выберите другой месяц или измените даты отчёта.</p></div>
+      }
+    </div>
+  }
 </div>
