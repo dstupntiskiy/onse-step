@@ -400,6 +400,17 @@ export class EventDialogComponent implements DynamicComponent {
     this.isColorSelectorOpen = false;
   }
 
+  onCreateGroupClick() {
+    this.dialogService.showDialog(GroupDialogComponent)
+      .afterClosed().subscribe((group: Group | undefined) => {
+        if (!group) return;
+
+        this.groups = [group, ...this.groups.filter(existing => existing.id !== group.id)];
+        this.group.setValue(group.id);
+        this.group.markAsDirty();
+      })
+  }
+
   onEditGroupClick() {
     this.dialogService.showDialog(GroupDialogComponent, { id: this.initialEvent()?.group?.id as string })
       .afterClosed().subscribe(() => {

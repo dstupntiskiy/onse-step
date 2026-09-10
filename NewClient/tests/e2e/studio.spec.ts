@@ -145,6 +145,66 @@ async function expectDrawer(page: Page, dialog: Locator) {
   expect(await dialog.locator('.mat-mdc-dialog-surface').evaluate(el => el.scrollTop)).toBe(0);
 }
 
+for (const width of [1536, 320]) {
+  for (const editing of [false, true]) {
+    test(`create group from ${editing ? 'existing' : 'new'} event at ${width}px`, async ({page}) => {
+      await page.setViewportSize({width, height:900});
+      await mockApi(page);
+      const errors: string[] = [];
+      page.on('pageerror', error => errors.push(error.message));
+      const createdGroup = {...group, id:'created-group', name:'Новая группа'};
+      await page.route('**/api/Group/GetAll?*', route => route.fulfill({json:[]}));
+      await page.route('**/api/Event/GetEventById/*', route => route.fulfill({json:{...fixtures[3], group:null}}));
+      await page.route('**/api/Group/', route => route.fulfill({json:createdGroup}));
+      await page.route('**/api/Event/', route => route.fulfill({json:[{
+        ...route.request().postDataJSON(), id:editing ? fixtures[3].id : 'created-event', group:createdGroup, coach
+      }]}));
+      await page.goto('/');
+      if (editing) {
+        await page.locator('.calendar-event[data-kind="event"]').first().click();
+      } else {
+        await page.getByRole('button',{name:'Добавить: 8 сентября, 19:30',exact:true}).click();
+      }
+      const eventDialog = page.locator('app-event-dialog');
+      const name = eventDialog.getByRole('textbox',{name:'Название',exact:true});
+      await name.fill('Занятие с новой группой');
+      const start = await eventDialog.getByRole('combobox',{name:'Время начала',exact:true}).innerText();
+      const create = eventDialog.getByRole('button',{name:'Создать группу',exact:true});
+      await expect(create).toBeEnabled();
+      await expect(page.getByRole('dialog')).toHaveClass(/mdc-dialog--open/);
+      await expect(page.getByRole('dialog')).not.toHaveClass(/mdc-dialog--opening/);
+      const fieldBox = await eventDialog.getByRole('combobox',{name:'Группа',exact:true}).boundingBox();
+      const buttonBox = await create.boundingBox();
+      expect(buttonBox!.x).toBeGreaterThan(fieldBox!.x + fieldBox!.width);
+      expect(await eventDialog.locator('.drawer-body').evaluate(el => el.scrollWidth <= el.clientWidth)).toBe(true);
+      await create.click();
+      await page.locator('app-group-dialog').getByRole('button',{name:'Закрыть',exact:true}).click();
+      await expect(page.getByRole('dialog')).toHaveCount(1);
+      await expect(create).toBeVisible();
+      await expect(name).toHaveValue('Занятие с новой группой');
+      await create.click();
+      const groupDialog = page.locator('app-group-dialog');
+      await groupDialog.getByRole('textbox',{name:'Название',exact:true}).fill(createdGroup.name);
+      await groupDialog.getByRole('combobox',{name:'Направление',exact:true}).click();
+      await page.getByRole('option',{name:'Bachata',exact:true}).click();
+      const groupSaved = page.waitForRequest(r => r.method() === 'POST' && r.url().endsWith('/api/Group/'));
+      await groupDialog.getByRole('button',{name:'Сохранить',exact:true}).click();
+      expect((await groupSaved).postDataJSON()).toMatchObject({name:createdGroup.name, styleId:style.id});
+      await expect(page.getByRole('dialog')).toHaveCount(1);
+      await expect(eventDialog.getByRole('combobox',{name:'Группа',exact:true})).toContainText(createdGroup.name);
+      await expect(create).toHaveCount(0);
+      await expect(name).toHaveValue('Занятие с новой группой');
+      await expect(eventDialog.getByRole('combobox',{name:'Время начала',exact:true})).toHaveText(start);
+      const eventSaved = page.waitForRequest(r => r.method() === 'POST' && r.url().endsWith('/api/Event/'));
+      await eventDialog.getByRole('button',{name:'Сохранить',exact:true}).click();
+      expect((await eventSaved).postDataJSON()).toMatchObject({name:'Занятие с новой группой', groupId:createdGroup.id});
+      await expect(eventDialog.getByRole('combobox',{name:'Группа',exact:true})).toContainText(createdGroup.name);
+      await expect(eventDialog.getByRole('button',{name:'Редактировать группу',exact:true})).toBeVisible();
+      expect(errors).toEqual([]);
+    });
+  }
+}
+
 for (const viewport of [{width:1536,height:900}, {width:760,height:600}, {width:390,height:844}, {width:320,height:568}, {width:740,height:390}]) {
   test(`drawers pin actions and preserve nested forms at ${viewport.width}x${viewport.height}`, async ({page}) => {
     await page.setViewportSize(viewport); await mockApi(page);

@@ -119,6 +119,11 @@
                     }
                 </mat-select>
             </mat-form-field>
+            @if(!group.value){
+            <button mat-icon-button class="event-field-action" type="button" aria-label="Создать группу" title="Создать группу" [disabled]="!groups" (click)="onCreateGroupClick()">
+                <mat-icon>add</mat-icon>
+            </button>
+            }
             @if(initialEvent()?.group){
             <button mat-icon-button class="event-field-action" type="button" aria-label="Редактировать группу" title="Редактировать группу" (click)="onEditGroupClick()">
                 <mat-icon>edit</mat-icon>
