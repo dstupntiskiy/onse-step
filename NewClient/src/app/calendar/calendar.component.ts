@@ -78,7 +78,7 @@ export class CalendarComponent {
     return {id:e.id,kind:'event',title:e.name,start:new Date(e.startDateTime),end:new Date(e.endDateTime),color:e.color || '#2bb3ba',coach:coach?.name || '',coachId:coach?.id || '',group:e.group?.name || '',eventType:e.eventType,recurrent:!!e.recurrence,substituted:!!e.eventCoachSubstitution};
   }
   private dutyEntry(e: EventDutyModel): CalendarEntry { return {id:e.id,kind:'duty',title:e.name,start:new Date(e.startDateTime),end:new Date(e.endDateTime),color:e.color || '#c48950',coach:'',coachId:'',group:'',eventType:-1,recurrent:false,substituted:false}; }
-  eventsForDay(day: Date) { const end = addDays(day, 1); return this.sortedEntries().filter(e => e.start < end && e.end > day); }
+  eventsForDay(day: Date) { const end = addDays(day, 1); return this.sortedEntries().filter(e => e.kind === 'event' && e.start < end && e.end > day); }
   isToday(day: Date) { return dateKey(day) === dateKey(this.now()); }
   navigate(delta: number) { this.selectDate(addDays(this.selected(), delta * (this.view() === 'day' ? 1 : 7))); }
   selectDate(day: Date) { this.selected.set(dayStart(day)); this.miniMonth.set(dayStart(day)); }
