@@ -1,4 +1,4 @@
-import { Component, effect, inject, input, output, signal } from '@angular/core';
+import { Component, effect, inject, input, output, signal, ChangeDetectionStrategy } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { DynamicComponent } from '../../shared/dialog/base-dialog/base-dialog.component';
 import { MatIcon } from '@angular/material/icon';
@@ -38,6 +38,7 @@ export interface DutyDialogData{
     
   ],
   templateUrl: './duty-dialog.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './duty-dialog.component.scss'
 })
 export class DutyDialogComponent implements DynamicComponent {

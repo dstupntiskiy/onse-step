@@ -353,7 +353,8 @@ test('directories, reports and client creation preserve API contracts', async ({
   await page.getByRole('button',{name:'Закрыть окно',exact:true}).click();
   await page.goto('/groups'); await expect(page.locator('app-group-card')).toHaveCount(1);
   await page.goto('/styles'); await expect(page.locator('app-style-card')).toHaveCount(3);
-  await page.goto('/reports'); await expect(page.getByRole('tab')).toHaveCount(4);
+  await page.goto('/reports');
+  await expect(page.getByRole('tab')).toHaveText(['Абонементы и разовые', 'Дежурства', 'Тренеры']);
   await page.screenshot({path:'test-results/reports-desktop.png',fullPage:true});
 });
 

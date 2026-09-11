@@ -1,5 +1,5 @@
 import { DatePipe, DecimalPipe } from '@angular/common';
-import { Component, computed, effect, inject, input, signal } from '@angular/core';
+import { Component, computed, effect, inject, input, signal, ChangeDetectionStrategy } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { DateRange } from '../reports.component';
 import { ReportService } from '../report.service';
@@ -11,6 +11,7 @@ import { CoachReportItemComponent } from './coach-report-item/coach-report-item.
   standalone: true,
   imports: [CoachReportItemComponent, DatePipe, DecimalPipe, MatButtonModule],
   templateUrl: './coach-report.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './coach-report.component.scss'
 })
 export class CoachReportComponent {

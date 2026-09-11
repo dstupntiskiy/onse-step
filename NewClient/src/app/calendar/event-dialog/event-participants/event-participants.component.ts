@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, input, signal } from '@angular/core';
+import { Component, computed, effect, inject, input, signal, ChangeDetectionStrategy } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { EventService } from '../../event/event.service';
 import { GroupService } from '../../../groups/group.service';
@@ -16,6 +16,7 @@ import { finalize } from 'rxjs';
     SpinnerComponent
   ],
   templateUrl: './event-participants.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './event-participants.component.scss'
 })
 export class EventParticipantsComponent {

@@ -1,4 +1,4 @@
-import { Component, effect, inject, input, model, OutputRefSubscription } from '@angular/core';
+import { Component, effect, inject, input, model, OutputRefSubscription, ChangeDetectionStrategy } from '@angular/core';
 import { MembershipWithDetails } from '../../models/membership-model';
 import { DialogService } from '../../../services/dialog.service';
 import { StyleModel } from '../../models/style-model';
@@ -16,6 +16,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatTooltipModule
   ],
   templateUrl: './membership-details.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './membership-details.component.scss'
 })
 export class MembershipDetailsComponent {

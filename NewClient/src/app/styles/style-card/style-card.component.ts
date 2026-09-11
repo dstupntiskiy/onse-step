@@ -1,4 +1,4 @@
-import { Component, inject, input, model, OutputRefSubscription } from '@angular/core';
+import { Component, inject, input, model, OutputRefSubscription, ChangeDetectionStrategy } from '@angular/core';
 import { StyleModel } from '../../shared/models/style-model';
 import { DialogService } from '../../services/dialog.service';
 import { StyleDialogComponent } from '../style-dialog/style-dialog.component';
@@ -9,6 +9,7 @@ import { CardComponent } from '../../shared/components/card/card.component';
   standalone: true,
   imports: [],
   templateUrl: './style-card.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './style-card.component.scss'
 })
 export class StyleCardComponent {

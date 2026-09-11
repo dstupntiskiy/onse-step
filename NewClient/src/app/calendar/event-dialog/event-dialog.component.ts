@@ -1,4 +1,4 @@
-import { Component, computed, inject, input, output, signal } from '@angular/core';
+import { Component, computed, inject, input, output, signal, ChangeDetectionStrategy } from '@angular/core';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog'
 import { MatButtonModule } from '@angular/material/button'
 import { MatInputModule } from '@angular/material/input'
@@ -93,6 +93,7 @@ const WEEKDAYS: Weekday[] = [
     EventOnetimeVisitsComponent],
   templateUrl: './event-dialog.component.html',
   styleUrl: './event-dialog.component.scss',
+  changeDetection: ChangeDetectionStrategy.Eager,
   providers: [
     GroupService,
     CoachService,

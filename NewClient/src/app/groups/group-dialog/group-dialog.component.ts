@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, input, signal } from '@angular/core';
+import { Component, computed, effect, inject, input, signal, ChangeDetectionStrategy } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -45,6 +45,7 @@ export interface GroupDialogData {
     SnackBarService
   ],
   templateUrl: './group-dialog.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './group-dialog.component.scss'
 })
 export class GroupDialogComponent implements DynamicComponent {

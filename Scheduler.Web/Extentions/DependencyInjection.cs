@@ -8,7 +8,6 @@ using Scheduler.Application.Services;
 using Scheduler.Handlers;
 using Scheduler.Infrastructure.Data;
 using Scheduler.Infrastructure.Repository;
-using Scheduler.Mappings;
 using Scheduler.Services;
 
 namespace Scheduler.Extentions;
@@ -41,7 +40,7 @@ public static class DependencyInjection
             .AddTransient<IAuthorizationHandler, ActiveUserHandler>()
             .AddMemoryCache();
 
-    public static IServiceCollection AddWebApi(this IServiceCollection services)
+    public static IServiceCollection AddWebApi(this IServiceCollection services, IConfiguration configuration)
     {
         services
             .AddEndpointsApiExplorer()
@@ -52,8 +51,7 @@ public static class DependencyInjection
                 option.JsonSerializerOptions.IncludeFields = true;
                 option.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
             });
-        services.AddAutoMapper(typeof(MappingProfile))
-            .AddAutoMapper(ApplicationAssemby)
+        services.AddAutoMapper(cfg => cfg.LicenseKey = configuration["AutoMapper:LicenseKey"], ApplicationAssemby)
             .AddMediatR(cfg => cfg.RegisterServicesFromAssembly(ApplicationAssemby));
         services.AddSpaStaticFiles(cfg =>
         {

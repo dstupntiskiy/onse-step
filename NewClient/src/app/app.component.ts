@@ -1,5 +1,5 @@
 import { AsyncPipe } from '@angular/common';
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { filter, of, switchMap, catchError, distinctUntilChanged } from 'rxjs';
@@ -12,7 +12,8 @@ import { SpinnerService } from './shared/spinner/spinner.service';
   selector: 'app-root', standalone: true,
   host: { '[class.calendar-page]': 'calendarPage()' },
   imports: [AsyncPipe, RouterOutlet, RouterLink, RouterLinkActive, MatIconModule, SpinnerComponent],
-  templateUrl: './app.component.html', styleUrl: './app.component.scss'
+  templateUrl: './app.component.html', changeDetection: ChangeDetectionStrategy.Eager,
+ styleUrl: './app.component.scss'
 })
 export class AppComponent {
   readonly user = inject(UserService);

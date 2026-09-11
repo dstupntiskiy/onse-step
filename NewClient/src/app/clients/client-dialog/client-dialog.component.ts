@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, input, output, OutputRefSubscription, signal, Signal, viewChildren } from '@angular/core';
+import { Component, computed, effect, inject, input, output, OutputRefSubscription, signal, Signal, viewChildren, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Client, ClientOnetimeVisit } from '../../shared/models/client-model';
@@ -43,6 +43,7 @@ export interface ClientDialogData {
     SnackBarService
   ],
   templateUrl: './client-dialog.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './client-dialog.component.scss'
 })
 export class ClientDialogComponent {

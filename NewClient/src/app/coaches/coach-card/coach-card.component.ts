@@ -1,4 +1,4 @@
-import { Component, inject, input, model } from '@angular/core';
+import { Component, inject, input, model, ChangeDetectionStrategy } from '@angular/core';
 import { CardComponent } from '../../shared/components/card/card.component';
 import { CoachModel } from '../../shared/models/coach-model';
 import { DialogService } from '../../services/dialog.service';
@@ -12,6 +12,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
     MatCheckboxModule
   ],
   templateUrl: './coach-card.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './coach-card.component.scss'
 })
 export class CoachCardComponent {

@@ -22,7 +22,7 @@ public class Startup
         services.AddDbContext<OneStepContext>(x =>
                 x.UseNpgsql(this.Configuration.GetConnectionString("DefaultConnection")))
             .AddNHibernate(this.Configuration.GetConnectionString("DefaultConnection"))
-            .AddWebApi()
+            .AddWebApi(this.Configuration)
             .AddRepositories()
             .ConfigureAuth(this.Configuration);
     }

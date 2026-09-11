@@ -1,4 +1,4 @@
-import { Component, input, output } from '@angular/core';
+import { Component, input, output, ChangeDetectionStrategy } from '@angular/core';
 import { OnetimeVisitorModel } from '../../../shared/models/onetime-visitor-model';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -17,6 +17,7 @@ import { StyleModel } from '../../../shared/models/style-model';
     ClientNameComponent
   ],
   templateUrl: './onetime-visitor.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './onetime-visitor.component.scss'
 })
 export class OnetimeVisitorComponent {

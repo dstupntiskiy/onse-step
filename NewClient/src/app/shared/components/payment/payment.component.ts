@@ -1,4 +1,4 @@
-import { Component, inject, input, model } from '@angular/core';
+import { Component, inject, input, model, ChangeDetectionStrategy } from '@angular/core';
 import { PaymentModel } from '../../models/payment-model';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -18,6 +18,7 @@ import { PaymentDialogComponent } from './payment-dialog/payment-dialog.componen
   providers:[
   ],
   templateUrl: './payment.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './payment.component.scss'
 })
 export class PaymentComponent {

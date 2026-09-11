@@ -1,4 +1,4 @@
-import { Component, effect, model } from '@angular/core';
+import { Component, effect, model, ChangeDetectionStrategy } from '@angular/core';
 
 export type Duty = {
   name: string, 
@@ -8,6 +8,7 @@ export type Duty = {
 @Component({
   selector: 'app-duty-list',
   templateUrl: './duty-list.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './duty-list.component.scss'
 })
 export class DutyListComponent {

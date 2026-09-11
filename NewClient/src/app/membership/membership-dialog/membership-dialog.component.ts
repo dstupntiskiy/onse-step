@@ -1,4 +1,4 @@
-import { booleanAttribute, Component, computed, effect, inject, input, output, signal } from '@angular/core';
+import { booleanAttribute, Component, computed, effect, inject, input, output, signal, ChangeDetectionStrategy } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
@@ -43,6 +43,7 @@ export type VisitsCount = 8 | 4
     MatButtonToggleModule
   ],
   templateUrl: './membership-dialog.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './membership-dialog.component.scss'
 })
 export class MembershipDialogComponent implements DynamicComponent  {

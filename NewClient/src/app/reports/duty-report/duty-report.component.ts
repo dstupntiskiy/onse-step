@@ -1,5 +1,5 @@
 import { DatePipe, DecimalPipe } from '@angular/common';
-import { Component, computed, effect, inject, input, signal } from '@angular/core';
+import { Component, computed, effect, inject, input, signal, ChangeDetectionStrategy } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { DateRange } from '../reports.component';
 import { ReportService } from '../report.service';
@@ -9,6 +9,7 @@ import { EventDutyReport } from '../models/eventDutyReport.model';
   selector: 'app-duty-report',
   imports: [DatePipe, DecimalPipe, MatButtonModule],
   templateUrl: './duty-report.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './duty-report.component.scss'
 })
 export class DutyReportComponent {

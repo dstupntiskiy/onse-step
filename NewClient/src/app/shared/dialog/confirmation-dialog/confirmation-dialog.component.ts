@@ -1,4 +1,4 @@
-import { Component, Inject, input } from '@angular/core';
+import { Component, Inject, input, ChangeDetectionStrategy } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { DynamicComponent } from '../base-dialog/base-dialog.component';
@@ -13,6 +13,7 @@ export interface ConfirmationDialogData{
     MatButtonModule
   ],
   templateUrl: './confirmation-dialog.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './confirmation-dialog.component.scss'
 })
 export class ConfirmationDialogComponent implements DynamicComponent {

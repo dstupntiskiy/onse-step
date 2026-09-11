@@ -1,4 +1,4 @@
-import { Component, Inject, inject, input } from '@angular/core';
+import { Component, Inject, inject, input, ChangeDetectionStrategy } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { ConfirmationDialogComponent } from '../../shared/dialog/confirmation-dialog/confirmation-dialog.component';
@@ -19,6 +19,7 @@ export interface DeleteResult {
     MatButtonModule
   ],
   templateUrl: './delete-dialog.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './delete-dialog.component.scss'
 })
 export class DeleteDialogComponent implements DynamicComponent {

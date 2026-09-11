@@ -1,4 +1,4 @@
-import { Component, inject, input, model } from '@angular/core';
+import { Component, inject, input, model, ChangeDetectionStrategy } from '@angular/core';
 import { MatSlideToggleModule} from '@angular/material/slide-toggle';
 import { catchError, of, switchMap } from 'rxjs';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
@@ -19,6 +19,7 @@ import { MembershipService } from '../../../membership/membership.service';
     MembershipDetailsComponent
   ],
   templateUrl: './participant.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './participant.component.scss'
 })
 export class ParticipantComponent {

@@ -48,7 +48,7 @@ using var host = new WebHostBuilder()
         services.AddDbContext<OneStepContext>(options => options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")))
             .AddSingleton(factory)
             .AddScoped(_ => factory.OpenSession())
-            .AddWebApi()
+            .AddWebApi(configuration)
             .AddRepositories()
             .ConfigureAuth(configuration);
         services.AddControllers().AddApplicationPart(typeof(Startup).Assembly);
@@ -56,6 +56,8 @@ using var host = new WebHostBuilder()
     .Configure(app => new Startup(configuration, app.ApplicationServices.GetRequiredService<IWebHostEnvironment>()).Configure(app))
     .UseUrls("http://127.0.0.1:0")
     .Build();
+MappingChecks.Run(host.Services);
+await JwtChecks.Run(host.Services);
 await host.StartAsync();
 try
 {

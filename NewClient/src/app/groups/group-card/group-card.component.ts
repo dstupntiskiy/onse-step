@@ -1,4 +1,4 @@
-import { Component, inject, model } from '@angular/core';
+import { Component, inject, model, ChangeDetectionStrategy } from '@angular/core';
 import { CardComponent } from '../../shared/components/card/card.component';
 import { Group, GroupWithDetails } from '../../shared/models/group-model';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -14,6 +14,7 @@ import { MatSlideToggle } from '@angular/material/slide-toggle';
     MatCheckboxModule
   ],
   templateUrl: './group-card.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './group-card.component.scss'
 })
 export class GroupCardComponent {

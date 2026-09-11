@@ -1,4 +1,4 @@
-import { Component, effect, inject, input, signal } from '@angular/core';
+import { Component, effect, inject, input, signal, ChangeDetectionStrategy } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -33,6 +33,7 @@ export interface CoachDialogData {
     SpinnerService
   ],
   templateUrl: './coach-dialog.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './coach-dialog.component.scss'
 })
 export class CoachDialogComponent implements DynamicComponent {

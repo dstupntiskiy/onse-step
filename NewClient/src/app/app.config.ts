@@ -1,16 +1,16 @@
-import { ApplicationConfig, ErrorHandler, LOCALE_ID } from '@angular/core';
+import { ApplicationConfig, ErrorHandler, LOCALE_ID, DOCUMENT } from '@angular/core';
 import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
 import { DomSanitizer } from '@angular/platform-browser';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { HTTP_INTERCEPTORS, HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClient, provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
 import { AuthInterceptor } from './shared/Interceptors/authInterceptor';
 
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 import { DateAdapter, MAT_DATE_LOCALE, provideNativeDateAdapter } from '@angular/material/core';
 import { CustomDateAdapter } from './shared/adapters/custom.date.adapter';
-import { DOCUMENT, registerLocaleData } from '@angular/common';
+import { registerLocaleData } from '@angular/common';
 import localeRu from '@angular/common/locales/ru'
 import { MatIconRegistry } from '@angular/material/icon';
 
@@ -21,7 +21,7 @@ export function tokenGetter() {
 registerLocaleData(localeRu, 'ru-Ru');
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideHttpClient(withInterceptorsFromDi()),
+    provideHttpClient(withXhr(), withInterceptorsFromDi()),
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,

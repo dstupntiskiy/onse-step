@@ -1,5 +1,5 @@
 # Build the Angular frontend from its lockfile.
-FROM node:22-bookworm-slim AS angular-build
+FROM node:24.19.0-bookworm-slim AS angular-build
 WORKDIR /app/NewClient
 
 COPY NewClient/package.json NewClient/package-lock.json ./

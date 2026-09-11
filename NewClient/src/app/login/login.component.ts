@@ -1,9 +1,10 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { UserService } from '../shared/services/user.service';
 import { FormControl, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { finalize } from 'rxjs';
 import { Router } from '@angular/router';
-@Component({selector:'app-login',standalone:true,imports:[FormsModule, ReactiveFormsModule],templateUrl:'./login.component.html',styleUrl:'./login.component.scss'})
+@Component({selector:'app-login',standalone:true,imports:[FormsModule, ReactiveFormsModule],templateUrl:'./login.component.html',changeDetection: ChangeDetectionStrategy.Eager,
+styleUrl:'./login.component.scss'})
 export class LoginComponent {
  readonly user = inject(UserService);
  readonly router = inject(Router);

@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { Component, input, output } from '@angular/core';
+import { Component, input, output, ChangeDetectionStrategy } from '@angular/core';
 import { Client } from '../../shared/models/client-model';
 import { CardComponent } from '../../shared/components/card/card.component';
 
@@ -11,6 +11,7 @@ import { CardComponent } from '../../shared/components/card/card.component';
 
   ],
   templateUrl: './client-card.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './client-card.component.scss'
 })
 export class ClientCardComponent {

@@ -1,4 +1,4 @@
-import { Component, inject, OutputRefSubscription, ViewChild } from '@angular/core';
+import { Component, inject, OutputRefSubscription, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { Client } from '../shared/models/client-model';
 import { ClientService } from './client.service';
 import { MatTable } from '@angular/material/table';
@@ -31,6 +31,7 @@ import { PageComponent } from '../shared/components/page/page.component';
     ClientService
   ],
   templateUrl: './clients.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './clients.component.scss'
 })
 export class ClientsComponent {

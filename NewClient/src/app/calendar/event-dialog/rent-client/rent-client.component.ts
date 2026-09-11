@@ -1,4 +1,4 @@
-import { Component, effect, inject, input, model, signal } from '@angular/core';
+import { Component, effect, inject, input, model, signal, ChangeDetectionStrategy } from '@angular/core';
 import { AddClientComponent } from '../../../shared/components/add-client/add-client.component';
 import { Client } from '../../../shared/models/client-model';
 import { EventService } from '../../event/event.service';
@@ -23,6 +23,7 @@ import { SpinnerComponent } from '../../../shared/spinner/spinner.component';
     SpinnerComponent
   ],
   templateUrl: './rent-client.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './rent-client.component.scss'
 })
 export class RentClientComponent {

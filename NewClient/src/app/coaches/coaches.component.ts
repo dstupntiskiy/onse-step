@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CoachService } from './coach.service';
 import { CoachModel } from '../shared/models/coach-model';
 import { MatTableModule } from '@angular/material/table';
@@ -25,6 +25,7 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
     CoachService
   ],
   templateUrl: './coaches.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './coaches.component.scss'
 })
 export class CoachesComponent {

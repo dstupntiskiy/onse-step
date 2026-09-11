@@ -1,4 +1,4 @@
-import { Component, inject, input, model, output } from '@angular/core';
+import { Component, inject, input, model, output, ChangeDetectionStrategy } from '@angular/core';
 import { Client } from '../../models/client-model';
 import { DialogService } from '../../../services/dialog.service';
 import { ClientDialogComponent } from '../../../clients/client-dialog/client-dialog.component';
@@ -8,6 +8,7 @@ import { ClientDialogComponent } from '../../../clients/client-dialog/client-dia
   standalone: true,
   imports: [],
   templateUrl: './client-name.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './client-name.component.scss'
 })
 export class ClientNameComponent {

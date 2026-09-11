@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 
@@ -10,6 +10,7 @@ import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
     MatButtonModule
   ],
   templateUrl: './update-only-this-dialog.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './update-only-this-dialog.component.scss'
 })
 export class UpdateOnlyThisDialogComponent {

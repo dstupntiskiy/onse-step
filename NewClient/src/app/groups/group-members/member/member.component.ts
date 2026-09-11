@@ -1,4 +1,4 @@
-import { Component, effect, inject, input, output } from '@angular/core';
+import { Component, effect, inject, input, output, ChangeDetectionStrategy } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule} from '@angular/material/icon'
 import { GroupMember } from '../../../shared/models/group-members';
@@ -21,6 +21,7 @@ import { MembershipDetailsComponent } from '../../../shared/components/membershi
     MembershipDetailsComponent
   ],
   templateUrl: './member.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './member.component.scss'
 })
 export class MemberComponent {

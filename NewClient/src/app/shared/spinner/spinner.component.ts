@@ -1,16 +1,15 @@
-import { Component, computed, input, signal } from '@angular/core';
+import { Component, computed, input, ChangeDetectionStrategy } from '@angular/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { CommonModule } from '@angular/common';
+
 
 @Component({
   selector: 'app-spinner',
   standalone: true,
-  imports: [
-    MatProgressSpinnerModule, 
-    CommonModule],
+  imports: [MatProgressSpinnerModule],
   providers:[
   ],
   templateUrl: './spinner.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './spinner.component.scss'
 })
 export class SpinnerComponent {

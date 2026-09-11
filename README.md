@@ -34,8 +34,12 @@ unauthenticated API requests through Kestrel. They use a dummy connection string
 disable NHibernate database keyword discovery, and skip the database initializer.
 Actual database operations require a separate integration environment.
 
-The build retains existing nullable/compiler warnings and the NuGet advisory for
-AutoMapper 13.0.1; this framework upgrade does not change AutoMapper's major version.
+AutoMapper 15.1.3 includes the recursion security fix. Configure its license key via
+`AutoMapper__LicenseKey` in the deployment environment according to the
+[AutoMapper license terms](https://docs.automapper.io/en/stable/15.0-Upgrade-Guide.html).
+Keep the key out of source control. Smoke tests also exercise production mappings
+and the maximum-depth protection for deeply nested object graphs.
+Existing nullable/compiler warnings remain.
 
 The Angular frontend and its instructions are in [NewClient](NewClient/README.md).
 Build it before publishing the backend to include its assets in `wwwroot`, preserving
@@ -45,7 +49,7 @@ Build the combined frontend/API Docker image from the repository root:
 
     docker build -t one-step .
 
-The Dockerfile builds `NewClient` with Node.js 22 and `npm ci`, publishes the .NET 9
+The Dockerfile builds `NewClient` with Node.js 24.19.0 and `npm ci`, publishes the .NET 9
 backend, and serves both from port 5000. Supply the database and authentication
 configuration above when running the container. Local dependencies, caches and build
 outputs are excluded by `.dockerignore`.

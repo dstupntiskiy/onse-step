@@ -1,4 +1,4 @@
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, signal, ChangeDetectionStrategy } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -37,6 +37,7 @@ export interface DateRange{
     DutyReportComponent
 ],
   templateUrl: './reports.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './reports.component.scss'
 })
 export class ReportsComponent {

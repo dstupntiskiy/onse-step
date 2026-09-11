@@ -1,11 +1,12 @@
 import { A11yModule } from '@angular/cdk/a11y';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
   selector: 'app-palette',
   standalone: true,
   imports: [A11yModule],
   templateUrl: './palette.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './palette.component.scss'
 })
 export class PaletteComponent {

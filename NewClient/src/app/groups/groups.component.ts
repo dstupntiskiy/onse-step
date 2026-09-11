@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import {MatButtonModule} from '@angular/material/button';
 import { GroupService } from './group.service';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
@@ -28,6 +28,7 @@ import { ScrollNearEndDirective } from '../directives/scroll-near-end.directive'
   ],
   templateUrl: './groups.component.html',
   styleUrl: './groups.component.scss',
+  changeDetection: ChangeDetectionStrategy.Eager,
   providers:[{
     provide: MatDialogRef,
     useValue: {}

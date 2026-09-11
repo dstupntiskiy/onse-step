@@ -1,4 +1,4 @@
-import { Component,  Input, OutputRefSubscription, Signal, computed, effect, inject, input, signal, viewChildren } from '@angular/core';
+import { Component, Input, OutputRefSubscription, Signal, computed, effect, inject, input, signal, viewChildren, ChangeDetectionStrategy } from '@angular/core';
 import { Group } from '../../shared/models/group-model';
 import { MatInputModule } from '@angular/material/input';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
@@ -7,14 +7,14 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Client } from '../../shared/models/client-model';
 import { BehaviorSubject, finalize, of } from 'rxjs';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS, MatFormFieldModule } from '@angular/material/form-field';
-import { AsyncPipe, CommonModule } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { SpinnerService } from '../../shared/spinner/spinner.service';
 import { MemberComponent } from './member/member.component';
 import { MatIconModule } from '@angular/material/icon';
 import { GroupMember } from '../../shared/models/group-members';
 import { AddClientComponent } from '../../shared/components/add-client/add-client.component';
-import { toSignal } from '@angular/core/rxjs-interop/index'
+import { toSignal } from '@angular/core/rxjs-interop'
 import { SpinnerComponent } from '../../shared/spinner/spinner.component';
 
 @Component({
@@ -27,7 +27,6 @@ import { SpinnerComponent } from '../../shared/spinner/spinner.component';
     MatButtonModule,
     FormsModule,
     ReactiveFormsModule,
-    CommonModule,
     MemberComponent,
     MatIconModule,
     AddClientComponent,
@@ -43,6 +42,7 @@ import { SpinnerComponent } from '../../shared/spinner/spinner.component';
     }
   ],
   templateUrl: './group-members.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './group-members.component.scss'
 })
 export class GroupMembersComponent {

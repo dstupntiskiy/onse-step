@@ -1,4 +1,4 @@
-import { Component, inject, input, signal } from '@angular/core';
+import { Component, inject, input, signal, ChangeDetectionStrategy } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 import { PaymentModel } from '../../../models/payment-model';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -29,6 +29,7 @@ export interface PaymentDialogData{
   providers:[
   ],
   templateUrl: './payment-dialog.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './payment-dialog.component.scss'
 })
 export class PaymentDialogComponent implements DynamicComponent {

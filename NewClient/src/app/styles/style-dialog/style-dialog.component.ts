@@ -1,4 +1,4 @@
-import { Component, effect, inject, input, output, signal } from '@angular/core';
+import { Component, effect, inject, input, output, signal, ChangeDetectionStrategy } from '@angular/core';
 import { DynamicComponent } from '../../shared/dialog/base-dialog/base-dialog.component';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { StyleModel } from '../../shared/models/style-model';
@@ -26,6 +26,7 @@ export interface StyleDialogData{
   providers:[
   ],
   templateUrl: './style-dialog.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './style-dialog.component.scss'
 })
 export class StyleDialogComponent implements DynamicComponent {

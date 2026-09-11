@@ -1,4 +1,4 @@
-import { Component, ComponentRef, DestroyRef, effect, inject, input, model, output, OutputRefSubscription } from '@angular/core';
+import { Component, ComponentRef, DestroyRef, effect, inject, input, model, output, OutputRefSubscription, ChangeDetectionStrategy } from '@angular/core';
 import { MembershipModel, MembershipWithDetails } from '../shared/models/membership-model';
 import { DatePipe } from '@angular/common';
 import { DialogService } from '../services/dialog.service';
@@ -18,6 +18,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatTooltipModule
   ],
   templateUrl: './membership.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './membership.component.scss'
 })
 export class MembershipComponent {

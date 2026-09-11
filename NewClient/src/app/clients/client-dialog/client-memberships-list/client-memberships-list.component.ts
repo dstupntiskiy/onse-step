@@ -1,4 +1,4 @@
-import { Component, effect, inject, input, signal } from '@angular/core';
+import { Component, effect, inject, input, signal, ChangeDetectionStrategy } from '@angular/core';
 import { MembershipComponent } from '../../../membership/membership.component';
 import { MembershipService } from '../../../membership/membership.service';
 import { MembershipWithDetails } from '../../../shared/models/membership-model';
@@ -18,6 +18,7 @@ import { finalize } from 'rxjs';
     SpinnerComponent
   ],
   templateUrl: './client-memberships-list.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './client-memberships-list.component.scss'
 })
 export class ClientMembershipsListComponent {

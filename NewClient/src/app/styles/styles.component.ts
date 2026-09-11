@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { StyleService } from './style.service';
 import { StyleModel } from '../shared/models/style-model';
 import { DialogService } from '../services/dialog.service';
@@ -22,6 +22,7 @@ import { finalize } from 'rxjs';
     ReactiveFormsModule
   ],
   templateUrl: './styles.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './styles.component.scss'
 })
 export class StylesComponent {

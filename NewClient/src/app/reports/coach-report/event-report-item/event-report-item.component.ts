@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, input, ChangeDetectionStrategy } from '@angular/core';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { EventWithParticipantsDto } from '../../models/coaches-report.model';
 
@@ -7,6 +7,7 @@ import { EventWithParticipantsDto } from '../../models/coaches-report.model';
   standalone: true,
   imports: [DatePipe, DecimalPipe],
   templateUrl: './event-report-item.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './event-report-item.component.scss'
 })
 export class EventReportItemComponent {

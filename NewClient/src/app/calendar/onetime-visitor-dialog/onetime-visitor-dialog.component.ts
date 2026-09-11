@@ -1,7 +1,7 @@
-import { Component, Inject, Input, OutputRefSubscription, Signal, effect, inject, input, signal, viewChildren } from '@angular/core';
+import { Component, Inject, Input, OutputRefSubscription, Signal, effect, inject, input, signal, viewChildren, ChangeDetectionStrategy } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { EventService } from '../event/event.service';
-import { CommonModule } from '@angular/common';
+
 import { OnetimeVisitorComponent } from './onetime-visitor/onetime-visitor.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
@@ -23,17 +23,11 @@ export interface OnetimeVisitorDialogData{
 @Component({
   selector: 'app-onetime-visitor-dialog',
   standalone: true,
-  imports: [CommonModule,
-    OnetimeVisitorComponent,
-    MatInputModule,
-    ReactiveFormsModule,
-    MatAutocompleteModule,
-    AddClientComponent,
-    MatButtonModule
-  ],
+  imports: [OnetimeVisitorComponent, MatInputModule, ReactiveFormsModule, MatAutocompleteModule, AddClientComponent, MatButtonModule],
   providers: [EventService
   ],
   templateUrl: './onetime-visitor-dialog.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './onetime-visitor-dialog.component.scss'
 })
 export class OnetimeVisitorDialogComponent implements DynamicComponent {

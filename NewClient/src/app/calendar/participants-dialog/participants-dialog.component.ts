@@ -1,4 +1,4 @@
-import { Component, effect, inject, input, model, signal } from '@angular/core';
+import { Component, effect, inject, input, model, signal, ChangeDetectionStrategy } from '@angular/core';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { Group } from '../../shared/models/group-model';
 import { SpinnerService } from '../../shared/spinner/spinner.service';
@@ -26,6 +26,7 @@ export interface ParticipantsDialogData{
     SpinnerComponent
   ],
   templateUrl: './participants-dialog.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './participants-dialog.component.scss'
 })
 export class ParticipantsDialogComponent implements DynamicComponent {

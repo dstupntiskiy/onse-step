@@ -1,4 +1,4 @@
-import { Component, effect, inject, input, model, output } from '@angular/core';
+import { Component, effect, inject, input, model, output, ChangeDetectionStrategy } from '@angular/core';
 import { CoachModel } from '../../../shared/models/coach-model';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
@@ -21,6 +21,7 @@ import { MatButtonModule } from '@angular/material/button';
     MatButtonModule
   ],
   templateUrl: './coach-substitution.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './coach-substitution.component.scss'
 })
 export class CoachSubstitutionComponent {

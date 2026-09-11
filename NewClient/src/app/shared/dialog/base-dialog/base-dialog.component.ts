@@ -1,4 +1,4 @@
-import { Component, ComponentRef, Inject, OnInit, Signal, ViewChild, ViewContainerRef, signal } from '@angular/core';
+import { Component, ComponentRef, Inject, OnInit, Signal, ViewChild, ViewContainerRef, signal, ChangeDetectionStrategy } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 export interface DynamicComponent {
@@ -11,6 +11,7 @@ export interface DynamicComponent {
   standalone: true,
   imports: [],
   templateUrl: './base-dialog.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './base-dialog.component.scss'
 })
 export class BaseDialogComponent implements OnInit {

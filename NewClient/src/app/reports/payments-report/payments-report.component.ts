@@ -1,5 +1,5 @@
 import { DatePipe, DecimalPipe } from '@angular/common';
-import { Component, computed, effect, ElementRef, inject, input, signal, viewChild } from '@angular/core';
+import { Component, computed, effect, ElementRef, inject, input, signal, viewChild, ChangeDetectionStrategy } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { ReportService } from '../report.service';
 import { DateRange } from '../reports.component';
@@ -10,6 +10,7 @@ import { PaymentsReport } from '../models/payments-report.model';
   standalone: true,
   imports: [DecimalPipe, DatePipe, MatButtonModule],
   templateUrl: './payments-report.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './payments-report.component.scss'
 })
 export class PaymentsReportComponent {

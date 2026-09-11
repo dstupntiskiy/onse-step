@@ -1,4 +1,4 @@
-import { Component, inject, input, model, output } from '@angular/core';
+import { Component, inject, input, model, output, ChangeDetectionStrategy } from '@angular/core';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatInputModule } from '@angular/material/input';
 import { Client } from '../../models/client-model';
@@ -21,6 +21,7 @@ import { CommonModule } from '@angular/common';
     ClientService
   ],
   templateUrl: './add-client.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './add-client.component.scss'
 })
 export class AddClientComponent {
