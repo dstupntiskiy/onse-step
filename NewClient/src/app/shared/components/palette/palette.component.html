@@ -1,0 +1,36 @@
+<section class="palette" role="dialog" aria-label="Цвет события" aria-modal="true"
+    cdkTrapFocus [cdkTrapFocusAutoCapture]="true">
+    <header class="palette-header">
+        <div>
+            <h2>Цвет события</h2>
+            <p>От нежного до насыщенного</p>
+        </div>
+        <button class="close-button" type="button" aria-label="Закрыть палитру" (click)="dismissed.emit()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="m6 6 12 12M6 18 18 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+            </svg>
+        </button>
+    </header>
+    <div class="palette-colors">
+        @for (family of families; track family.name) {
+            <div class="color-row" role="group" [attr.aria-label]="family.name">
+                @for (color of family.shades; track color; let index = $index) {
+                    <button class="color" type="button" [style.--swatch]="color"
+                        [class.selected]="isSelected(color)" [attr.aria-pressed]="isSelected(color)"
+                        [attr.aria-label]="family.name + ' · ' + tones[index]"
+                        [title]="family.name + ' · ' + tones[index] + ' · ' + color"
+                        (click)="onColorClick(color)">
+                        @if (isSelected(color)) {
+                            <span class="selection-mark" aria-hidden="true">✓</span>
+                        }
+                    </button>
+                }
+            </div>
+        }
+    </div>
+    <footer class="palette-footer">
+        <span class="current-swatch" [style.background-color]="currentColor" aria-hidden="true"></span>
+        <div><span class="current-label">Текущий цвет</span><strong>{{ currentColor }}</strong></div>
+        <span class="palette-hint">Выберите цвет<br>для события</span>
+    </footer>
+</section>

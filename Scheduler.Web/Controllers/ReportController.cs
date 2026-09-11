@@ -4,9 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Scheduler.Application.Common.Dtos.Reports;
 using Scheduler.Application.Queries.Reports;
 using Scheduler.Application.Queries.Reports.GetAllCoachesEventsWithParticipants;
-using Scheduler.Application.Queries.Reports.GetMembershipPaymentAmountByDate;
-using Scheduler.Application.Queries.Reports.GetMembershipsStylesByPeriod;
-using Scheduler.Application.Queries.Reports.GetOnetimeVisitsStylesByPeriodQuery;
+using Scheduler.Application.Queries.Reports.GetPaymentsReportByPeriod;
 
 namespace Scheduler.Controllers;
 
@@ -15,18 +13,28 @@ namespace Scheduler.Controllers;
 [Route("api/[controller]")]
 public class ReportController(IMediator mediator) : ControllerBase
 {
-    [HttpGet("GetMembershipsStylesByPeriod")]
-    public async Task<List<MembershipStyle>> GetMembershipsStylesByPeriod(DateTime startDate, DateTime endDate)
+    [HttpGet("GetPaymentsReportByPeriod")]
+    public async Task<ActionResult<PaymentsReportDto>> GetPaymentsReportByPeriod(
+        DateTimeOffset startDate, DateTimeOffset endDate, string timeZoneId = "Europe/Belgrade",
+        CancellationToken cancellationToken = default)
     {
-        return await mediator.Send(new GetMembershipsStylesByPeriodQuery(startDate, endDate));
+        if (endDate <= startDate)
+            return BadRequest(new { message = "Конец периода должен быть позже начала." });
+
+        TimeZoneInfo timeZone;
+        try
+        {
+            timeZone = TimeZoneInfo.FindSystemTimeZoneById(timeZoneId);
+        }
+        catch (Exception exception) when (exception is TimeZoneNotFoundException or InvalidTimeZoneException)
+        {
+            return BadRequest(new { message = "Неизвестный часовой пояс." });
+        }
+
+        return await mediator.Send(new GetPaymentsReportByPeriodQuery(
+            startDate.UtcDateTime, endDate.UtcDateTime, timeZone), cancellationToken);
     }
 
-    [HttpGet("GetOnetimeVisitsStylesByPeriod")]
-    public async Task<List<OnetimeVisitStyle>> GetOnetimeVisitsStylesByPeriod(DateTime startDate, DateTime endDate)
-    {
-        return await mediator.Send(new GetOnetimeVisitsStylesByPeriodQuery(startDate, endDate));
-    }
-    
     [HttpGet("GetEventDutiesReportByPeriod")]
     public async Task<List<EventDutyReportDto>> GetEventDutiesReportByPeriod(DateTime startDate, DateTime endDate)
     {
@@ -38,11 +46,5 @@ public class ReportController(IMediator mediator) : ControllerBase
         DateTime endDate)
     {
         return await mediator.Send(new GetAllCoachesEventsWithParticipantsByPeriodQuery(startDate, endDate));
-    }
-
-    [HttpGet("GetPaymentsAmountByPeriod")]
-    public async Task<List<KeyValuePair<DateTime, decimal>>> GetPaymentsAmountByPeriod(DateTime startDate, DateTime endDate)
-    {
-        return await mediator.Send(new GetPaymentsAmountByPeriodQueryQuery(startDate, endDate));
     }
 }

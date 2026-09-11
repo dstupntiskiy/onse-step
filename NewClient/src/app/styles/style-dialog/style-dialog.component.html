@@ -1,0 +1,35 @@
+<div class="drawer-layout style-dialog-content">
+    <div class="drawer-body style-dialog-content">
+        <div class="fields">
+            <mat-form-field>
+                <mat-label>Название</mat-label>
+                <input matInput [formControl]="name">
+            </mat-form-field>
+            <mat-form-field>
+                <mat-label>Базовая стоимость, RSD</mat-label>
+                <input matInput type="number" [formControl]="basePrice">
+            </mat-form-field>
+            <mat-form-field>
+                <mat-label>Стоимость 4 занятий, RSD</mat-label>
+                <input matInput type="number" [formControl]="secondaryPrice">
+            </mat-form-field>
+            <mat-form-field>
+                <mat-label>Разовое посещение, RSD</mat-label>
+                <input matInput type="number" [formControl]="onetimeVisitPrice">
+            </mat-form-field>
+            <mat-form-field>
+                <mat-label>Базовая оплата тренера, RSD</mat-label>
+                <input matInput type="number" [formControl]="baseSalary">
+            </mat-form-field>
+            <mat-form-field>
+                <mat-label>Бонусная оплата тренера, RSD</mat-label>
+                <input matInput type="number" [formControl]="bonusSalary">
+            </mat-form-field>
+            <mat-slide-toggle [formControl]="active">Активность</mat-slide-toggle>
+        </div>
+    </div>
+    <div class="actions">
+        <button mat-button (click)="onClose()">Закрыть</button>
+        <button mat-raised-button color="accent" (click)="onSave()">Сохранить</button>
+    </div>
+</div>

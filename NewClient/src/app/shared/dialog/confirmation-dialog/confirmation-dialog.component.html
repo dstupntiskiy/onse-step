@@ -1,0 +1,11 @@
+<div class="drawer-layout dialog">
+    <div class="drawer-body dialog">
+        <mat-dialog-content>
+            <p>{{data()?.message}}</p>
+        </mat-dialog-content>
+    </div>
+    <mat-dialog-actions class="actions">
+        <button mat-button (click)="onCloseClick()">Закрыть</button>
+        <button mat-raised-button color="accent" (click)="onOkClick()">ОК</button>
+    </mat-dialog-actions>
+</div>

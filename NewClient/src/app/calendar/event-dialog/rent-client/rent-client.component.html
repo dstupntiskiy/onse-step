@@ -1,0 +1,20 @@
+<app-spinner [isLoading$$]="isLoading"></app-spinner>
+<div class="rent-client">
+    @if(!isLoading){
+    @if(!oneTimeVisitor()){
+    <app-add-client (selectedClient$$)="onClientSelect($event)"></app-add-client>
+    }
+    @else{
+    <app-client-name [client]="oneTimeVisitor()!.client"></app-client-name>
+    <div class="rent-client-actions">
+        <app-payment [memberId]="oneTimeVisitor()!.id" [paymentType]="paymentTypes.Onetime"
+            [(payment)]="oneTimeVisitor()!.payment">
+        </app-payment>
+        <button mat-icon-button class="remove-client" type="button" aria-label="Удалить участника"
+            title="Удалить участника" (click)="onDeleteClick()">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+    }
+    }
+</div>

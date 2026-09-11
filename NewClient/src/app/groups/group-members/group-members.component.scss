@@ -1,0 +1,42 @@
+:host {
+    display: block;
+    width: 100%;
+    min-width: 0;
+}
+
+.members-content {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    .field-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+    }
+
+    .add-member {
+        flex: 1 1 220px;
+        min-width: 0;
+
+        app-add-client { display: block; }
+    }
+
+    .members-count {
+        color: #63776e;
+        font-size: 13px;
+        white-space: nowrap;
+    }
+
+    .member-list {
+        display: grid;
+        gap: 12px;
+        position: relative;
+        min-height: 50px;
+    }
+
+    .member-row { min-width: 0; }
+}
+
+:host ::ng-deep .add-member mat-form-field { width: 100%; }

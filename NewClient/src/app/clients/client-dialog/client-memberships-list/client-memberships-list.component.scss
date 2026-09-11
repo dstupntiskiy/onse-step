@@ -1,0 +1,16 @@
+.client-memberships-list{
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.memberships-list{
+    min-height: 50px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    app-spinner { position: absolute; }
+}

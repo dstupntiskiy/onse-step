@@ -1,0 +1,168 @@
+<app-spinner [isLoading$$]="isLoading"></app-spinner>
+<form class="drawer-layout dialog" [formGroup]="form" (ngSubmit)="submit()">
+    <div class="drawer-body dialog">
+        <div class="event-dialog-header">
+            <div>
+                @if(date()){
+                <span class="event-day">{{ date() | date: 'dd MMM' }}</span>
+                }
+            </div>
+        </div>
+        <div class="fields-row">
+            <mat-form-field class="input event-name">
+                <mat-label>Название</mat-label>
+                <input matInput placeholder="Название" formControlName="name">
+            </mat-form-field>
+            <div class="color-wrapper">
+                <button type="button" aria-label="Выбрать цвет события" aria-haspopup="dialog" [attr.aria-expanded]="isColorSelectorOpen" (click)="isColorSelectorOpen = !isColorSelectorOpen" class="color-selector"
+                    cdkOverlayOrigin #trigger="cdkOverlayOrigin">
+                    <span class="color-preview" [style.background-color]="color()"></span>
+                    <span class="color-caption">Цвет</span>
+                    <mat-icon aria-hidden="true">expand_more</mat-icon>
+                </button>
+                <ng-template cdkConnectedOverlay [cdkConnectedOverlayOrigin]="trigger"
+                    [cdkConnectedOverlayOpen]="isColorSelectorOpen"
+                    [cdkConnectedOverlayPositions]="palettePositions"
+                    [cdkConnectedOverlayPush]="true" [cdkConnectedOverlayViewportMargin]="12"
+                    [cdkConnectedOverlayHasBackdrop]="true" cdkConnectedOverlayBackdropClass="cdk-overlay-transparent-backdrop"
+                    (backdropClick)="isColorSelectorOpen = false" (overlayKeydown)="onPaletteKeydown($event)">
+                    <app-palette [selectedColor]="color()" (onColorSelect)="colorSelected($event)"
+                        (dismissed)="isColorSelectorOpen = false"></app-palette>
+                </ng-template>
+            </div>
+        </div>
+        <div class="fields-row">
+            <mat-button-toggle-group class="event-types" aria-label="Тип события" formControlName="eventType" [hideSingleSelectionIndicator]="true">
+                <mat-button-toggle class="event-type" [value]="eventTypes.Event">
+                    <mat-icon>event</mat-icon>
+                    <span>Занятие</span>
+                </mat-button-toggle>
+                <mat-button-toggle class="event-type" [value]="eventTypes.Rent">
+                    <mat-icon>home</mat-icon>
+                    <span>Аренда</span>
+                </mat-button-toggle>
+                <mat-button-toggle class="event-type" [value]="eventTypes.SpecialEvent">
+                    <mat-icon>people</mat-icon>
+                    <span>Мастер Класс</span>
+                </mat-button-toggle>
+            </mat-button-toggle-group>
+        </div>
+        @if(eventType.value == eventTypes.Event || eventType.value == eventTypes.Rent)
+        {
+        <div class="fields-row recur">
+            <mat-checkbox class="recur-checkbox" formControlName="isRecur" (change)="changeIsRecur($event.checked)">
+                Еженедельное событие
+            </mat-checkbox>
+            <ng-container *ngIf="isRecur?.value">
+                <mat-form-field class="event-start">
+                    <mat-label>Дни недели</mat-label>
+                    <mat-select formControlName="weekdays" multiple>
+                        @for (option of weekDaysList; track option){
+                        <mat-option [value]="option">{{option.name}}</mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
+            </ng-container>
+        </div>
+        <ng-container *ngIf="isRecur?.value">
+            <div class="fields-row">
+                <mat-form-field class="recur-start">
+                    <mat-label>Дата старта</mat-label>
+                    <input matInput [matDatepicker]="pickerStart" formControlName="recurStart">
+                    <mat-datepicker-toggle matIconSuffix [for]="pickerStart"></mat-datepicker-toggle>
+                    <mat-datepicker #pickerStart></mat-datepicker>
+                </mat-form-field>
+                <mat-form-field class="recur-end">
+                    <mat-label>Дата окончания</mat-label>
+                    <input matInput [matDatepicker]="pickerEnd" formControlName="recurEnd">
+                    <mat-datepicker-toggle matIconSuffix [for]="pickerEnd"></mat-datepicker-toggle>
+                    <mat-datepicker #pickerEnd></mat-datepicker>
+                </mat-form-field>
+            </div>
+        </ng-container>
+        }
+        <div class="fields-row period">
+            <mat-form-field class="event-start">
+                <mat-label>Время начала</mat-label>
+                <mat-select formControlName="start">
+                    @for (option of timeOptions; track option){
+                    <mat-option [value]="option">{{option}}</mat-option>
+                    }
+                </mat-select>
+            </mat-form-field>
+            <mat-form-field class="event-end">
+                <mat-label>Время окончания</mat-label>
+                <mat-select formControlName="end">
+                    @for (option of timeOptions; track option){
+                    <mat-option [value]="option">{{option}}</mat-option>
+                    }
+                </mat-select>
+            </mat-form-field>
+        </div>
+        @if(eventType.value != eventTypes.Rent && initialEvent()?.id)
+        {
+        <div class="fields-row">
+            <app-coach-substitution [eventId]="initialEvent()?.id ?? ''" [coach]="initialEvent()?.coach"
+                (coachChange)="onCoachChange($event)" [substitution]="substitution$ | async"
+                [coaches]="coaches$ | async"></app-coach-substitution>
+        </div>
+        }
+
+        @if(eventType.value == eventTypes.Event)
+        {
+        <div class="fields-row group">
+            <mat-form-field class="event-group">
+                <mat-label>Группа</mat-label>
+                <mat-select formControlName="group">
+                    @for (option of groups; track option.id){
+                    <mat-option [value]="option.id">{{option.name}}</mat-option>
+                    }
+                </mat-select>
+            </mat-form-field>
+            @if(!group.value){
+            <button mat-icon-button class="event-field-action" type="button" aria-label="Создать группу" title="Создать группу" [disabled]="!groups" (click)="onCreateGroupClick()">
+                <mat-icon>add</mat-icon>
+            </button>
+            }
+            @if(initialEvent()?.group){
+            <button mat-icon-button class="event-field-action" type="button" aria-label="Редактировать группу" title="Редактировать группу" (click)="onEditGroupClick()">
+                <mat-icon>edit</mat-icon>
+            </button>
+            }
+        </div>
+        }
+
+        @if(initialEvent()?.id){
+        <div class="participants">
+            @if(eventType.value == eventTypes.Event && initialEvent()?.group)
+            {
+            <app-event-participants [eventId]="initialEvent()!.id" [groupId]="initialEvent()!.group?.id!"
+                [eventDate]="initialEvent()!.startDateTime" [group]="initialEvent()!.group!"
+                [triggerUpdateGroupMembersCount]="triggerUpdateGroupMembersCount()"></app-event-participants>
+            }
+            @if(eventType.value != eventTypes.Rent)
+            {
+            <app-event-onetime-visits [eventId]="initialEvent()!.id" [eventStyle]="initialEvent()?.group?.style"
+                [eventType]="eventType.value"></app-event-onetime-visits>
+            }
+
+        </div>
+        }
+        @if(eventType.value == eventTypes.Rent && initialEvent()?.id){
+        <div class="fields-row rent-client">
+            <app-rent-client [eventId]="initialEvent()?.id ?? ''"></app-rent-client>
+        </div>
+        }
+    </div>
+    <div class="actions" mat-dialog-actions>
+        <div class="actions-left">
+            @if(initialEvent()?.id){
+            <button mat-raised-button color="warn" type="button" (click)="onDelete()">Удалить</button>
+            }
+        </div>
+        <div class="actions-right">
+            <button mat-button type="button" (click)="onCloseClick()">Закрыть</button>
+            <button mat-raised-button color="accent" type="submit" [disabled]="!dirty() || form.invalid">Сохранить</button>
+        </div>
+    </div>
+</form>

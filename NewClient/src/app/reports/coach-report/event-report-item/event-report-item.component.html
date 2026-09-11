@@ -1,0 +1,10 @@
+<td class="lesson">
+  <strong>{{ item().name }}</strong>
+  <time [attr.datetime]="item().startDate">{{ item().startDate | date:'dd.MM.yyyy · HH:mm' }}</time>
+</td>
+<td data-label="Абонементы"><span>{{ item().membersCount | number }}</span></td>
+<td data-label="Разовые"><span>{{ item().onetimeVisitsCount | number }}</span></td>
+<td data-label="Участников"><span>{{ item().participantsCount | number }}</span></td>
+<td data-label="Базовая ЗП"><span>{{ item().baseSalary | number:'1.0-2' }}</span></td>
+<td data-label="Бонусная ЗП"><span>{{ item().bonusSalary | number:'1.0-2' }}</span></td>
+<td data-label="Итого" class="event-total"><strong>{{ item().totalSalary | number:'1.0-2' }}</strong></td>

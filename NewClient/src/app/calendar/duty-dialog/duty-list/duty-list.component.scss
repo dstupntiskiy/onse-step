@@ -1,0 +1,72 @@
+:host { display: block; }
+.duty-list {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+}
+.duty-option {
+    position: relative;
+    min-width: 0;
+    cursor: pointer;
+    input {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        opacity: 0;
+    }
+    input:checked + .duty-card {
+        border-color: #16847f;
+        background: #edf7f3;
+        box-shadow: inset 0 0 0 1px #16847f;
+        .selection-mark { background: #16847f; border-color: #16847f; }
+        .selection-mark::after {
+            content: '';
+            width: 7px;
+            height: 4px;
+            border-left: 2px solid white;
+            border-bottom: 2px solid white;
+            transform: translateY(-1px) rotate(-45deg);
+        }
+    }
+    input:focus-visible + .duty-card { outline: 3px solid #16847f; outline-offset: 3px; }
+    &:hover .duty-card { border-color: #16847f; }
+}
+.duty-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    height: 100%;
+    padding: 20px 10px 16px;
+    border: 1px solid #dce5df;
+    border-radius: 12px;
+    background: #fff;
+    transition: background 150ms, border-color 150ms;
+}
+.duty-avatar {
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    color: #233b34;
+    font-size: 18px;
+    font-weight: 600;
+}
+.duty-name { font-size: 14px; font-weight: 600; overflow-wrap: anywhere; text-align: center; }
+.selection-mark {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: grid;
+    place-items: center;
+    width: 16px;
+    height: 16px;
+    border: 1px solid #b7c9be;
+    border-radius: 50%;
+}
+@media (max-width: 400px) {
+    .duty-list { gap: 8px; }
+    .duty-card { padding: 24px 8px 14px; }
+    .selection-mark { top: 7px; right: 7px; width: 14px; height: 14px; }
+}

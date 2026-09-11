@@ -1,0 +1,77 @@
+<app-page>
+    <div class="reports-content">
+        <div class="content">
+            <div class="controls">
+                <button type="button" class="quiet-button month-trigger" cdkOverlayOrigin #monthOrigin="cdkOverlayOrigin"
+                    aria-haspopup="dialog" [attr.aria-expanded]="monthPickerOpen()"
+                    [attr.aria-label]="'Месяц отчёта: ' + monthLabel"
+                    [attr.aria-controls]="monthPickerOpen() ? 'report-month-picker' : null" (click)="toggleMonthPicker()">
+                    <mat-icon>calendar_today</mat-icon><span>{{ monthLabel }}</span>
+                </button>
+                <ng-template cdkConnectedOverlay [cdkConnectedOverlayOrigin]="monthOrigin" [cdkConnectedOverlayOpen]="monthPickerOpen()"
+                    [cdkConnectedOverlayPositions]="monthPickerPositions" [cdkConnectedOverlayHasBackdrop]="true"
+                    cdkConnectedOverlayBackdropClass="cdk-overlay-transparent-backdrop" [cdkConnectedOverlayPush]="true"
+                    [cdkConnectedOverlayViewportMargin]="12" (backdropClick)="monthPickerOpen.set(false)"
+                    (detach)="monthPickerOpen.set(false)" (overlayKeydown)="$event.key === 'Escape' && monthPickerOpen.set(false)">
+                    <div class="month-popover" id="report-month-picker" role="dialog" aria-label="Выбор месяца" aria-modal="true"
+                        cdkTrapFocus [cdkTrapFocusAutoCapture]="true">
+                        <div class="month-popover-header">
+                            <div><span>Месяц отчёта</span><strong aria-live="polite">{{ pickerYear() }}</strong></div>
+                            <div class="year-navigation">
+                                <button type="button" class="year-button" aria-label="Предыдущий год" [disabled]="pickerYear() <= 100" (click)="pickerYear.set(pickerYear() - 1)"><mat-icon>chevron_left</mat-icon></button>
+                                <button type="button" class="year-button" aria-label="Следующий год" [disabled]="pickerYear() >= 9999" (click)="pickerYear.set(pickerYear() + 1)"><mat-icon>chevron_right</mat-icon></button>
+                            </div>
+                        </div>
+                        <div class="month-grid" role="group" aria-label="Месяцы">
+                            @for (month of months; track $index) {
+                                <button type="button" [class.selected]="selectedMonth === monthKey($index)"
+                                    [attr.aria-pressed]="selectedMonth === monthKey($index)" [attr.aria-label]="monthNames[$index] + ' ' + pickerYear()"
+                                    [attr.cdkFocusInitial]="initialMonth === $index ? '' : null"
+                                    (click)="selectMonth(monthKey($index))">{{ month }}</button>
+                            }
+                        </div>
+                        <div class="month-popover-footer"><button type="button" (click)="selectCurrentMonth()"><mat-icon>today</mat-icon>Текущий месяц</button></div>
+                    </div>
+                </ng-template>
+                <div class="date-range">
+                    <mat-form-field>
+                        <mat-label>Начало</mat-label>
+                            <input matInput  [matDatepicker]="pickerStart" [formControl]="startDateFormControl" placeholder="Начало">
+                        <mat-datepicker-toggle matIconSuffix [for]="pickerStart"></mat-datepicker-toggle>
+                        <mat-datepicker #pickerStart></mat-datepicker>
+                    </mat-form-field>
+                    <mat-form-field>
+                        <mat-label>Конец</mat-label>
+                            <input matInput  [matDatepicker]="pickerEnd" [formControl]="endDateFormControl" placeholder="Конец">
+                        <mat-datepicker-toggle matIconSuffix [for]="pickerEnd"></mat-datepicker-toggle>
+                        <mat-datepicker #pickerEnd></mat-datepicker>
+                    </mat-form-field>
+                </div>
+                <button class="build-report" mat-flat-button color="primary" [disabled]="invalidPeriod" (click)="onRecalculate()">Построить</button>
+            </div>
+            <div class="tabs">
+                <mat-tab-group animationDuration="0">
+                    <mat-tab label="Абонементы и разовые">
+                        <ng-template matTabContent>
+                            <app-payments-report [dateRange]="dateRange()"></app-payments-report>
+                        </ng-template>
+                    </mat-tab>
+                    <mat-tab label="Дежурства">
+                        <ng-template matTabContent>
+                            <app-duty-report
+                                [dateRange]="dateRange()">
+                            </app-duty-report>
+                        </ng-template>
+                    </mat-tab>
+                    <mat-tab label="Тренеры">
+                        <ng-template matTabContent>
+                            <app-coach-report
+                                [dateRange]="dateRange()">
+                            </app-coach-report>
+                        </ng-template>
+                    </mat-tab>
+                </mat-tab-group>
+            </div>
+        </div>
+    </div>
+</app-page>

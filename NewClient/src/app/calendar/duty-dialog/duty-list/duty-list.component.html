@@ -1,0 +1,13 @@
+<div class="duty-list" role="radiogroup" aria-label="Кто дежурит">
+    @for(duty of DutyList; track duty.name) {
+        <label class="duty-option">
+            <input type="radio" name="duty-person" [value]="duty.name"
+                [checked]="currentDuty()?.name === duty.name" (change)="currentDuty.set(duty)">
+            <span class="duty-card">
+                <span class="duty-avatar" [style.background-color]="duty.color" aria-hidden="true">{{ duty.name.slice(0, 1) }}</span>
+                <span class="duty-name">{{ duty.name }}</span>
+                <span class="selection-mark" aria-hidden="true"></span>
+            </span>
+        </label>
+    }
+</div>

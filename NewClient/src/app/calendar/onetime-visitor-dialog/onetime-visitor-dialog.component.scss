@@ -1,0 +1,28 @@
+.onetime-visitors-dialog{
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    .onetime-visitors-dialog-content{
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        min-width: 0;
+        
+        .add-client{
+            app-add-client { display: block; width: 100%; }
+        }
+
+        .visitors-list{
+            display: grid;
+            gap: 12px;
+            min-width: 0;
+        }
+    }
+    .actions{
+        display: flex;
+        justify-content: flex-end;
+    }
+}
+
+:host ::ng-deep .add-client mat-form-field { width: 100%; }

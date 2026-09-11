@@ -1,0 +1,19 @@
+.participants-dialog-content {
+    gap: 16px;
+    display: flex;
+    flex-direction: column;
+
+    min-width: 0;
+
+    .attendies-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        min-width: 0;
+    }
+}
+
+.actions {
+    display: flex;
+    justify-content: flex-end;
+}

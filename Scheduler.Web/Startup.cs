@@ -25,7 +25,6 @@ public class Startup
             .AddWebApi()
             .AddRepositories()
             .ConfigureAuth(this.Configuration);
-        AppContext.SetSwitch("System.Runtime.Serialization.EnableUnsafeBinaryFormatterSerialization", true);
     }
 
     public void Configure(IApplicationBuilder app)

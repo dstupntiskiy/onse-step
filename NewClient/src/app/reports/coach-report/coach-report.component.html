@@ -1,0 +1,27 @@
+<div class="report-content">
+  <div class="report-heading">
+    <h2>Занятия и выплаты тренерам</h2>
+    <span class="period">{{ dateRange().startDate | date:'dd.MM.yyyy' }} — {{ dateRange().endDate | date:'dd.MM.yyyy' }}</span>
+  </div>
+  @if (loading()) {
+    <div class="report-state" role="status">Загружаем отчёт…</div>
+  } @else if (failed()) {
+    <div class="report-state" role="alert">
+      <p>Не удалось загрузить отчёт по тренерам</p>
+      <button mat-stroked-button (click)="retry()">Повторить</button>
+    </div>
+  } @else {
+    <div class="summary-grid">
+      <div class="summary-card accent"><span>Всего к выплате</span><strong>{{ totalSalary() | number:'1.0-2' }} <small>RSD</small></strong></div>
+      <div class="summary-card"><span>Занятий у тренеров</span><strong>{{ totalEvents() | number }}</strong></div>
+      <div class="summary-card"><span>Тренеров в отчёте</span><strong>{{ coachesWithEvents().length | number }}</strong></div>
+    </div>
+    <div class="coach-items-list">
+      @for (item of coachesWithEvents(); track $index) {
+        <app-coach-report-item [item]="item"></app-coach-report-item>
+      } @empty {
+        <div class="report-state"><strong>За этот период занятий нет</strong><p>Выберите другой месяц или измените даты отчёта.</p></div>
+      }
+    </div>
+  }
+</div>

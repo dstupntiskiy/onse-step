@@ -1,0 +1,17 @@
+@use '../report-layout';
+.duties-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; align-items: start; }
+.duty-card { padding: 20px; border: 1px solid var(--line); border-radius: 10px; min-width: 0; }
+.duty-heading, .person { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.duty-heading { justify-content: space-between; }
+.avatar { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; flex-shrink: 0; background: #e9f5f3; color: #287c70; font-size: 18px; }
+h3 { font-size: 14px; font-weight: 600; margin: 0; overflow-wrap: anywhere; }
+.hours { flex-shrink: 0; font-size: 22px; color: #285c45; font-variant-numeric: tabular-nums; }
+.hours small { font-size: 12px; font-weight: 500; }
+.hours-track { height: 6px; margin: 18px 0; background: #eff5ef; border-radius: 4px; overflow: hidden; }
+.hours-track > div { background: #2bb3ba; height: 100%; border-radius: inherit; }
+summary { cursor: pointer; color: #536d60; font-size: 12px; padding: 4px 0; }
+summary span { margin-left: 6px; background: #edf5ef; padding: 2px 7px; border-radius: 4px; }
+.duty-details { list-style: none; margin: 12px 0 0; padding: 0; }
+.duty-details li { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 12px; padding: 11px 0; border-top: 1px solid var(--line); font-size: 12px; color: #536d60; font-variant-numeric: tabular-nums; }
+.duty-details strong { font-weight: 500; color: var(--ink); }
+@media (max-width: 760px) { .duties-list { grid-template-columns: 1fr; } .duty-card { padding: 16px; } }

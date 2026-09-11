@@ -1,0 +1,38 @@
+<article class="coach-card">
+  <div class="coach-heading">
+    <div class="person">
+      <span class="avatar" aria-hidden="true">{{ (item().coach?.name ?? 'Т').slice(0, 1) }}</span>
+      <div><h3>{{ item().coach?.name ?? 'Нет тренера' }}</h3><span class="event-count">Занятий: <strong>{{ item().totalEvents | number }}</strong></span></div>
+    </div>
+    <div class="salary"><span>К выплате</span><strong>{{ item().totalSalary | number:'1.0-2' }} <small>RSD</small></strong></div>
+    <button mat-stroked-button color="primary" class="show-more-button" [attr.aria-expanded]="showDetails" (click)="toggleDetails()">
+      <mat-icon>{{ showDetails ? 'expand_less' : 'expand_more' }}</mat-icon>
+      {{ showDetails ? 'Скрыть детали' : 'Показать детали' }}
+    </button>
+  </div>
+  @if (showDetails) {
+    <div class="event-items">
+      @if (events().length) {
+        <table>
+          <caption>Детали занятий · {{ item().coach?.name ?? 'Нет тренера' }}<span>Все суммы в RSD</span></caption>
+          <thead><tr>
+            <th scope="col">Занятие</th>
+            <th scope="col">Абонементы</th>
+            <th scope="col">Разовые</th>
+            <th scope="col">Участников</th>
+            <th scope="col">Базовая ЗП</th>
+            <th scope="col">Бонусная ЗП</th>
+            <th scope="col">Итого</th>
+          </tr></thead>
+          <tbody>
+            @for (event of events(); track $index) {
+              <tr app-event-report-item [item]="event"></tr>
+            }
+          </tbody>
+        </table>
+      } @else {
+        <p class="empty-details">За этот период нет подробностей о занятиях.</p>
+      }
+    </div>
+  }
+</article>
