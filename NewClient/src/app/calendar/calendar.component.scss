@@ -1,5 +1,4 @@
 :host { display: block; }
-.time-calendar { padding-bottom: var(--initial-scroll-padding, 0px); }
 .schedule { --resize-transition: 280ms cubic-bezier(.2,.8,.2,1); }
 .eyebrow { color: #708782; font-size: 9px; font-weight: 600; letter-spacing: 1.8px; }
 .schedule-layout { display: grid; grid-template-columns: minmax(0,1fr); gap: 22px; }

@@ -59,8 +59,7 @@ export class CalendarComponent {
       if (!scroll || this.loading() || scroll === initializedScroll) return;
       // Initialize after loading; later refreshes and clock updates preserve manual scrolling.
       const offset = Math.max(0, new Date().getHours() - this.firstHour) * 76;
-      // Leave enough room below late hours to align them with the top of the viewport.
-      scroll.style.setProperty('--initial-scroll-padding', `${Math.max(0, offset + scroll.clientHeight - scroll.scrollHeight)}px`);
+      // The browser clamps late hours to the end of the grid without extra blank space.
       scroll.scrollTop = offset;
       initializedScroll = scroll;
     }});
