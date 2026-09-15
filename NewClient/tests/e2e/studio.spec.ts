@@ -450,6 +450,8 @@ test('320px login and all directory pages remain usable on mobile', async ({page
   await page.evaluate(()=>localStorage.setItem('jwtToken','isolated-test-token'));
   for(const [route, title] of [['/', 'Расписание'], ['/clients', 'Клиенты'], ['/groups', 'Группы'], ['/coaches', 'Тренеры'], ['/styles', 'Направления'], ['/reports', 'Отчёты']]) {
     await page.goto(route); await expect(page.locator('.topbar h1')).toHaveText(title);
+    await expect(page.locator('.topbar')).toBeHidden();
+    await expect(page.getByRole('button', {name:'Открыть меню',exact:true})).toHaveCount(0);
     await expect(page.locator('app-page-header, .page-heading')).toHaveCount(0);
     expect(await page.evaluate(()=>document.documentElement.scrollWidth <= innerWidth),route).toBe(true);
     if (route === '/') {
@@ -569,7 +571,8 @@ for (const viewport of [{width:390,height:844}, {width:320,height:568}, {width:7
     await page.setViewportSize(viewport); await mockApi(page); await page.goto('/');
     await expect(page.locator('.calendar-event')).toHaveCount(5);
     const grid = page.locator('.time-scroll');
-    const controls = page.locator('.topbar, .calendar-top, .calendar-toolbar, .mobile-nav');
+    await expect(page.locator('.topbar')).toBeHidden();
+    const controls = page.locator('.calendar-top, .calendar-toolbar, .mobile-nav');
     const before = await controls.evaluateAll(elements => elements.map(el => el.getBoundingClientRect().y));
     const assertFrame = async () => {
       expect(await page.evaluate(() => document.documentElement.scrollHeight <= innerHeight)).toBe(true);
@@ -587,12 +590,25 @@ for (const viewport of [{width:390,height:844}, {width:320,height:568}, {width:7
     await assertFrame();
     await grid.evaluate(el => el.scrollTop = el.scrollHeight);
     await expect(page.locator('.time-end')).toBeInViewport();
-    await page.locator('.topbar').hover(); await page.mouse.wheel(0, 1000);
+    await page.locator('.calendar-top').hover(); await page.mouse.wheel(0, 1000);
     await assertFrame();
     await page.getByRole('button', {name:'Выбрать дату',exact:true}).click();
     await expect(page.getByRole('dialog', {name:'Выбор даты',exact:true})).toBeVisible();
     await page.keyboard.press('Escape');
     await page.screenshot({path:'test-results/calendar-single-scroll-' + viewport.width + '.png', animations:'disabled'});
+    await page.getByRole('button', {name:'Ещё',exact:true}).click();
+    const sidebar = page.locator('.sidebar');
+    await expect(sidebar).toHaveClass(/open/);
+    await expect(sidebar.locator('.nav-label')).toBeHidden();
+    expect(await sidebar.evaluate(el => el.scrollHeight <= el.clientHeight)).toBe(true);
+    const bottomNav = await page.locator('.mobile-nav').boundingBox();
+    for (const item of await sidebar.locator('nav a, .profile').all()) {
+      await expect(item).toBeInViewport({ratio:1});
+      const box = await item.boundingBox();
+      expect(box!.y + box!.height).toBeLessThanOrEqual(bottomNav!.y);
+    }
+    await page.screenshot({path:'test-results/mobile-menu-' + viewport.width + '.png', animations:'disabled'});
+    await page.getByRole('button', {name:'Ещё',exact:true}).click();
     await page.locator('.mobile-nav').getByRole('link', {name:'Клиенты',exact:true}).click();
     await expect(page.locator('app-client-card')).toHaveCount(2);
     await expect(page.locator('app-root')).not.toHaveClass(/calendar-page/);
