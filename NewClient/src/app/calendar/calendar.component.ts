@@ -51,7 +51,6 @@ export class CalendarComponent {
   readonly hours = computed(() => Array.from({length: this.lastHour - this.firstHour}, (_, i) => i + this.firstHour));
   readonly slots = computed(() => Array.from({length: this.hours().length * 2}, (_, i) => this.firstHour + i / 2));
   readonly columns = computed(() => this.days().map(day => ({day, items: layoutScheduleDay(this.sortedEntries(), day, this.firstHour, this.lastHour, this.mode())})));
-  readonly next = computed(() => this.focusedEntries().find(e => e.end > this.now()));
   constructor() {
     let initializedScroll: HTMLDivElement | undefined;
     afterRenderEffect({ write: () => {

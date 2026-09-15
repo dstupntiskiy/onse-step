@@ -1,6 +1,5 @@
 :host { display: block; }
 .schedule { --resize-transition: 280ms cubic-bezier(.2,.8,.2,1); }
-.eyebrow { color: #708782; font-size: 9px; font-weight: 600; letter-spacing: 1.8px; }
 .schedule-layout { display: grid; grid-template-columns: minmax(0,1fr); gap: 22px; }
 .calendar-panel { background: white; border: 1px solid var(--line); border-radius: 12px; min-width: 0; overflow: hidden; }
 .calendar-top { padding: 0 21px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); height: 55px; }
@@ -26,8 +25,6 @@
 .mini-header { display: flex; align-items: center; gap: 4px; margin-bottom: 16px; }.mini-header strong { flex: 1; font-size: 12px; text-transform: capitalize; }.mini-header .icon-button { border: 0; }
 .mini-grid { display: grid; grid-template-columns: repeat(7,minmax(0,1fr)); gap: 4px 0; text-align: center; justify-items: center; }.mini-grid > span { font-size: 9px; color: #8a9b93; padding-bottom: 7px; }.mini-grid button { width: 32px; height: 32px; padding: 0; border: 0; background: none; border-radius: 50%; font-size: 11px; color: #52685d; }.mini-grid button:hover { background: #e7f4ee; }.mini-grid .muted { color: #a3b2a9; }.mini-grid .selected, .mini-grid .selected:hover { background: #2bb3ba; color: white; }.today-text { color: #168b83 !important; font-weight: 600; }.mini-grid .selected.today-text { color: white !important; }
 .mini-footer { display: flex; gap: 8px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); }.mini-footer .jump-date { flex: 1; min-width: 0; max-width: none; }.mini-footer .quiet-button { padding-inline: 10px; }
-.up-next { display: none; align-items: center; gap: 28px; padding: 18px 20px; border: 1px solid var(--line); border-radius: 12px; background: white; }.up-next p { font-size: 11px; color: #849287; margin: 8px 0 0; }.up-next strong { display: block; font-size: 14px; }.up-next small { display: block; color: var(--muted); font-size: 11px; margin-top: 7px; }.up-next button { margin-left: auto; }
-@media(min-width: 1450px) { .up-next { display: flex; } }
 @media(max-width: 1100px) { .calendar-caption { display: none; }.date-controls h2 { font-size: 14px; } }
 @media(max-width: 760px) {
  .calendar-top { height: 44px; padding-inline: 12px; }.calendar-toolbar { padding: 10px 12px; gap: 6px; flex-wrap: nowrap; }.date-controls { display: contents; }.date-controls h2 { display: none; }.calendar-view-controls { flex: 1; min-width: 0; }.date-picker-button { width: 100%; padding-inline: 6px; gap: 5px; font-size: 10px; }.calendar-footer { padding: 12px; font-size: 9px; }.calendar-footer span:last-child { display: none; }.time-scroll { max-height: 620px; }.day-header { height: 52px; padding-bottom: 0; }.day-count { position: static; margin-left: 8px; }.single-day .calendar-event { padding: 10px 14px; }.single-day .calendar-event strong { font-size: 13px; }.single-day .event-time, .single-day .event-coach { font-size: 11px; }.empty-inline { padding: 10px 12px; line-height: 1.6; }
@@ -37,14 +34,12 @@
 
 .time-end { height: 24px; border-top: 1px solid var(--line); color: #87968f; font-size: 10px; padding-top: 5px; }.time-end span { display: block; width: 55px; text-align: center; }
 
-@media (max-width: 760px) {
-  :host, .schedule, .schedule-layout { height: 100%; min-height: 0; }
-  .schedule-layout { display: flex; flex-direction: column; gap: 0; }
-  .calendar-panel { flex: 1; min-height: 0; display: flex; flex-direction: column; }
-  .calendar-panel > * { flex-shrink: 0; }
-  .time-scroll { flex: 1; min-height: 0; max-height: none; }
-  .error-state { flex: 1; min-height: 0; overflow-y: auto; }
-}
+:host, .schedule, .schedule-layout { height: 100%; min-height: 0; }
+.schedule-layout { display: flex; flex-direction: column; gap: 0; }
+.calendar-panel { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.calendar-panel > * { flex-shrink: 0; }
+.time-scroll { flex: 1; min-height: 0; max-height: none; }
+.error-state { flex: 1; min-height: 0; overflow-y: auto; }
 .calendar-toolbar .date-picker-button { min-height: var(--control-action-height); }
 @media (max-width: 760px), (pointer: coarse) {
   .calendar-top { height: 52px; }

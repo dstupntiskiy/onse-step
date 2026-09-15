@@ -1,5 +1,5 @@
 import { AsyncPipe } from '@angular/common';
-import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, computed, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { filter, of, switchMap, catchError, distinctUntilChanged } from 'rxjs';
@@ -23,6 +23,7 @@ export class AppComponent {
   readonly pageTitle = signal('');
   readonly calendarPage = signal(false);
   readonly admin = signal(false);
+  readonly currentUrl = signal(this.router.url);
   readonly today = new Intl.DateTimeFormat('ru', { day: 'numeric', month: 'long', weekday: 'long' }).format(new Date());
   readonly navigation = [
     { name: 'Расписание', link: '/', icon: 'calendar_today' },
@@ -31,8 +32,18 @@ export class AppComponent {
     { name: 'Тренеры', link: '/coaches', icon: 'sports_gymnastics' },
     { name: 'Направления', link: '/styles', icon: 'auto_awesome' }
   ];
+  readonly reportNavigation = { name: 'Отчёты', link: '/reports', icon: 'bar_chart' };
+  readonly mobileNavigation = computed(() => {
+    const path = this.currentUrl().split(/[?#]/)[0];
+    const available = this.admin() ? [...this.navigation, this.reportNavigation] : this.navigation;
+    const active = available.find(item => item.link === path || (item.link !== '/' && path.startsWith(`${item.link}/`)));
+    const primary = this.navigation.slice(0, 3);
+    if (active && !primary.includes(active)) primary[2] = active;
+    return primary;
+  });
   constructor() {
-    this.router.events.pipe(filter(e => e instanceof NavigationEnd), takeUntilDestroyed()).subscribe(() => {
+    this.router.events.pipe(filter(e => e instanceof NavigationEnd), takeUntilDestroyed()).subscribe(event => {
+      this.currentUrl.set(event.urlAfterRedirects);
       let route = this.router.routerState.snapshot.root;
       while (route.firstChild) route = route.firstChild;
       this.pageTitle.set(route.data['pageTitle'] ?? 'One Step');

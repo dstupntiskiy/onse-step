@@ -47,7 +47,6 @@
       }
       <footer class="calendar-footer"><span><i></i>{{sortedEntries().length}} событий в расписании</span><span>Время браузера · {{now() | date:'ZZZZ'}}</span></footer>
     </div>
-    @if(next(); as entry) { <aside class="up-next"><div><span class="eyebrow">БЛИЖАЙШЕЕ В ПЕРИОДЕ</span><p>{{entry.start | date:'d MMM · HH:mm'}}</p></div><div><strong>{{entry.title}}</strong><small>{{entry.coach || typeName(entry)}}</small></div><button class="quiet-button" (click)="open(entry)">Открыть событие <span>↗</span></button></aside> }
   </div>
 </section>
 

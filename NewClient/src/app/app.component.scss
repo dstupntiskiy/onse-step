@@ -63,9 +63,11 @@ main { padding: 30px 32px; }
   .sidebar nav { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; }
 }
 
+:host(.calendar-page) { height: 100dvh; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+:host(.calendar-page) .app-workspace { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+:host(.calendar-page) .topbar { flex-shrink: 0; }
+:host(.calendar-page) main { flex: 1; min-height: 0; overflow: hidden; }
 @media (max-width: 760px) {
-  :host(.calendar-page) { height: 100dvh; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
-  :host(.calendar-page) .app-workspace { flex: 1; min-height: 0; display: flex; flex-direction: column; }
-  :host(.calendar-page) main { flex: 1; min-height: 0; overflow: hidden; padding: 10px 8px; }
+  :host(.calendar-page) main { padding: 10px 8px; }
   :host(.calendar-page) .mobile-nav { position: static; flex-shrink: 0; }
 }
