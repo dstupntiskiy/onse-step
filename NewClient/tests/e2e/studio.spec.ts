@@ -145,6 +145,134 @@ async function expectDrawer(page: Page, dialog: Locator) {
   expect(await dialog.locator('.mat-mdc-dialog-surface').evaluate(el => el.scrollTop)).toBe(0);
 }
 
+async function expectLocalDrawerLoading(page: Page, dialog: Locator) {
+  const overlay = dialog.locator('app-spinner .overlay').last();
+  await expect(overlay).toBeVisible();
+  await expect(overlay).toHaveCSS('position', 'absolute');
+  await expect(page.locator('app-root > app-spinner .overlay')).toHaveCount(0);
+  const content = await dialog.locator('.dialog-content').boundingBox();
+  const bounds = await overlay.boundingBox();
+  expect(bounds!.x).toBeGreaterThanOrEqual(content!.x);
+  expect(bounds!.y).toBeGreaterThanOrEqual(content!.y);
+  expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(content!.x + content!.width + 1);
+  expect(bounds!.y + bounds!.height).toBeLessThanOrEqual(content!.y + content!.height + 1);
+  await expect(dialog.getByRole('button', {name:'Закрыть окно', exact:true})).toBeEnabled();
+}
+
+for (const width of [1536, 320]) {
+  for (const kind of ['event', 'duty']) {
+    test(`drawer initial loading stays local for ${kind} at ${width}px`, async ({page}) => {
+      await page.setViewportSize({width, height:900});
+      await mockApi(page);
+      let release!: () => void;
+      const pending = new Promise<void>(resolve => release = resolve);
+      const endpoint = kind === 'event' ? '**/api/Event/GetEventById/*' : '**/api/Event/GetEventDutyById/*';
+      await page.route(endpoint, async route => {
+        await pending;
+        await route.fallback();
+      });
+      await page.goto('/');
+      if (kind === 'duty') {
+        await page.getByRole('button', {name:'Дежурства', exact:true}).click();
+      }
+      await page.locator(`.calendar-event[data-kind="${kind}"]`).first().click();
+      const dialog = page.getByRole('dialog');
+      await expect(dialog).not.toHaveClass(/mdc-dialog--opening/);
+      try {
+        await expectLocalDrawerLoading(page, dialog);
+        // The header can dismiss the drawer even while its request is pending.
+        await dialog.getByRole('button', {name:'Закрыть окно', exact:true}).click();
+        await expect(dialog).toHaveCount(0);
+      } finally {
+        release();
+      }
+      await expect(page.locator('app-root > app-spinner .overlay')).toHaveCount(0);
+    });
+  }
+}
+
+test('drawer membership list keeps its local loading indicator visible', async ({page}) => {
+  await page.setViewportSize({width:1536, height:900});
+  await mockApi(page);
+  let release!: () => void;
+  const pending = new Promise<void>(resolve => release = resolve);
+  await page.route(/\/api\/membership\/GetMebershipsByClient/i, async route => {
+    await pending;
+    await route.fallback();
+  });
+  await page.goto('/clients');
+  await page.locator('app-client-card').first().click();
+  const dialog = page.getByRole('dialog');
+  await expect(dialog).not.toHaveClass(/mdc-dialog--opening/);
+  const list = dialog.locator('.memberships-list');
+  try {
+    await expect(list.locator('app-spinner .overlay')).toBeVisible();
+    await expectLocalDrawerLoading(page, dialog);
+    expect(await list.locator('app-spinner .overlay').boundingBox()).toEqual(await list.boundingBox());
+  } finally {
+    release();
+  }
+  await expect(list.locator('app-spinner .overlay')).toHaveCount(0);
+  await expect(list.locator('app-membership')).toHaveCount(1);
+});
+
+test('drawer coach saving uses the shared local indicator', async ({page}) => {
+  await page.setViewportSize({width:1536, height:900});
+  await mockApi(page);
+  await page.goto('/coaches');
+  await page.locator('app-coach-card').first().click();
+  const dialog = page.getByRole('dialog');
+  await expect(dialog.getByRole('textbox', {name:'Имя', exact:true})).toHaveValue(coach.name);
+  let release!: () => void;
+  const pending = new Promise<void>(resolve => release = resolve);
+  await page.route('**/api/Coach/', async route => {
+    await pending;
+    await route.fulfill({json:coach});
+  });
+  await dialog.getByRole('button', {name:'Сохранить', exact:true}).click();
+  try {
+    await expectLocalDrawerLoading(page, dialog);
+  } finally {
+    release();
+  }
+  await expect(dialog).toHaveCount(0);
+  await expect(page.locator('app-root > app-spinner .overlay')).toHaveCount(0);
+});
+
+test('drawer loading is isolated during nested group saving and clears after errors', async ({page}) => {
+  await page.setViewportSize({width:1536, height:900});
+  await mockApi(page);
+  await page.goto('/');
+  await page.locator('.calendar-event[data-kind="event"]').first().click();
+  const parent = page.getByRole('dialog').first();
+  await parent.getByRole('button', {name:'Редактировать группу', exact:true}).click();
+  const child = page.getByRole('dialog').last();
+  await expect(child.locator('app-group-dialog')).toBeVisible();
+  await expect(child.locator('app-spinner .overlay')).toHaveCount(0);
+
+  let release!: () => void;
+  const pending = new Promise<void>(resolve => release = resolve);
+  await page.route('**/api/Group/', async route => {
+    await pending;
+    await route.fulfill({status:500, json:{message:'Тестовая ошибка сохранения'}});
+  });
+  await child.getByRole('button', {name:'Сохранить', exact:true}).click();
+  try {
+    await expectLocalDrawerLoading(page, child);
+    await expect(parent.locator('app-spinner .overlay')).toHaveCount(0);
+  } finally {
+    release();
+  }
+  await expect(page.getByText('Тестовая ошибка сохранения', {exact:true})).toBeVisible();
+  await expect(child.locator('app-spinner .overlay')).toHaveCount(0);
+  await expect(child.getByRole('button', {name:'Сохранить', exact:true})).toBeEnabled();
+  await page.route('**/api/Group/', route => route.fulfill({json:group}));
+  await child.getByRole('button', {name:'Сохранить', exact:true}).click();
+  await expect(page.getByRole('dialog')).toHaveCount(1);
+  await expect(parent.getByRole('button', {name:'Группа: 0 / 0', exact:true})).toBeEnabled();
+  await expect(page.locator('app-root > app-spinner .overlay')).toHaveCount(0);
+});
+
 for (const width of [1536, 320]) {
   for (const editing of [false, true]) {
     test(`create group from ${editing ? 'existing' : 'new'} event at ${width}px`, async ({page}) => {

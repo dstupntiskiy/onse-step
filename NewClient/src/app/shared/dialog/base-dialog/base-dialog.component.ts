@@ -1,5 +1,7 @@
-import { Component, ComponentRef, Inject, OnInit, Signal, ViewChild, ViewContainerRef, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ComponentRef, Inject, OnInit, Signal, ViewChild, ViewContainerRef, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { SpinnerComponent } from '../../spinner/spinner.component';
+import { SpinnerService } from '../../spinner/spinner.service';
 
 export interface DynamicComponent {
   data: Signal<any>
@@ -9,12 +11,14 @@ export interface DynamicComponent {
 @Component({
   selector: 'app-base-dialog',
   standalone: true,
-  imports: [],
+  imports: [SpinnerComponent],
+  providers: [SpinnerService],
   templateUrl: './base-dialog.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './base-dialog.component.scss'
 })
 export class BaseDialogComponent implements OnInit {
+  readonly spinner = inject(SpinnerService);
   @ViewChild('dynamicComponent', { read: ViewContainerRef, static: true }) dynamicComponent!: ViewContainerRef;
   componentRef: ComponentRef<any>
   title: Signal<string | undefined>

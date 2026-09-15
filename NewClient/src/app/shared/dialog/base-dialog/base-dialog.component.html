@@ -3,5 +3,8 @@
     <h1>{{title() || 'One Step'}}</h1>
     <button type="button" class="icon-button" (click)="close()" aria-label="Закрыть окно">×</button>
   </div>
-  <div class="dialog-content"><ng-template #dynamicComponent></ng-template></div>
+  <div class="dialog-content" [attr.aria-busy]="spinner.loading$$()">
+    <ng-template #dynamicComponent></ng-template>
+    <app-spinner [isLoading$$]="spinner.loading$$()" />
+  </div>
 </div>

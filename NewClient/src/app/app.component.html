@@ -24,6 +24,6 @@
     <button (click)="menuOpen.set(!menuOpen())" [attr.aria-expanded]="menuOpen()"><mat-icon>menu</mat-icon>Ещё</button>
   </nav>
 } @else { <router-outlet /> }
-<app-spinner [isLoading$$]="spinner.loading$$()" />
+<app-spinner scope="global" [isLoading$$]="spinner.loading$$()" />
 
 

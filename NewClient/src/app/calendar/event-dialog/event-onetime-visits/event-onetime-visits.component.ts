@@ -1,7 +1,7 @@
 import { Component, effect, inject, input, signal, ChangeDetectionStrategy } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { EventType } from '../../event/event.model';
-import { SpinnerComponent } from '../../../shared/spinner/spinner.component';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { DialogService } from '../../../services/dialog.service';
 import { OnetimeVisitorDialogComponent } from '../../onetime-visitor-dialog/onetime-visitor-dialog.component';
 import { StyleModel } from '../../../shared/models/style-model';
@@ -13,7 +13,7 @@ import { finalize } from 'rxjs';
   standalone: true,
   imports: [
     MatButtonModule,
-    SpinnerComponent
+    MatProgressSpinnerModule
   ],
   templateUrl: './event-onetime-visits.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,

@@ -5,7 +5,7 @@ import { GroupService } from '../../../groups/group.service';
 import { ParticipantsDialogComponent } from '../../participants-dialog/participants-dialog.component';
 import { DialogService } from '../../../services/dialog.service';
 import { Group } from '../../../shared/models/group-model';
-import { SpinnerComponent } from '../../../shared/spinner/spinner.component';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { finalize } from 'rxjs';
 
 @Component({
@@ -13,7 +13,7 @@ import { finalize } from 'rxjs';
   standalone: true,
   imports: [
     MatButtonModule,
-    SpinnerComponent
+    MatProgressSpinnerModule
   ],
   templateUrl: './event-participants.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,

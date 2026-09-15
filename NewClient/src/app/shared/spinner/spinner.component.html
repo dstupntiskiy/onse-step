@@ -1,8 +1,8 @@
 @if(isLoading$$())
 {
-    <div class="overlay">
+    <div class="overlay" [class.global]="scope() === 'global'">
         <div class="spinner">
-            <mat-spinner [diameter]="diameter()"></mat-spinner>
+            <mat-spinner [diameter]="diameter()" aria-label="Загрузка"></mat-spinner>
         </div>
     </div>
 }

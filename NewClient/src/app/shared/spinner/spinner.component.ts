@@ -14,6 +14,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 })
 export class SpinnerComponent {
   isLoading$$ = input.required<boolean>()
+  scope = input<'local' | 'global'>('local')
   size = input<'small' | 'large'>('large')
   diameter = computed<number>(() => this.size() == 'small' ? 30 : 50)
 }

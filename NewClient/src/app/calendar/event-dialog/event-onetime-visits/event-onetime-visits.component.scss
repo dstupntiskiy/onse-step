@@ -1,3 +1,13 @@
-.event-onetime-visits{
+.button-content {
     position: relative;
+    display: inline-grid;
+    place-items: center;
+
+    .loading {
+        opacity: 0;
+    }
+
+    mat-spinner {
+        position: absolute;
+    }
 }

@@ -29,9 +29,6 @@ export interface CoachDialogData {
     MatSelectModule,
     MatSlideToggleModule
   ],
-  providers: [
-    SpinnerService
-  ],
   templateUrl: './coach-dialog.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './coach-dialog.component.scss'
