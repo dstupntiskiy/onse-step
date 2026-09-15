@@ -53,10 +53,16 @@ export class CalendarComponent {
   readonly columns = computed(() => this.days().map(day => ({day, items: layoutScheduleDay(this.sortedEntries(), day, this.firstHour, this.lastHour, this.mode())})));
   readonly next = computed(() => this.focusedEntries().find(e => e.end > this.now()));
   constructor() {
+    let initializedScroll: HTMLDivElement | undefined;
     afterRenderEffect({ write: () => {
       const scroll = this.calendarScroll()?.nativeElement;
-      // Initialize each new grid once; data refreshes preserve the user's scroll position.
-      if (scroll) scroll.scrollTop = (9 - this.firstHour) * 76;
+      if (!scroll || this.loading() || scroll === initializedScroll) return;
+      // Initialize after loading; later refreshes and clock updates preserve manual scrolling.
+      const offset = Math.max(0, new Date().getHours() - this.firstHour) * 76;
+      // Leave enough room below late hours to align them with the top of the viewport.
+      scroll.style.setProperty('--initial-scroll-padding', `${Math.max(0, offset + scroll.clientHeight - scroll.scrollHeight)}px`);
+      scroll.scrollTop = offset;
+      initializedScroll = scroll;
     }});
     const updateView = (event: MediaQueryListEvent) => this.responsiveView.set(event.matches ? 'day' : 'week');
     this.mobileViewport.addEventListener('change', updateView);

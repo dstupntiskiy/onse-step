@@ -547,10 +547,10 @@ for (const width of [1536, 390]) {
     await expect(page.locator('.hour-label').first()).toHaveText('08:00');
     await expect(page.locator('.hour-label').last()).toHaveText('23:00');
     await expect(page.locator('.day-column').first().locator('.time-slot')).toHaveCount(32);
-    await expect.poll(() => scroll.evaluate(el => el.scrollTop)).toBe(76);
+    await expect.poll(() => scroll.evaluate(el => el.scrollTop)).toBe(152);
     const header = await page.locator('.day-headers').boundingBox();
-    const nine = await page.locator('.hour-label').filter({hasText:'09:00'}).boundingBox();
-    expect(Math.abs(nine!.y - header!.y - header!.height)).toBeLessThan(2);
+    const ten = await page.locator('.hour-label').filter({hasText:'10:00'}).boundingBox();
+    expect(Math.abs(ten!.y - header!.y - header!.height)).toBeLessThan(2);
     await scroll.evaluate(el => el.scrollTop = 0);
     await page.getByRole('button', {name:'Следующий период',exact:true}).click();
     await expect(page.locator('.calendar-status')).toHaveCount(0);
@@ -581,9 +581,9 @@ for (const viewport of [{width:390,height:844}, {width:320,height:568}, {width:7
       const nav = await page.locator('.mobile-nav').boundingBox();
       expect(panel!.y + panel!.height).toBeLessThanOrEqual(nav!.y);
     };
-    await expect.poll(() => grid.evaluate(el => el.scrollTop)).toBe(76);
+    await expect.poll(() => grid.evaluate(el => el.scrollTop)).toBe(152);
     await grid.hover(); await page.mouse.wheel(0, 2000);
-    await expect.poll(() => grid.evaluate(el => el.scrollTop)).toBeGreaterThan(76);
+    await expect.poll(() => grid.evaluate(el => el.scrollTop)).toBeGreaterThan(152);
     await assertFrame();
     await grid.evaluate(el => el.scrollTop = el.scrollHeight);
     await expect(page.locator('.time-end')).toBeInViewport();
