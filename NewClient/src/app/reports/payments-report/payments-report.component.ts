@@ -18,6 +18,7 @@ export class PaymentsReportComponent {
   private readonly reportService = inject(ReportService);
   private readonly reload = signal(0);
   readonly report = signal<PaymentsReport | null>(null);
+  readonly unlimitedCount = computed(() => this.styles().find(row => row.key === 'unlimited')?.membershipCount ?? 0);
   readonly loading = signal(true);
   readonly failed = signal(false);
   readonly styles = computed(() => [...(this.report()?.byStyle ?? [])].sort((a, b) => b.totalAmount - a.totalAmount));

@@ -64,7 +64,9 @@ for (const width of [1440, 390, 320]) {
     await page.getByRole('button', {name:'Скрыть детали'}).click();
     await expect(rows).toHaveCount(0);
     await page.getByRole('tab', {name:'Дежурства', exact:true}).click();
-    await expect(page.locator('app-duty-report .summary-card strong')).toHaveText(['8,5 ч','3','2']);
+    await expect(page.locator('app-duty-report .summary-card strong')).toHaveText(['4 675 RSD','8,5 ч','3','2']);
+    await expect(page.locator('app-duty-report .rate-note')).toHaveText('Ставка: 550 RSD/ч');
+    await expect(page.locator('.duty-card .payout strong')).toHaveText(['3 025 RSD', '1 650 RSD']);
     const card = page.locator('.duty-card').first();
     await card.locator('summary').click();
     await expect(card.locator('.duty-details li').first()).toHaveText('01.09.202617:00 — 20:00');
@@ -134,5 +136,8 @@ for (const [tab, endpoint] of [['Тренеры', coachEndpoint], ['Дежурс
     await page.getByRole('button', {name:'Повторить', exact:true}).click();
     await expect(page.locator('.report-state')).toContainText('Выберите другой месяц');
     await expect(page.getByRole('alert')).toHaveCount(0);
+    if (tab === 'Дежурства') {
+      await expect(page.locator('app-duty-report .summary-card strong')).toHaveText(['0 RSD', '0 ч', '0', '0']);
+    }
   });
 }

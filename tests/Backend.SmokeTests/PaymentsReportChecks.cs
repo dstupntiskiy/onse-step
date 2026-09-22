@@ -17,10 +17,10 @@ internal static class PaymentsReportChecks
             StartDateTime = start.AddMonths(-1), Group = new Group { Style = style }
         } };
         var rental = new OneTimeVisit { Id = Guid.NewGuid(), Event = new Event() };
-        Membership Membership(DateTime? date, decimal amount, Style? direction) => new()
+        Membership Membership(DateTime? date, decimal amount, Style? direction, bool unlimited = false) => new()
         {
             Id = Guid.NewGuid(), CreateDate = date, Amount = amount, Style = direction,
-            StartDate = start.AddMonths(2)
+            StartDate = start.AddMonths(2), Unlimited = unlimited
         };
         OneTimeVisitPayment Payment(DateTime? date, decimal amount, OneTimeVisit item) => new()
         {
@@ -29,6 +29,7 @@ internal static class PaymentsReportChecks
         var handler = new GetPaymentsReportByPeriodQueryHandler(
             new ReadOnlyRepository<Membership>([
                 Membership(start, 6000, style), Membership(end.AddTicks(-1), 9000, null),
+                Membership(start, 4000, style, unlimited: true),
                 Membership(start.AddDays(1), 0, otherStyle),
                 Membership(start.AddTicks(-1), 99999, style), Membership(end, 99999, style),
                 Membership(null, 99999, style)
@@ -40,9 +41,13 @@ internal static class PaymentsReportChecks
             ]));
         var query = new GetPaymentsReportByPeriodQuery(start, end, TimeZoneInfo.FindSystemTimeZoneById("Europe/Belgrade"));
         var report = await handler.Handle(query, default);
-        Check(report.TotalAmount == 18000 && report.MembershipAmount == 15000 && report.OnetimeAmount == 3000,
+        Check(report.TotalAmount == 22000 && report.MembershipAmount == 19000 && report.OnetimeAmount == 3000,
             "Amounts use creation/payment dates and an exclusive end boundary.");
-        Check(report.MembershipCount == 3 && report.OnetimeCount == 2, "Split payments count as one visit.");
+        Check(report.MembershipCount == 4 && report.OnetimeCount == 2, "Split payments count as one visit.");
+        var unlimited = report.ByStyle.Single(x => x.Key == "unlimited");
+        Check(unlimited.StyleId == null && unlimited.StyleName == "Безлимит" &&
+              unlimited.MembershipAmount == 13000 && unlimited.MembershipCount == 2 && unlimited.OnetimeCount == 0,
+            "Unlimited memberships with a saved direction and legacy memberships without a direction share a separate row.");
         Check(report.ByStyle.Count == 4 && report.ByStyle[0].Key == "unlimited" && report.ByStyle[2].Key == "rental",
             "Directions sort by combined amount; rental, unlimited and equal names stay separate.");
         var bachata = report.ByStyle.Single(x => x.StyleId == style.Id);

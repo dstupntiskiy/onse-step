@@ -12,10 +12,12 @@
     </div>
   } @else {
     <div class="summary-grid">
-      <div class="summary-card accent"><span>Всего часов</span><strong>{{ totalHours() | number:'1.0-2' }} <small>ч</small></strong></div>
+      <div class="summary-card accent"><span>Всего к выплате</span><strong>{{ totalPayout() | number:'1.0-2' }} <small>RSD</small></strong></div>
+      <div class="summary-card"><span>Всего часов</span><strong>{{ totalHours() | number:'1.0-2' }} <small>ч</small></strong></div>
       <div class="summary-card"><span>Дежурств за период</span><strong>{{ totalDuties() | number }}</strong></div>
       <div class="summary-card"><span>Сотрудников</span><strong>{{ eventDutys().length | number }}</strong></div>
     </div>
+    <p class="rate-note">Ставка: {{ hourlyRate | number }} RSD/ч</p>
     <div class="duties-list">
       @for (item of eventDutys(); track $index) {
         <article class="duty-card">
@@ -23,6 +25,7 @@
             <div class="person"><span class="avatar" aria-hidden="true">{{ item.name.slice(0, 1) }}</span><h3>{{ item.name }}</h3></div>
             <strong class="hours">{{ item.totalHours | number:'1.0-2' }} <small>ч</small></strong>
           </div>
+          <div class="payout"><span>К выплате</span><strong>{{ payout(item.totalHours) | number:'1.0-2' }} <small>RSD</small></strong></div>
           <div class="hours-track" aria-hidden="true"><div [style.width.%]="item.totalHours / maxHours() * 100"></div></div>
           <details>
             <summary>Дежурства <span>{{ item.eventDutyDetails.length }}</span></summary>

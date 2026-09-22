@@ -14,6 +14,7 @@
       <span><i class="dot membership"></i>Абонементы <strong>{{ data.membershipAmount | number:'1.0-2' }} RSD</strong></span>
       <span><i class="dot onetime"></i>Разовые <strong>{{ data.onetimeAmount | number:'1.0-2' }} RSD</strong></span>
     </div>
+    <p class="unlimited-note">В том числе безлимитных абонементов: <strong>{{ unlimitedCount() | number }}</strong></p>
   </section>
   <p class="period-note">По дате оформления абонемента и дате разовой оплаты</p>
 

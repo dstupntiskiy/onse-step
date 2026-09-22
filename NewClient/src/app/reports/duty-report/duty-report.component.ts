@@ -19,6 +19,8 @@ export class DutyReportComponent {
   readonly loading = signal(true);
   readonly failed = signal(false);
   readonly eventDutys = signal<EventDutyReport[]>([]);
+  readonly hourlyRate = 550;
+  readonly totalPayout = computed(() => this.eventDutys().reduce((sum, row) => sum + this.payout(row.totalHours), 0));
   readonly totalHours = computed(() => this.eventDutys().reduce((sum, row) => sum + row.totalHours, 0));
   readonly totalDuties = computed(() => this.eventDutys().reduce((sum, row) => sum + row.eventDutyDetails.length, 0));
   readonly maxHours = computed(() => Math.max(1, ...this.eventDutys().map(row => row.totalHours)));
@@ -45,4 +47,8 @@ export class DutyReportComponent {
   }
 
   retry(): void { this.reload.update(value => value + 1); }
+
+  payout(hours: number): number {
+    return Math.round(hours * this.hourlyRate * 100) / 100;
+  }
 }

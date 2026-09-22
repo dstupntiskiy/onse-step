@@ -38,9 +38,12 @@ for (const width of [1440, 390, 320]) {
     await expect(page.locator('.total-amount')).toHaveText('18 000 RSD');
     await expect(page.locator('.total-breakdown')).toContainText('15 000 RSD');
     await expect(page.locator('.total-breakdown')).toContainText('3 000 RSD');
+    await expect(page.locator('.unlimited-note')).toHaveText('В том числе безлимитных абонементов: 1');
     const panels = page.locator('app-payments-report .chart-panel');
     await expect(panels.locator('h3')).toHaveText(['Сумма, RSD по направлениям', 'Количество по направлениям', 'Сумма по датам RSD']);
     await expect(panels.nth(0).locator('.row-label > span')).toHaveText(['Безлимит', 'Bachata', 'Аренда']);
+    await expect(panels.nth(0).locator('.chart-row').filter({hasText:'Безлимит'}).locator('.row-label strong')).toHaveText('9 000');
+    await expect(panels.nth(1).locator('.chart-row').filter({hasText:'Безлимит'}).locator('.row-label strong')).toHaveText('1');
     await expect(panels.nth(1).locator('.chart-row').first()).toContainText('Абонементы: 2');
     await expect(panels.nth(1).locator('.chart-row').first()).toContainText('Разовые: 1');
     const bars = panels.nth(0).locator('.chart-row').nth(1).locator('.segment');
@@ -125,6 +128,7 @@ test('report handles failures, retry, empty periods and the entire selected fina
   fail = false;
   await page.getByRole('button', {name:'Повторить', exact:true}).click();
   await expect(page.locator('.total-amount')).toHaveText('0 RSD');
+  await expect(page.locator('.unlimited-note')).toHaveText('В том числе безлимитных абонементов: 0');
   await expect(page.locator('.empty')).toHaveCount(3);
   await page.getByRole('textbox', {name:'Начало', exact:true}).fill('09/10/2026');
   await page.getByRole('textbox', {name:'Конец', exact:true}).fill('09/10/2026');

@@ -23,8 +23,8 @@ public class GetPaymentsReportByPeriodQueryHandler(
             .Select(x => new
             {
                 x.Id, Date = x.CreateDate!.Value, x.Amount,
-                StyleId = x.Style != null ? (Guid?)x.Style.Id : null,
-                StyleName = x.Style != null ? x.Style.Name : "Безлимит"
+                StyleId = !x.Unlimited && x.Style != null ? (Guid?)x.Style.Id : null,
+                StyleName = !x.Unlimited && x.Style != null ? x.Style.Name : "Безлимит"
             }).ToList();
         cancellationToken.ThrowIfCancellationRequested();
         var payments = paymentRepository.Query()
