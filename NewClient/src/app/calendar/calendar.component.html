@@ -1,6 +1,7 @@
 <section class="schedule" [class.duty-mode]="mode() === 'duty'">
   <div class="schedule-layout">
-    <div class="calendar-panel">
+    <div class="calendar-panel" [attr.aria-busy]="loading()">
+      <app-spinner [isLoading$$]="loading()"></app-spinner>
       <div class="calendar-top"><div class="mode-tabs" aria-label="Тип расписания"><button [class.active]="mode() === 'event'" [attr.aria-pressed]="mode() === 'event'" (click)="setMode('event')">Занятия и события</button><button [class.active]="mode() === 'duty'" [attr.aria-pressed]="mode() === 'duty'" (click)="setMode('duty')">Дежурства</button></div><span class="calendar-caption">Планируйте. Танцуйте. Вдохновляйте.</span></div>
       <div class="calendar-toolbar">
         <div class="date-controls"><button class="icon-button" aria-label="Предыдущий период" (click)="navigate(-1)"><mat-icon>chevron_left</mat-icon></button><button class="icon-button" aria-label="Следующий период" (click)="navigate(1)"><mat-icon>chevron_right</mat-icon></button><h2>{{selected() | date:'LLLL yyyy'}}</h2><button class="quiet-button today-button" (click)="today()">Сегодня</button></div>
@@ -15,7 +16,6 @@
           </ng-template>
         </div>
       </div>
-      @if (loading()) { <div class="calendar-status" role="status"><span class="loading-dot"></span>Обновляем расписание…</div> }
       @if (error()) { <div class="error-state" role="alert"><mat-icon>cloud_off</mat-icon><strong>Не удалось загрузить расписание</strong><p>Проверьте подключение и попробуйте ещё раз.</p><button class="quiet-button" (click)="refresh()">Повторить</button></div> }
       @else {
         @if(!loading() && focusedEntries().length === 0) { <div class="empty-inline" role="status"><mat-icon>event_available</mat-icon><span>{{mode() === 'duty' ? 'Пока нет дежурств. Нажмите на свободное время в календаре, чтобы добавить дежурство.' : 'Пока нет событий. Нажмите на свободное время в календаре, чтобы добавить занятие.'}}</span></div> }

@@ -10,10 +10,11 @@ import { EventModel, EventDutyModel } from './event/event.model';
 import { DialogService } from '../services/dialog.service';
 import { EventDialogComponent } from './event-dialog/event-dialog.component';
 import { DutyDialogComponent } from './duty-dialog/duty-dialog.component';
+import { SpinnerComponent } from '../shared/spinner/spinner.component';
 import { addDays, CalendarEntry, dateKey, dayStart, layoutScheduleDay, monthDays, moveMonth, parseDateKey, weekStart } from './calendar-layout';
 type View = 'week' | 'day';
 @Component({
-  selector: 'app-calendar', standalone: true, imports: [DatePipe, FormsModule, MatIconModule, A11yModule, OverlayModule],
+  selector: 'app-calendar', standalone: true, imports: [DatePipe, FormsModule, MatIconModule, A11yModule, OverlayModule, SpinnerComponent],
   templateUrl: './calendar.component.html', styleUrl: './calendar.component.scss', changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CalendarComponent {
