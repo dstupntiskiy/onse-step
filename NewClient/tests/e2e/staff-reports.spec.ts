@@ -5,7 +5,7 @@ const dutyEndpoint = 'GetEventDutiesReportByPeriod';
 const coaches = [{
   coach: {id:'coach-1', name:'Александра Константинопольская'}, totalEvents:2, totalSalary:3250,
   eventWithParticipants: [
-    {name:'Bachata — продолжающая группа с длинным названием', startDate:'2026-09-30T19:00:00+02:00', membersCount:8, onetimeVisitsCount:2, participantsCount:9, baseSalary:1000, bonusSalary:750, totalSalary:1750},
+    {name:'Bachata — продолжающая группа с длинным названием', startDate:'2026-09-30T19:00:00+02:00', membersCount:6, onetimeVisitsCount:2, participantsCount:8, baseSalary:1000, bonusSalary:750, totalSalary:1750},
     {name:'Salsa', startDate:'2026-09-01T18:00:00+02:00', membersCount:6, onetimeVisitsCount:1, participantsCount:7, baseSalary:1000, bonusSalary:500, totalSalary:1500}
   ]
 }];
@@ -56,7 +56,7 @@ for (const width of [1440, 390, 320]) {
     await expect(rows.first().locator('.lesson')).toContainText('Salsa');
     await expect(rows.first().locator('time')).toHaveText('01.09.2026 · 18:00');
     await expect(rows.last().locator('td')).toHaveText([
-      /Bachata.*30.09.2026 · 19:00/s, '8', '2', '9', '1 000', '750', '1 750'
+      /Bachata.*30.09.2026 · 19:00/s, '6', '2', '8', '1 000', '750', '1 750'
     ]);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     expect(await page.locator('.event-items').evaluate(el => el.scrollWidth <= el.clientWidth)).toBe(true);

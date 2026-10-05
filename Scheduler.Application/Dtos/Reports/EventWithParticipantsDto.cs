@@ -7,7 +7,7 @@ public class EventWithParticipantsDto
     public int OnetimeVisitsCount { get; set; }
     public int ParticipantsCount { get; set; }
     public int MembersCount { get; set; }
-    public int BaseSalary { get; set; }
-    public int BonusSalary { get; set; }
-    public int TotalSalary { get; set; }
+    public decimal BaseSalary { get; set; }
+    public decimal BonusSalary { get; set; }
+    public decimal TotalSalary { get; set; }
 }

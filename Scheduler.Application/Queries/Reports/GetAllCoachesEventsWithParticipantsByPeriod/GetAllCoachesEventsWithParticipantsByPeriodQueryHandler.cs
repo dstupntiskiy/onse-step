@@ -5,22 +5,19 @@ using Scheduler.Application.Common.Dtos.Reports;
 using Scheduler.Application.Entities;
 using Scheduler.Application.Enums;
 using Scheduler.Application.Interfaces;
-using Scheduler.Application.Services;
 
 namespace Scheduler.Application.Queries.Reports.GetAllCoachesEventsWithParticipants;
 
 public class GetAllCoachesEventsWithParticipantsByPeriodQueryHandler(
     IRepository<Event> eventRepository,
-    MembershipService membershipService,
-    IRepository<OneTimeVisit> oneTimeVisitRepository,
+    IRepository<OneTimeVisitPayment> oneTimeVisitPaymentRepository,
     IRepository<EventCoachSubstitution> eventCoachSubstitutionRepository,
     IRepository<EventParticipance> eventParticipanceRepository,
-    IRepository<GroupMemberLink> groupMemberRepository,
     IMapper mapper)
     : IRequestHandler<GetAllCoachesEventsWithParticipantsByPeriodQuery, List<CoachWithEventsDto>>
 {
     public const int MIN_MEMBERS = 5;
-    public async Task<List<CoachWithEventsDto>> Handle(GetAllCoachesEventsWithParticipantsByPeriodQuery request,
+    public Task<List<CoachWithEventsDto>> Handle(GetAllCoachesEventsWithParticipantsByPeriodQuery request,
         CancellationToken cancellationToken)
     {
         var events = eventRepository.Query().Where(x => x.StartDateTime >= request.StartDate
@@ -29,6 +26,16 @@ public class GetAllCoachesEventsWithParticipantsByPeriodQueryHandler(
                                                         && x.Group != null).ToList();
 
         events = UpdateCoachFromSub(events);
+
+        var eventIds = events.Select(x => x.Id).ToList();
+        var participants = eventParticipanceRepository.Query()
+            .Where(x => eventIds.Contains(x.Event.Id))
+            .Select(x => new { EventId = x.Event.Id, ClientId = x.Client.Id })
+            .ToList().ToLookup(x => x.EventId, x => x.ClientId);
+        var paidVisitors = oneTimeVisitPaymentRepository.Query()
+            .Where(x => eventIds.Contains(x.OneTimeVisit.Event.Id) && x.Amount > 0)
+            .Select(x => new { EventId = x.OneTimeVisit.Event.Id, ClientId = x.OneTimeVisit.Client.Id })
+            .ToList().ToLookup(x => x.EventId, x => x.ClientId);
         
         var coachesWithEvents = new List<CoachWithEventsDto>();
 
@@ -38,47 +45,14 @@ public class GetAllCoachesEventsWithParticipantsByPeriodQueryHandler(
                 coachesWithEvents.Add(new CoachWithEventsDto
                 {
                     Coach = mapper.Map<CoachDto>(x.Key),
-                    EventWithParticipants = Task.WhenAll(
-                            x.Select(async ev => await GetEventWithParticipants(ev)))
-                        .Result
+                    EventWithParticipants = x.Select(ev => GetEventWithParticipants(
+                            ev, participants[ev.Id], paidVisitors[ev.Id]))
                         .OrderBy(ev => ev.Name)
                         .ThenBy(ev => ev.StartDate).ToList()
                 });
             });
         
-        return coachesWithEvents.OrderBy(x => x.Coach?.Name ?? string.Empty).ToList();
-    }
-
-    private async Task<int> GetMembersCount(Event ev)
-    {
-        var count = 0;
-        var members = groupMemberRepository.Query().Where(x => ev.Group != null && x.Group.Id == ev.Group.Id).ToList().Select(x => x.Client);
-
-        var index = 0;
-        if (ev.Recurrence != null)
-        {
-            index = eventRepository.Query()
-                .Where(x => x.Recurrence != null && x.Recurrence.Id == ev.Recurrence.Id)
-                .OrderBy(x => x.StartDateTime).ToList().FindIndex(x => x.Id == ev.Id);
-        }
-
-        foreach (var member in members)
-        {
-            var membership = await membershipService.GetActualMembership(member.Id, ev.Group!.Style.Id, ev.StartDateTime);
-
-            if (membership != null && index >= membership.VisitsNumber)
-            {
-                continue;
-            }
-            
-            if (membership is { Expired: false }
-                && (membership is not { Unlimited: true } || eventParticipanceRepository.Query().Any(x => x.Client.Id == membership.Client.Id && x.Event.Id == ev.Id)))
-            {
-                count += 1;
-            }
-        }
-
-        return count;
+        return Task.FromResult(coachesWithEvents.OrderBy(x => x.Coach?.Name ?? string.Empty).ToList());
     }
 
     private List<Event> UpdateCoachFromSub(List<Event> events)
@@ -91,22 +65,25 @@ public class GetAllCoachesEventsWithParticipantsByPeriodQueryHandler(
         }).ToList();
     }
     
-    private async Task<EventWithParticipantsDto> GetEventWithParticipants(Event ev)
+    private static EventWithParticipantsDto GetEventWithParticipants(
+        Event ev, IEnumerable<Guid> participants, IEnumerable<Guid> paidVisitors)
     {
-        var onetimeVisitsCount = oneTimeVisitRepository.Query().Count(y => y.Event.Id == ev.Id);
-        var membersCount = await GetMembersCount(ev);
-        var additionalMembers = onetimeVisitsCount + membersCount - MIN_MEMBERS;
+        var paidVisitorIds = paidVisitors.ToHashSet();
+        // Count people once even if attendance or payment records overlap.
+        var membersCount = participants.Except(paidVisitorIds).Count();
+        var participantsCount = membersCount + paidVisitorIds.Count;
+        var additionalMembers = Math.Max(0, participantsCount - MIN_MEMBERS);
 
-        var baseSalary = (int)ev.Group.Style.BaseSalary;
-        var bonusSalary = additionalMembers > 0 ? additionalMembers * (int)ev.Group.Style.BonusSalary : 0;
+        var baseSalary = ev.Group!.Style.BaseSalary;
+        var bonusSalary = additionalMembers * ev.Group.Style.BonusSalary;
         return new EventWithParticipantsDto
         {
             Name = ev.Name,
             StartDate = ev.StartDateTime,
-            OnetimeVisitsCount = onetimeVisitsCount,
-            ParticipantsCount = eventParticipanceRepository.Query().Count(y => y.Event.Id == ev.Id),
+            OnetimeVisitsCount = paidVisitorIds.Count,
+            ParticipantsCount = participantsCount,
             MembersCount = membersCount,
-            BaseSalary = (int)ev.Group.Style.BaseSalary,
+            BaseSalary = baseSalary,
             BonusSalary = bonusSalary,
             TotalSalary = baseSalary + bonusSalary
         };

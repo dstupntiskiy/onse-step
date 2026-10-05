@@ -24,6 +24,7 @@
                 <input matInput [matDatepicker]="pickerStart" [formControl]="startDate">
                 <mat-datepicker-toggle matIconSuffix [for]="pickerStart"></mat-datepicker-toggle>
                 <mat-datepicker #pickerStart></mat-datepicker>
+                <mat-error>Укажите дату начала</mat-error>
             </mat-form-field>
         </div>
         <div class="field-row">
@@ -37,6 +38,7 @@
                 }
                 <mat-datepicker-toggle matIconSuffix [for]="pickerEnd"></mat-datepicker-toggle>
                 <mat-datepicker #pickerEnd></mat-datepicker>
+                <mat-error>Дата окончания должна быть не раньше даты начала</mat-error>
             </mat-form-field>
         </div>
         <div class="field-row">
@@ -45,10 +47,32 @@
         @if(group()){
         <h3>Состав группы</h3>
         <app-group-members [group]="group()!"></app-group-members>
+        } @else if (isCopy()) {
+        <h3>Состав группы</h3>
+        <app-add-client (selectedClient$$)="addDraftMember($event)" [clearControl]="clearClientControl"></app-add-client>
+        <span>Участники: {{draftMembers().length}}</span>
+        <div class="draft-members">
+            @for (member of draftMembers(); track member.id) {
+            <div class="draft-member">
+                <span>{{member.name}}</span>
+                <button mat-icon-button type="button" [attr.aria-label]="'Удалить участника ' + member.name"
+                    (click)="removeDraftMember(member)"><mat-icon>close</mat-icon></button>
+            </div>
+            }
+        </div>
         }
     </div>
     <div class="actions">
+        @if (group()) {
+        <button mat-stroked-button class="copy-button" type="button" (click)="copyGroup()"
+            [disabled]="isLoading || spinnerService.loading$$()">
+            <mat-icon>content_copy</mat-icon>Копировать
+        </button>
+        }
+        <div class="actions-right">
         <button mat-button (click)="onCloseClick()">Закрыть</button>
-        <button mat-raised-button color="accent" (click)="submit()">Сохранить</button>
+        <button mat-raised-button color="accent" (click)="submit()"
+            [disabled]="isLoading || spinnerService.loading$$()">Сохранить</button>
+        </div>
     </div>
 </div>

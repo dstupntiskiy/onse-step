@@ -13,12 +13,13 @@ export interface GroupData{
 }
 
 export interface IGroupSave{
-  id: string
+  id?: string
   name?: string
   styleId?: string
   active: boolean
   startDate: string,
   endDate?: string
+  memberIds?: string[]
 }
 
 @Injectable({

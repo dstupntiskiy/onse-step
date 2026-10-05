@@ -5,7 +5,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { Group } from '../../shared/models/group-model';
 import { GroupService, IGroupSave } from '../group.service';
-import { finalize, forkJoin, Observable, of } from 'rxjs';
+import { BehaviorSubject, finalize, forkJoin, of } from 'rxjs';
 import { SnackBarService } from '../../services/snack-bar.service';
 import { SpinnerService } from '../../shared/spinner/spinner.service';
 import { GroupMembersComponent } from '../group-members/group-members.component';
@@ -19,9 +19,11 @@ import { SpinnerComponent } from '../../shared/spinner/spinner.component';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
+import { Client } from '../../shared/models/client-model';
+import { AddClientComponent } from '../../shared/components/add-client/add-client.component';
 
 export interface GroupDialogData {
-  id: string
+  id?: string
 }
 
 @Component({
@@ -39,6 +41,7 @@ export interface GroupDialogData {
     MatDatepickerModule,
     MatNativeDateModule,
     MatIconModule,
+    AddClientComponent,
   ],
   providers: [
     GroupService,
@@ -58,9 +61,11 @@ export class GroupDialogComponent implements DynamicComponent {
   endDate = new FormControl<string | null>(null)
 
   group = signal<Group | undefined>(undefined)
-  title = computed<string>(() => { return this.group()?.name ?? 'Группа' })
+  isCopy = signal(false)
+  draftMembers = signal<Client[]>([])
+  clearClientControl = new BehaviorSubject<boolean>(false)
+  title = computed<string>(() => this.isCopy() ? 'Создание группы' : this.group()?.name ?? 'Группа')
 
-  public isNew: boolean = false;
   styles: StyleModel[] = []
 
   data = input.required<GroupDialogData>()
@@ -73,7 +78,7 @@ export class GroupDialogComponent implements DynamicComponent {
       this.isLoading = true
 
       forkJoin({
-        group: this.data()?.id != null ? this.groupService.getGroupById(this.data().id) : of(null),
+        group: this.data()?.id != null ? this.groupService.getGroupById(this.data().id!) : of(null),
         styles: this.styleService.getAllStyles(true)
       })
         .pipe(
@@ -81,7 +86,7 @@ export class GroupDialogComponent implements DynamicComponent {
         )
         .subscribe(result => {
           this.styles = result.styles
-          if (!this.styles.find(x => x.id == result.group?.style.id) && result.group?.style) {
+          if (!this.styles.find(x => x.id == result.group?.style?.id) && result.group?.style) {
             this.styles.push(result.group?.style as StyleModel)
           }
 
@@ -114,17 +119,47 @@ export class GroupDialogComponent implements DynamicComponent {
     this.dialogRef.close();
   }
 
+  copyGroup() {
+    const source = this.group()
+    if (!source || this.isLoading || this.spinnerService.loading$$()) return
+
+    this.isLoading = true
+    this.groupService.getGroupMembers(source.id)
+      .pipe(finalize(() => this.isLoading = false))
+      .subscribe(members => {
+        this.draftMembers.set(members.map(member => member.member))
+        this.name.setValue(`${this.name.value ?? source.name} - copy`)
+        this.active.setValue(true)
+        this.startDate.reset(null)
+        this.endDate.reset(null)
+        this.isCopy.set(true)
+        this.group.set(undefined)
+      })
+  }
+
+  addDraftMember(client: Client) {
+    this.draftMembers.update(members => members.some(member => member.id === client.id)
+      ? members : [...members, client])
+    this.clearClientControl.next(true)
+  }
+
+  removeDraftMember(client: Client) {
+    this.draftMembers.update(members => members.filter(member => member.id !== client.id))
+  }
+
   submit() {
+    if (this.isLoading || this.spinnerService.loading$$()) return
     if (this.validateForm()) {
       this.spinnerService.loadingOn();
 
       var group: IGroupSave = {
-        id: this.data()?.id,
+        id: this.group()?.id,
         name: this.name.value as string,
         styleId: this.style?.value?.id,
         active: this.active.value as boolean,
         startDate: this.startDate.value as string,
-        endDate: this.endDate.value ? this.endDate?.value as string : undefined
+        endDate: this.endDate.value ? this.endDate?.value as string : undefined,
+        memberIds: this.isCopy() ? this.draftMembers().map(member => member.id) : undefined
       }
       this.groupService.saveGroup(group)
         .pipe(
@@ -139,13 +174,16 @@ export class GroupDialogComponent implements DynamicComponent {
   }
 
   private validateForm(): boolean {
+    this.name.markAsTouched()
+    this.style.markAsTouched()
+    this.startDate.markAsTouched()
     if (this.name.invalid || this.style.invalid || this.startDate.invalid) {
       return false
     }
 
     var start = new Date(this.startDate.value as string)
     var end = new Date(this.endDate.value as string)
-    if (end < start) {
+    if (this.endDate.value && end < start) {
       this.endDate.setErrors({ invalidEndDate: true })
       return false
     }

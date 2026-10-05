@@ -57,6 +57,8 @@ using var host = new WebHostBuilder()
     .UseUrls("http://127.0.0.1:0")
     .Build();
 MappingChecks.Run(host.Services);
+await GroupCopyChecks.Run(host.Services);
+await CoachReportChecks.Run(host.Services);
 await JwtChecks.Run(host.Services);
 await host.StartAsync();
 try

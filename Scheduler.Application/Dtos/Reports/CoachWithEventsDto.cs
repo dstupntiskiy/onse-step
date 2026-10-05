@@ -6,7 +6,7 @@ public class CoachWithEventsDto
 
     public int TotalEvents => EventWithParticipants.Count;
 
-    public int TotalSalary => EventWithParticipants.Sum(x => x.TotalSalary);
+    public decimal TotalSalary => EventWithParticipants.Sum(x => x.TotalSalary);
     public List<EventWithParticipantsDto> EventWithParticipants { get; set; }
     
 }

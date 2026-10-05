@@ -18,6 +18,7 @@ public static class DependencyInjection
     public static IServiceCollection AddRepositories(this IServiceCollection services) =>
         services.AddTransient<IRepository<Recurrence>, Repository<Recurrence>>()
             .AddTransient<IRepository<Group>, Repository<Group>>()
+            .AddTransient<IGroupWriter, GroupWriter>()
             .AddTransient<IRepository<Event>, Repository<Event>>()
             .AddTransient<IRepository<Client>, Repository<Client>>()
             .AddTransient<IRepository<GroupMemberLink>, Repository<GroupMemberLink>>()

@@ -22,6 +22,39 @@
     .actions {
         display: flex;
         justify-content: flex-end;
-        gap: 16px
+        gap: 16px;
+
+        .copy-button {
+            margin-right: auto;
+            background: #fff3cd;
+            color: #785600;
+            border-color: #e6c768;
+        }
+
+        .actions-right {
+            display: flex;
+            gap: 16px;
+            margin-left: auto;
+        }
+    }
+
+    .draft-members {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .draft-member {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 12px 16px;
+        border: 1px solid #dce6e0;
+        border-radius: 12px;
+        background: #f5f8f6;
+
+        span { overflow-wrap: anywhere; min-width: 0; }
+        button { flex-shrink: 0; }
     }
 }

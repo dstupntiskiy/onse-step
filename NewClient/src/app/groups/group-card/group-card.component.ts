@@ -1,4 +1,4 @@
-import { Component, inject, model, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, model, output, ChangeDetectionStrategy } from '@angular/core';
 import { CardComponent } from '../../shared/components/card/card.component';
 import { Group, GroupWithDetails } from '../../shared/models/group-model';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -19,6 +19,7 @@ import { MatSlideToggle } from '@angular/material/slide-toggle';
 })
 export class GroupCardComponent {
   group = model.required<GroupWithDetails>()
+  groupCreated = output<GroupWithDetails>()
 
   dialogService = inject(DialogService)
 
@@ -26,7 +27,11 @@ export class GroupCardComponent {
     this.dialogService.showDialog(GroupDialogComponent, { id: this.group().id })
       .afterClosed().subscribe((result: GroupWithDetails) => {
         if(result){
-          this.group.update(() => result)
+          if (result.id === this.group().id) {
+            this.group.update(group => ({ ...group, ...result }))
+          } else {
+            this.groupCreated.emit(result)
+          }
         }
       })
   }

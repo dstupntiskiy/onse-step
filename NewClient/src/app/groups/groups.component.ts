@@ -56,11 +56,17 @@ export class GroupsComponent {
     .afterClosed()
     .subscribe((result : GroupWithDetails) => {
       if (result){
-        result.membersCount = result.membersCount ?? 0
-        result.membershipsCount = result.membershipsCount ?? 0
-        this.groups.update(groups => [result, ...groups])
+        this.onGroupCreated(result)
       }
     });
+  }
+
+  onGroupCreated(group: GroupWithDetails) {
+    this.groupService.getGoupWithDetails(group.id).subscribe(result => {
+      if (!this.onlyActive.value || result.active) {
+        this.groups.update(groups => [result, ...groups])
+      }
+    })
   }
 
   ngOnInit(){
