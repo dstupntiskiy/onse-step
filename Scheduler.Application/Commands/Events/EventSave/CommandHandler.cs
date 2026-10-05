@@ -19,7 +19,11 @@ public class CommandHandler(
 {
     public async Task<List<EventDto>> Handle(Command request, CancellationToken cancellationToken)
     {
-        
+            // Existing group changes must use the series-wide attendance check.
+            var existingEvent = await eventRepository.GetById(request.Id);
+            if (existingEvent != null && existingEvent.Group?.Id != request.GroupId)
+                throw new ValidationException("Для изменения группы используйте кнопку замены группы в занятии");
+
             var events = new List<EventDto>();
             var group = mapper.Map<Group>(await groupRepository.GetById(request.GroupId ?? Guid.Empty));
             var coach = mapper.Map<Coach>(await coachRepository.GetById(request.CoachId ?? Guid.Empty));
@@ -39,6 +43,8 @@ public class CommandHandler(
                 else
                 {
                     var recurEvents = eventRepository.Query().Where(x => x.Recurrence.Id == recurrence.Id).ToList();
+                    if (recurEvents.Any(ev => ev.Group?.Id != request.GroupId))
+                        throw new ValidationException("Для изменения группы используйте кнопку замены группы в занятии");
                     foreach (var ev in recurEvents)
                     {
                         var duration = request.EndDateTime - request.StartDateTime;

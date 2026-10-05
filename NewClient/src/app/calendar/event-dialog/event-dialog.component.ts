@@ -134,6 +134,8 @@ export class EventDialogComponent implements DynamicComponent {
   onetimeVisitorsCount: number = 0;
 
   initialEvent = signal<EventModel | null>(null);
+  isGroupEditing = false;
+  isGroupSaving = false;
 
   form = new FormGroup({
     name: new FormControl<string>('', [Validators.required]),
@@ -255,7 +257,7 @@ export class EventDialogComponent implements DynamicComponent {
 
       // Устанавливаем значение и блокируем поле при необходимости
       this.group.setValue(selectedGroup?.id as string);
-      if (this.group.value) {
+      if (this.initialEvent()?.id) {
         this.group.disable();
       }
       this.updateSnapshot();
@@ -287,6 +289,7 @@ export class EventDialogComponent implements DynamicComponent {
   }
 
   submit(): void {
+    if (this.isGroupEditing || this.isGroupSaving) return;
     if (this.form.valid) {
       const data: EventRequestModel = {
         id: this.initialEvent()?.id as string,
@@ -417,6 +420,41 @@ export class EventDialogComponent implements DynamicComponent {
       .afterClosed().subscribe(() => {
         this.triggerUpdateGroupMembersCount.set({})
       })
+  }
+
+  onChangeGroupClick() {
+    this.isGroupEditing = true;
+    this.group.enable();
+  }
+
+  saveGroupChange() {
+    const event = this.initialEvent();
+    const groupId = this.group.value as string;
+    if (!event?.id || !groupId || this.isGroupSaving) return;
+
+    if (groupId === event.group?.id) {
+      this.isGroupEditing = false;
+      this.group.disable();
+      return;
+    }
+
+    this.isGroupSaving = true;
+    this.group.disable();
+    this.eventService.changeGroup(event.id, groupId)
+      .pipe(finalize(() => this.isGroupSaving = false))
+      .subscribe({
+        next: events => {
+          const updated = events.find(item => item.id === event.id)!;
+          // Keep other unsaved edits and their original snapshot intact.
+          this.initialFormValues = { ...this.initialFormValues, group: updated.group?.id };
+          this.initialEvent.set(updated);
+          this.isGroupEditing = false;
+          this.group.setValue(updated.group?.id);
+          this.triggerUpdateGroupMembersCount.set({});
+          this.eventSaved.emit(events);
+        },
+        error: () => this.group.enable()
+      });
   }
 
   onCoachChange(coachId: string) {

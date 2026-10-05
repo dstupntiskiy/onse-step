@@ -2,6 +2,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Scheduler.Application.Commands.Events;
+using Scheduler.Application.Commands.Events.ChangeEventGroup;
 using Scheduler.Application.Commands.Events.EventDutyDelete;
 using Scheduler.Application.Commands.Events.EventDutySave;
 using Scheduler.Application.Commands.Events.EventSave;
@@ -74,6 +75,12 @@ public class EventController(IMediator mediator) : ControllerBase
     public async Task<Guid> Delete(Guid id)
     {
         var cmd = new Application.Commands.Events.EventDelete.Command(id);
+        return await mediator.Send(cmd);
+    }
+
+    [HttpPost("ChangeGroup")]
+    public async Task<List<EventDto>> ChangeGroup(ChangeEventGroupCommand cmd)
+    {
         return await mediator.Send(cmd);
     }
 

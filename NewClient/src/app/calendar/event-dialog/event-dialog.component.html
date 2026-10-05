@@ -119,9 +119,18 @@
             }
           </mat-select>
         </mat-form-field>
-        @if(!group.value){
+        @if(!group.value && (!initialEvent()?.id || isGroupEditing)){
           <button mat-icon-button class="event-field-action" type="button" aria-label="Создать группу" title="Создать группу" [disabled]="!groups" (click)="onCreateGroupClick()">
             <mat-icon>add</mat-icon>
+          </button>
+        }
+        @if(initialEvent()?.id){
+          <button mat-icon-button class="event-field-action" type="button"
+            [attr.aria-label]="isGroupEditing ? 'Сохранить замену группы' : 'Заменить группу'"
+            [title]="isGroupEditing ? 'Сохранить замену группы' : 'Заменить группу'"
+            [disabled]="!groups || isGroupSaving || (isGroupEditing && !group.value)"
+            (click)="isGroupEditing ? saveGroupChange() : onChangeGroupClick()">
+            <mat-icon>{{ isGroupEditing ? 'done' : 'loop' }}</mat-icon>
           </button>
         }
         @if(initialEvent()?.group){
@@ -162,7 +171,7 @@
     </div>
     <div class="actions-right">
       <button mat-button type="button" (click)="onCloseClick()">Закрыть</button>
-      <button mat-raised-button color="accent" type="submit" [disabled]="!dirty() || form.invalid">Сохранить</button>
+      <button mat-raised-button color="accent" type="submit" [disabled]="!dirty() || form.invalid || isGroupEditing || isGroupSaving">Сохранить</button>
     </div>
   </div>
 </form>

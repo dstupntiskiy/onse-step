@@ -96,6 +96,10 @@ export class EventService extends BaseHttpService{
     return this.post<EventModel[]>('', event);
    }
 
+   changeGroup(eventId: string, groupId: string): Observable<EventModel[]> {
+    return this.post<EventModel[]>('ChangeGroup', { eventId, groupId });
+   }
+
    deleteEvent(event: EventModel):Observable<void>{
     var options: IAngularHttpRequestOptions = {
       params: {id: event.id}

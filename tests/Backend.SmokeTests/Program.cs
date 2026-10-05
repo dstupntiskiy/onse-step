@@ -58,6 +58,7 @@ using var host = new WebHostBuilder()
     .Build();
 MappingChecks.Run(host.Services);
 await GroupCopyChecks.Run(host.Services);
+await EventGroupChecks.Run(host.Services);
 await CoachReportChecks.Run(host.Services);
 await JwtChecks.Run(host.Services);
 await host.StartAsync();
